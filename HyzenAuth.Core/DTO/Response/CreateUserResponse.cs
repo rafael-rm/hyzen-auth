@@ -1,22 +1,20 @@
-using HyzenAuth.Core.Models;
+﻿using HyzenAuth.Core.Models;
 
 namespace HyzenAuth.Core.DTO.Response;
 
-public class LoginResponse
+public class CreateUserResponse
 {
     public Guid Guid { get; set; } 
     public string Name { get; set; }
     public string Email { get; set; }
-    public string Token { get; set; }
-
-    public static LoginResponse FromUser(User user, string token)
+    
+    public static CreateUserResponse FromUser(User user)
     {
-        return new LoginResponse()
+        return new CreateUserResponse()
         {
             Guid = user.Guid,
             Name = user.Name,
             Email = user.Email,
-            Token = token,
         };
     }
 }

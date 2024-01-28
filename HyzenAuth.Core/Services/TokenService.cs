@@ -7,7 +7,7 @@ namespace HyzenAuth.Core.Services;
 
 public class TokenService
 {
-    private const string Secret = "6FSx1+1AOUEImFI7KTMCFxceC7P0ZyiekaKTKTkGQGM=";
+    private const string Secret = "6FSx1+1AOUEImFI7KTMCFxceC7P0ZyiekaKTKTkGQGM="; // TODO: Save to an environment variable
     private static byte[] ByteSecret => Convert.FromBase64String(Secret);
     
     public static string GenerateToken(User request)

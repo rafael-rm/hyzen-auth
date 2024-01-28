@@ -17,7 +17,9 @@ public class AuthController : ControllerBase
     {
         await using var context = AuthContext.Get("Auth.Login");
         
-        var user = await Models.User.GetAsync(request);
+        // TODO: Encrypt password before searching the database
+        
+        var user = (await Models.User.SearchAsync(email: request.Email, password: request.Password)).FirstOrDefault();
 
         if (user is null)
             throw new Exception("User not found");

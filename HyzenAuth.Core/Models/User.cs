@@ -35,13 +35,55 @@ public class User
     [Column("updated_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
     public DateTime UpdatedAt { get; set; }
     
-    public static async Task<User> GetAsync(int id)
+    public static async Task<User> GetAsync(string term)
     {
-        return await AuthContext.Get().UsersSet.FirstOrDefaultAsync(s => s.Id == id && s.IsActive);
+        if (string.IsNullOrEmpty(term))
+            return null;
+            
+        if (int.TryParse(term, out var id))
+            return await AuthContext.Get().UsersSet.FirstOrDefaultAsync(s => s.Id == id);
+            
+        if (Guid.TryParse(term, out var guid))
+            return await AuthContext.Get().UsersSet.FirstOrDefaultAsync(s => s.Guid == guid);
+
+        return null;
     }
     
-    public static async Task<User> GetAsync(LoginRequest request)
+    public static async Task<List<User>> SearchAsync(int? id = null, Guid? guid = null, string email = null, string password = null, bool? isActive = null)
     {
-        return await AuthContext.Get().UsersSet.FirstOrDefaultAsync(s => s.Email == request.Email && s.Password == request.Password && s.IsActive);
+        var queryable =  AuthContext.Get().UsersSet.AsQueryable();
+
+        if (id is not null)
+            queryable = queryable.Where(s => s.Id == id);
+
+        if (guid is not null)
+            queryable = queryable.Where(s => s.Guid == guid);
+
+        if (!string.IsNullOrEmpty(email))
+            queryable = queryable.Where(s => s.Email == email);
+
+        if (!string.IsNullOrEmpty(password))
+            queryable = queryable.Where(s => s.Password == password);
+
+        if (isActive is not null)
+            queryable = queryable.Where(s => s.IsActive == isActive);
+
+        return await queryable.ToListAsync();
+    }
+
+    public static async Task<User> CreateAsync(CreateUserRequest request, bool isActive = true)
+    {
+        var user = new User
+        {
+            Guid = Guid.NewGuid(),
+            Name = request.Name,
+            Email = request.Email,
+            Password = request.Password,
+            IsActive = isActive,
+        };
+
+        await AuthContext.Get().UsersSet.AddAsync(user);
+
+        return user;
     }
 }
