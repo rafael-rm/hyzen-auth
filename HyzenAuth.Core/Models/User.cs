@@ -49,6 +49,11 @@ public class User
         return null;
     }
     
+    public void Delete()
+    {
+        AuthContext.Get().UsersSet.Remove(this);
+    }
+    
     public static async Task<List<User>> SearchAsync(int? id = null, Guid? guid = null, string email = null, string password = null, bool? isActive = null)
     {
         var queryable =  AuthContext.Get().UsersSet.AsQueryable();
@@ -85,5 +90,13 @@ public class User
         await AuthContext.Get().UsersSet.AddAsync(user);
 
         return user;
+    }
+    
+    public void Update(UpdateUserRequest request)
+    {
+        Name = request.Name;
+        Email = request.Email;
+        IsActive = request.IsActive;
+        Password = request.Password;
     }
 }

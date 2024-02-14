@@ -1,9 +1,4 @@
-﻿using System.Text;
-using HyzenAuth.Core.Infrastructure;
-using HyzenAuth.Core.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi.Models;
 
 namespace HyzenAuth.Core;
 
@@ -22,7 +17,7 @@ public class Startup
 
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Base API", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hyzen Auth API", Version = "v1" });
         });
     }
 
@@ -32,7 +27,7 @@ public class Startup
         {
             app.UseDeveloperExceptionPage();
             app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Base API v1"));
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hyzen Auth API v1"));
         }
 
         app.UseCors(e => e.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
