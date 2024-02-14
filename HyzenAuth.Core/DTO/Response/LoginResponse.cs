@@ -11,7 +11,7 @@ public class LoginResponse
 
     public static LoginResponse FromUser(User user, string token)
     {
-        return new LoginResponse()
+        return new LoginResponse
         {
             Guid = user.Guid,
             Name = user.Name,
