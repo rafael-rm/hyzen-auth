@@ -14,6 +14,7 @@ namespace HyzenAuth.Core.Infrastructure
         {
             if (_instance.Value == null)
                 throw new Exception("A transaction cannot be initiated without title.");
+            
             return _instance.Value;
         }
 		
@@ -21,6 +22,7 @@ namespace HyzenAuth.Core.Infrastructure
         {
             if (_instance.Value != null)
                 throw new Exception($"A transaction can only have one title {title}.");
+            
             return _instance.Value = new AuthContext(title);
         }
 

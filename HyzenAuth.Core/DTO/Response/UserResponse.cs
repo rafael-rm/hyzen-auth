@@ -2,7 +2,7 @@
 
 namespace HyzenAuth.Core.DTO.Response;
 
-public class UserResponse
+public record UserResponse
 {
     public Guid Guid { get; set; } 
     public string Name { get; set; }

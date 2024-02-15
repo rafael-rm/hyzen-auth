@@ -14,16 +14,14 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         await using var context = AuthContext.Get("Auth.Login");
-
-        request.Password = PasswordHelper.HashPassword(request.Password);
         
-        var user = (await Models.User.SearchAsync(email: request.Email, password: request.Password)).FirstOrDefault();
+        var user = (await Models.User.SearchAsync(email: request.Email, isActive: true)).FirstOrDefault();
 
-        if (user is null)
+        if (user is null || !PasswordHelper.Verify(request.Password, user.Password))
             return NotFound("User not found");
 
-        var token = TokenService.GenerateToken(user);
-        var response = LoginResponse.FromUser(user, token);
+        var token = TokenService.GenerateToken(user, 12);
+        var response = new LoginResponse { Token = token };
         
         await context.SaveChangesAsync();
 

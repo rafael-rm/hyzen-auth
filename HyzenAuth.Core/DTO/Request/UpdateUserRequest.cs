@@ -1,6 +1,6 @@
 ﻿namespace HyzenAuth.Core.DTO.Request;
 
-public class UpdateUserRequest
+public record UpdateUserRequest
 {
     public string Id { get; set; }
     public string Email { get; set; }

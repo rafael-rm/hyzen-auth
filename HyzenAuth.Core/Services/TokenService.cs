@@ -10,7 +10,7 @@ public class TokenService
     private const string Secret = "6FSx1+1AOUEImFI7KTMCFxceC7P0ZyiekaKTKTkGQGM="; // TODO: Save to an environment variable / AWS
     private static byte[] ByteSecret => Convert.FromBase64String(Secret);
     
-    public static string GenerateToken(User request)
+    public static string GenerateToken(User request, int expirationHours = 6)
     {
         var securityKey = new SymmetricSecurityKey(ByteSecret);
         var descriptor = new SecurityTokenDescriptor
@@ -23,7 +23,7 @@ public class TokenService
 
             }),
             SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),
-            Expires = DateTime.UtcNow.AddHours(6),
+            Expires = DateTime.UtcNow.AddHours(expirationHours),
             IssuedAt = DateTime.UtcNow
         };
         

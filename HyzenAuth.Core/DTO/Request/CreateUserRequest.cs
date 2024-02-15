@@ -1,6 +1,6 @@
 ﻿namespace HyzenAuth.Core.DTO.Request;
 
-public class CreateUserRequest
+public record CreateUserRequest
 {
     public string Email { get; set; }
     public string Name { get; set; }
