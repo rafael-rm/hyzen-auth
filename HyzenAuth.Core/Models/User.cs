@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using HyzenAuth.Core.DTO.Request;
+using HyzenAuth.Core.DTO.Request.User;
 using HyzenAuth.Core.Infrastructure;
+using HyzenAuth.Core.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace HyzenAuth.Core.Models;
@@ -35,16 +36,21 @@ public class User
     [Column("updated_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
     public DateTime UpdatedAt { get; set; }
     
+    [InverseProperty("User")] 
+    public List<UserRole> Roles { get; set; }
+    
     public static async Task<User> GetAsync(string term)
     {
+        var context =  AuthContext.Get().UsersSet.Include(s => s.Roles).ThenInclude(s => s.Role).AsQueryable();
+        
         if (string.IsNullOrEmpty(term))
             return null;
             
         if (int.TryParse(term, out var id))
-            return await AuthContext.Get().UsersSet.FirstOrDefaultAsync(s => s.Id == id);
+            return await context.FirstOrDefaultAsync(s => s.Id == id);
             
         if (Guid.TryParse(term, out var guid))
-            return await AuthContext.Get().UsersSet.FirstOrDefaultAsync(s => s.Guid == guid);
+            return await context.FirstOrDefaultAsync(s => s.Guid == guid);
 
         return null;
     }
@@ -56,7 +62,7 @@ public class User
     
     public static async Task<List<User>> SearchAsync(int? id = null, Guid? guid = null, string email = null, string password = null, bool? isActive = null)
     {
-        var queryable =  AuthContext.Get().UsersSet.AsQueryable();
+        var queryable =  AuthContext.Get().UsersSet.Include(s => s.Roles).ThenInclude(s => s.Role).AsQueryable();
 
         if (id is not null)
             queryable = queryable.Where(s => s.Id == id);
@@ -83,7 +89,7 @@ public class User
             Guid = Guid.NewGuid(),
             Name = request.Name,
             Email = request.Email,
-            Password = request.Password,
+            Password = PasswordHelper.HashPassword(request.Password),
             IsActive = isActive,
         };
 
@@ -96,7 +102,24 @@ public class User
     {
         Name = request.Name;
         Email = request.Email;
+        Password = PasswordHelper.HashPassword(request.Password);
         IsActive = request.IsActive;
-        Password = request.Password;
+    }
+    
+    public async Task LoadRoles()
+    {
+        await AuthContext.Get().Entry(this)
+            .Collection(s => s.Roles)
+            .Query()
+            .Include(x => x.Role)
+            .LoadAsync();
+    }
+
+    public async Task<bool> HasRole(string role)
+    {
+        if (Roles is null)
+            await LoadRoles();
+
+        return Roles!.Any(s => s.Role.Name == role);
     }
 }

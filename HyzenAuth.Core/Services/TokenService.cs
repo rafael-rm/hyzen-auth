@@ -7,8 +7,8 @@ namespace HyzenAuth.Core.Services;
 
 public class TokenService
 {
-    private const string Secret = "6FSx1+1AOUEImFI7KTMCFxceC7P0ZyiekaKTKTkGQGM="; // TODO: Save to an environment variable / AWS
-    private static byte[] ByteSecret => Convert.FromBase64String(Secret);
+    public const string Secret = "6FSx1+1AOUEImFI7KTMCFxceC7P0ZyiekaKTKTkGQGM="; // TODO: Save to an environment variable / AWS
+    public static byte[] ByteSecret => Convert.FromBase64String(Secret);
     
     public static string GenerateToken(User request, int expirationHours = 6)
     {
@@ -26,6 +26,11 @@ public class TokenService
             Expires = DateTime.UtcNow.AddHours(expirationHours),
             IssuedAt = DateTime.UtcNow
         };
+        
+        request.Roles.ForEach(s =>
+        {
+            descriptor.Subject.AddClaim(new Claim(ClaimTypes.Role, s.Role.Name));
+        });
         
         var handler = new JwtSecurityTokenHandler();
         var token = handler.CreateJwtSecurityToken(descriptor);

@@ -1,6 +1,6 @@
-﻿using HyzenAuth.Core.Models;
+﻿using HyzenAuth.Core.DTO.Response.Role;
 
-namespace HyzenAuth.Core.DTO.Response;
+namespace HyzenAuth.Core.DTO.Response.User;
 
 public record UserResponse
 {
@@ -9,8 +9,9 @@ public record UserResponse
     public string Email { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
+    public List<RoleResponse> Roles { get; set; } 
     
-    public static UserResponse FromUser(User user)
+    public static UserResponse FromUser(Models.User user)
     {
         return new UserResponse
         {
@@ -18,7 +19,8 @@ public record UserResponse
             Name = user.Name,
             Email = user.Email,
             IsActive = user.IsActive,
-            CreatedAt = user.CreatedAt
+            CreatedAt = user.CreatedAt,
+            Roles = user.Roles.Select(s => RoleResponse.FromUser(s.Role)).ToList()
         };
     }
 }

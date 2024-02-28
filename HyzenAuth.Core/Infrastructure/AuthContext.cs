@@ -27,6 +27,8 @@ namespace HyzenAuth.Core.Infrastructure
         }
 
         public DbSet<User> UsersSet { get; set; }
+        public DbSet<Role> RolesSet { get; set; }
+        public DbSet<UserRole> UsersRolesSet { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

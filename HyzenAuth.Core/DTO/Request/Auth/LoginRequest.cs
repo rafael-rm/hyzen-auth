@@ -1,4 +1,4 @@
-namespace HyzenAuth.Core.DTO.Request;
+namespace HyzenAuth.Core.DTO.Request.Auth;
 
 public record LoginRequest
 {

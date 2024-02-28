@@ -1,27 +1,28 @@
-﻿using HyzenAuth.Core.DTO.Request;
-using HyzenAuth.Core.DTO.Response;
+﻿using HyzenAuth.Core.DTO.Request.Role;
+using HyzenAuth.Core.DTO.Request.User;
+using HyzenAuth.Core.DTO.Response.User;
 using HyzenAuth.Core.Infrastructure;
-using HyzenAuth.Core.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HyzenAuth.Core.Controllers;
 
 [ApiController]
 [Route("api/v1/User")]
+[Authorize]
 public class UserController : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] string id)
+    public async Task<IActionResult> Get([FromQuery] Guid id)
     {
         await using var context = AuthContext.Get("User.Get");
         
-        var user = await Models.User.GetAsync(id);
+        var user = await Models.User.GetAsync(id.ToString());
 
         if (user is null)
             return NotFound("User not found");
         
         var response = UserResponse.FromUser(user);
-        await context.SaveChangesAsync();
 
         return Ok(response);
     }
@@ -36,8 +37,6 @@ public class UserController : ControllerBase
         if (user is not null)
             return Conflict("There is already a registered user with this email");
 
-        request.Password = PasswordHelper.HashPassword(request.Password);
-        
         user = await Models.User.CreateAsync(request);
         
         var response = UserResponse.FromUser(user);
@@ -47,11 +46,11 @@ public class UserController : ControllerBase
     }
     
     [HttpDelete]
-    public async Task<IActionResult> Delete([FromQuery] string id)
+    public async Task<IActionResult> Delete([FromQuery] Guid id)
     {
         await using var context = AuthContext.Get("User.Delete");
         
-        var user = await Models.User.GetAsync(id);
+        var user = await Models.User.GetAsync(id.ToString());
 
         if (user is null)
             return NotFound("User not found");
@@ -72,8 +71,6 @@ public class UserController : ControllerBase
 
         if (user is null)
             return NotFound("User not found");
-
-        request.Password = PasswordHelper.HashPassword(request.Password);
         
         user.Update(request);
         
@@ -81,5 +78,20 @@ public class UserController : ControllerBase
         await context.SaveChangesAsync();
 
         return Ok(response);
+    }
+    
+    [HttpPost, Route("HasRole")]
+    public async Task<IActionResult> HasRole([FromBody] HasRoleRequest request)
+    {
+        await using var context = AuthContext.Get("Role.HasRole");
+
+        var user = await Models.User.GetAsync(request.UserGuid.ToString());
+
+        if (user is null)
+            return NotFound("User not found");
+
+        var hasRole = await user.HasRole(request.Role);
+
+        return Ok(hasRole);
     }
 }
