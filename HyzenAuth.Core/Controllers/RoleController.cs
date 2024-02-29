@@ -1,5 +1,4 @@
-﻿using HyzenAuth.Core.DTO.Request.Role;
-using HyzenAuth.Core.DTO.Response.Role;
+﻿using HyzenAuth.Core.DTO.Response.Role;
 using HyzenAuth.Core.Infrastructure;
 using HyzenAuth.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -13,44 +12,44 @@ namespace HyzenAuth.Core.Controllers;
 public class RoleController : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] Guid term)
+    public async Task<IActionResult> Get([FromQuery] string name)
     {
         await using var context = AuthContext.Get("Role.Get");
     
-        var role = await Role.GetAsync(term.ToString());
+        var role = await Role.GetAsync(name);
 
         if (role is null)
             return NotFound("Role not found");
     
-        var response = RoleResponse.FromUser(role);
+        var response = RoleResponse.FromRole(role);
 
         return Ok(response);
     }
     
-    [HttpPost, Authorize]
-    public async Task<IActionResult> Create([FromBody] CreateRoleRequest request)
+    [HttpPost]
+    public async Task<IActionResult> Create([FromForm] string name)
     {
         await using var context = AuthContext.Get("Role.Create");
 
-        var role = await Role.GetAsync(request.Name);
+        var role = await Role.GetAsync(name);
 
         if (role is not null)
             return Conflict("There is already a registered role with this name");
 
-        role = await Role.CreateAsync(request);
+        role = await Role.CreateAsync(name);
 
-        var response = RoleResponse.FromUser(role);
+        var response = RoleResponse.FromRole(role);
         await context.SaveChangesAsync();
 
         return Ok(response);
     }
     
     [HttpDelete]
-    public async Task<IActionResult> Delete([FromQuery] string term)
+    public async Task<IActionResult> Delete([FromForm] string name)
     {
         await using var context = AuthContext.Get("Role.Delete");
     
-        var role = await Role.GetAsync(term);
+        var role = await Role.GetAsync(name);
 
         if (role is null)
             return NotFound("Role not found");
@@ -61,18 +60,20 @@ public class RoleController : ControllerBase
 
         return NoContent();
     }
-    
+
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdateRoleRequest request)
+    public async Task<IActionResult> Update([FromForm] string oldName, [FromForm] string newName)
     {
         await using var context = AuthContext.Get("Role.Update");
-        
-        var role = await Role.GetAsync(request.Id);
+
+        var role = await Role.GetAsync(oldName);
 
         if (role is null)
             return NotFound("Role not found");
-    
-        var response = RoleResponse.FromUser(role);
+        
+        role.Update(newName);
+
+        var response = RoleResponse.FromRole(role);
         await context.SaveChangesAsync();
 
         return Ok(response);

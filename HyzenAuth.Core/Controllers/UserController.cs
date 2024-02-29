@@ -1,5 +1,4 @@
-﻿using HyzenAuth.Core.DTO.Request.Role;
-using HyzenAuth.Core.DTO.Request.User;
+﻿using HyzenAuth.Core.DTO.Request.User;
 using HyzenAuth.Core.DTO.Response.User;
 using HyzenAuth.Core.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
@@ -17,7 +16,7 @@ public class UserController : ControllerBase
     {
         await using var context = AuthContext.Get("User.Get");
         
-        var user = await Models.User.GetAsync(id.ToString());
+        var user = await Models.User.GetAsync(id);
 
         if (user is null)
             return NotFound("User not found");
@@ -46,11 +45,11 @@ public class UserController : ControllerBase
     }
     
     [HttpDelete]
-    public async Task<IActionResult> Delete([FromQuery] Guid id)
+    public async Task<IActionResult> Delete([FromForm] Guid id)
     {
         await using var context = AuthContext.Get("User.Delete");
         
-        var user = await Models.User.GetAsync(id.ToString());
+        var user = await Models.User.GetAsync(id);
 
         if (user is null)
             return NotFound("User not found");
@@ -63,11 +62,11 @@ public class UserController : ControllerBase
     }
     
     [HttpPut]
-    public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
+    public async Task<IActionResult> Update([FromForm] Guid userGuid, [FromBody] UpdateUserRequest request)
     {
         await using var context = AuthContext.Get("User.Update");
         
-        var user = await Models.User.GetAsync(request.Id);;
+        var user = await Models.User.GetAsync(userGuid);;
 
         if (user is null)
             return NotFound("User not found");
@@ -81,16 +80,16 @@ public class UserController : ControllerBase
     }
     
     [HttpPost, Route("HasRole")]
-    public async Task<IActionResult> HasRole([FromBody] HasRoleRequest request)
+    public async Task<IActionResult> HasRole([FromForm] Guid userGuid, [FromForm] string roleName)
     {
         await using var context = AuthContext.Get("Role.HasRole");
 
-        var user = await Models.User.GetAsync(request.UserGuid.ToString());
+        var user = await Models.User.GetAsync(userGuid);
 
         if (user is null)
             return NotFound("User not found");
 
-        var hasRole = await user.HasRole(request.Role);
+        var hasRole = await user.HasRole(roleName);
 
         return Ok(hasRole);
     }

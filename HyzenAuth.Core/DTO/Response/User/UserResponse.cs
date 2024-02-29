@@ -20,7 +20,7 @@ public record UserResponse
             Email = user.Email,
             IsActive = user.IsActive,
             CreatedAt = user.CreatedAt,
-            Roles = user.Roles.Select(s => RoleResponse.FromUser(s.Role)).ToList()
+            Roles = user.Roles.Select(s => RoleResponse.FromRole(s.Role)).ToList()
         };
     }
 }

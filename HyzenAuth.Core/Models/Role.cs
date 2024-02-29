@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using HyzenAuth.Core.DTO.Request.Role;
 using HyzenAuth.Core.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,18 +25,12 @@ public class Role
     [Column("updated_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
     public DateTime UpdatedAt { get; set; }
     
-    public static async Task<Role> GetAsync(string term)
+    public static async Task<Role> GetAsync(string name)
     {
-        if (string.IsNullOrEmpty(term))
+        if (string.IsNullOrEmpty(name))
             return null;
-            
-        if (int.TryParse(term, out var id))
-            return await AuthContext.Get().RolesSet.FirstOrDefaultAsync(s => s.Id == id);
         
-        if (Guid.TryParse(term, out var guid))
-            return await AuthContext.Get().RolesSet.FirstOrDefaultAsync(s => s.Guid == guid);
-        
-        return await AuthContext.Get().RolesSet.FirstOrDefaultAsync(s => s.Name == term);
+        return await AuthContext.Get().RolesSet.FirstOrDefaultAsync(s => s.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
     }
     
     public void Delete()
@@ -45,12 +38,12 @@ public class Role
         AuthContext.Get().RolesSet.Remove(this);
     }
     
-    public static async Task<Role> CreateAsync(CreateRoleRequest request)
+    public static async Task<Role> CreateAsync(string  name)
     {
         var role = new Role
         {
             Guid = Guid.NewGuid(),
-            Name = request.Name
+            Name = name
         };
 
         await AuthContext.Get().RolesSet.AddAsync(role);
@@ -58,8 +51,8 @@ public class Role
         return role;
     }
     
-    public void Update(UpdateRoleRequest request)
+    public void Update(string name)
     {
-        Name = request.Name;
+        Name = name;
     }
 }

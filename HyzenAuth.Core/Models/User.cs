@@ -39,20 +39,12 @@ public class User
     [InverseProperty("User")] 
     public List<UserRole> Roles { get; set; }
     
-    public static async Task<User> GetAsync(string term)
+    public static async Task<User> GetAsync(Guid id)
     {
-        var context =  AuthContext.Get().UsersSet.Include(s => s.Roles).ThenInclude(s => s.Role).AsQueryable();
-        
-        if (string.IsNullOrEmpty(term))
-            return null;
-            
-        if (int.TryParse(term, out var id))
-            return await context.FirstOrDefaultAsync(s => s.Id == id);
-            
-        if (Guid.TryParse(term, out var guid))
-            return await context.FirstOrDefaultAsync(s => s.Guid == guid);
-
-        return null;
+        return await AuthContext.Get().UsersSet
+            .Include(s => s.Roles)
+            .ThenInclude(s => s.Role)
+            .FirstOrDefaultAsync(s => s.Guid == id);
     }
     
     public void Delete()
@@ -120,6 +112,6 @@ public class User
         if (Roles is null)
             await LoadRoles();
 
-        return Roles!.Any(s => s.Role.Name == role);
+        return Roles!.Any(s => s.Role.Name.Equals(role, StringComparison.CurrentCultureIgnoreCase));
     }
 }
