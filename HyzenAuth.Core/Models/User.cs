@@ -54,7 +54,10 @@ public class User
     
     public static async Task<List<User>> SearchAsync(int? id = null, Guid? guid = null, string email = null, string password = null, bool? isActive = null)
     {
-        var queryable =  AuthContext.Get().UsersSet.Include(s => s.Roles).ThenInclude(s => s.Role).AsQueryable();
+        var queryable =  AuthContext.Get().UsersSet
+            .Include(s => s.Roles)
+            .ThenInclude(s => s.Role)
+            .AsQueryable();
 
         if (id is not null)
             queryable = queryable.Where(s => s.Id == id);
@@ -112,6 +115,6 @@ public class User
         if (Roles is null)
             await LoadRoles();
 
-        return Roles!.Any(s => s.Role.Name.Equals(role, StringComparison.CurrentCultureIgnoreCase));
+        return Roles!.Any(s => s.Role.Name.ToLower() == role.ToLower());
     }
 }

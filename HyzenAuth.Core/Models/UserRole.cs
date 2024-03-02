@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using HyzenAuth.Core.Infrastructure;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace HyzenAuth.Core.Models;
@@ -22,16 +24,30 @@ public class UserRole
     [Column("assigned_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
     public DateTime AssignedAt { get; set; }
     
-    public static async Task<UserRole> GetAsync(int id)
+    public static async Task<UserRole> GetAsync(User user, Role role)
     {
         return await AuthContext.Get().UsersRolesSet
             .Include(s => s.User)
             .Include(s => s.Role)
-            .FirstOrDefaultAsync(s => s.Id == id);
+            .FirstOrDefaultAsync(s => s.User == user && s.Role == role);
     }
     
     public void Delete()
     {
         AuthContext.Get().UsersRolesSet.Remove(this);
+    }
+    
+    public static async Task Add(User user, Role role)
+    {
+        var userRole = new UserRole { User = user, Role = role };
+        
+        await AuthContext.Get().UsersRolesSet.AddAsync(userRole);
+    }
+    
+    public static async Task Remove(User user, Role role)
+    {
+        var userRole = await GetAsync(user, role);
+        
+        AuthContext.Get().UsersRolesSet.Remove(userRole);
     }
 }

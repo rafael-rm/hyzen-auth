@@ -58,7 +58,7 @@ public class RoleController : ControllerBase
         
         await context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok("Role deleted");
     }
 
     [HttpPut]

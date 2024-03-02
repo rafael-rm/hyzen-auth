@@ -30,7 +30,7 @@ public class Role
         if (string.IsNullOrEmpty(name))
             return null;
         
-        return await AuthContext.Get().RolesSet.FirstOrDefaultAsync(s => s.Name.Equals(name, StringComparison.CurrentCultureIgnoreCase));
+        return await AuthContext.Get().RolesSet.FirstOrDefaultAsync(s => s.Name.ToLower() == name.ToLower());
     }
     
     public void Delete()

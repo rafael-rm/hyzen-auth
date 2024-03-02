@@ -1,6 +1,7 @@
 ﻿using HyzenAuth.Core.DTO.Request.User;
 using HyzenAuth.Core.DTO.Response.User;
 using HyzenAuth.Core.Infrastructure;
+using HyzenAuth.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -58,7 +59,7 @@ public class UserController : ControllerBase
         
         await context.SaveChangesAsync();
 
-        return NoContent();
+        return Ok("User deleted");
     }
     
     [HttpPut]
@@ -92,5 +93,55 @@ public class UserController : ControllerBase
         var hasRole = await user.HasRole(roleName);
 
         return Ok(hasRole);
+    }
+    
+    [HttpPost, Route("AddRole")]
+    public async Task<IActionResult> AddRole([FromForm] Guid userGuid, [FromForm] string roleName)
+    {
+        await using var context = AuthContext.Get("User.AddRole");
+
+        var user = await Models.User.GetAsync(userGuid);
+
+        if (user is null)
+            return NotFound("User not found");
+
+        var role = await Role.GetAsync(roleName);
+        
+        if (role is null)
+            return NotFound("Role not found");
+
+        if (await user.HasRole(roleName))
+            return Conflict("The user already has this role");
+
+        await UserRole.Add(user, role);
+        
+        await context.SaveChangesAsync();
+
+        return Ok("Role added to user");
+    }
+    
+    [HttpPost, Route("RemoveRole")]
+    public async Task<IActionResult> RemoveRole([FromForm] Guid userGuid, [FromForm] string roleName)
+    {
+        await using var context = AuthContext.Get("User.RemoveRole");
+
+        var user = await Models.User.GetAsync(userGuid);
+
+        if (user is null)
+            return NotFound("User not found");
+
+        var role = await Role.GetAsync(roleName);
+        
+        if (role is null)
+            return NotFound("Role not found");
+        
+        if (!await user.HasRole(roleName))
+            return Conflict("User does not have this role");
+
+        await UserRole.Remove(user, role);
+        
+        await context.SaveChangesAsync();
+
+        return Ok("Role removed from user");
     }
 }

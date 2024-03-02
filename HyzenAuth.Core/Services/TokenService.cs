@@ -20,7 +20,6 @@ public class TokenService
                 new Claim(ClaimTypes.PrimarySid, request.Guid.ToString()),
                 new Claim(ClaimTypes.GivenName, request.Name),
                 new Claim(ClaimTypes.Email, request.Email),
-
             }),
             SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),
             Expires = DateTime.UtcNow.AddHours(expirationHours),
