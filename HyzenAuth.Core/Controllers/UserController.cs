@@ -113,7 +113,7 @@ public class UserController : ControllerBase
         if (await user.HasRole(roleName))
             return Conflict("The user already has this role");
 
-        await UserRole.Add(user, role);
+        await UserRole.Add(user.Id, role.Id);
         
         await context.SaveChangesAsync();
 
@@ -166,7 +166,7 @@ public class UserController : ControllerBase
         if (await user.HasGroup(groupName))
             return Conflict("The user already has this group");
 
-        await UserGroup.Add(user, group);
+        await UserGroup.AddAsync(user, group);
         
         await context.SaveChangesAsync();
 

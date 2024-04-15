@@ -10,38 +10,38 @@ namespace HyzenAuth.Core.Models;
 [Table("users")]
 public class User
 {
-    private User() { }
-    
-    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("id", TypeName = "INT")] 
+    private User()
+    {
+    }
+
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("id", TypeName = "INT")]
     public int Id { get; set; }
-    
-    [Column("guid", TypeName = "CHAR(36)"), Required] 
-    public Guid Guid { get; set; } 
-    
-    [Column("name", TypeName = "VARCHAR(255)"), MaxLength(255), Required] 
+
+    [Column("guid", TypeName = "CHAR(36)"), Required]
+    public Guid Guid { get; set; }
+
+    [Column("name", TypeName = "VARCHAR(255)"), MaxLength(255), Required]
     public string Name { get; set; }
-    
-    [Column("email", TypeName = "VARCHAR(255)"), MaxLength(255), Required] 
+
+    [Column("email", TypeName = "VARCHAR(255)"), MaxLength(255), Required]
     public string Email { get; set; }
-    
-    [Column("is_active", TypeName = "BIT"), Required] 
-    public bool IsActive { get; set; } 
-    
-    [Column("password", TypeName = "VARCHAR(255)"), MaxLength(255), Required] 
+
+    [Column("is_active", TypeName = "BIT"), Required]
+    public bool IsActive { get; set; }
+
+    [Column("password", TypeName = "VARCHAR(255)"), MaxLength(255), Required]
     public string Password { get; set; }
-    
-    [Column("created_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
+
+    [Column("created_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public DateTime CreatedAt { get; set; }
-    
-    [Column("updated_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
+
+    [Column("updated_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public DateTime UpdatedAt { get; set; }
-    
-    [InverseProperty("User")] 
-    public List<UserRole> UserRoles { get; set; }
-    
-    [InverseProperty("User")]
-    public List<UserGroup> UserGroups { get; set; } 
-    
+
+    [InverseProperty("User")] public List<UserRole> UserRoles { get; set; }
+
+    [InverseProperty("User")] public List<UserGroup> UserGroups { get; set; }
+
     public static async Task<User> GetAsync(Guid id)
     {
         return await AuthContext.Get().UsersSet
@@ -49,15 +49,16 @@ public class User
             .ThenInclude(s => s.Role)
             .FirstOrDefaultAsync(s => s.Guid == id);
     }
-    
+
     public void Delete()
     {
         throw new NotImplementedException();
     }
-    
-    public static async Task<List<User>> SearchAsync(int? id = null, Guid? guid = null, string email = null, string password = null, bool? isActive = null)
+
+    public static async Task<List<User>> SearchAsync(int? id = null, Guid? guid = null, string email = null,
+        string password = null, bool? isActive = null)
     {
-        var queryable =  AuthContext.Get().UsersSet
+        var queryable = AuthContext.Get().UsersSet
             .Include(s => s.UserRoles)
             .ThenInclude(s => s.Role)
             .AsQueryable();
@@ -95,7 +96,7 @@ public class User
 
         return user;
     }
-    
+
     public void Update(UpdateUserRequest request)
     {
         Name = request.Name;
@@ -103,7 +104,7 @@ public class User
         Password = PasswordHelper.HashPassword(request.Password);
         IsActive = request.IsActive;
     }
-    
+
     public async Task LoadRoles()
     {
         await AuthContext.Get().Entry(this)
@@ -120,7 +121,7 @@ public class User
 
         return UserRoles!.Any(s => s.Role.Name.ToLower() == role.ToLower());
     }
-    
+
     public async Task LoadUserGroups()
     {
         await AuthContext.Get().Entry(this)
@@ -129,7 +130,7 @@ public class User
             .Include(x => x.Group)
             .LoadAsync();
     }
-    
+
     public async Task<bool> HasGroup(string group)
     {
         if (UserGroups is null)

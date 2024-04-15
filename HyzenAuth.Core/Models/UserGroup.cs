@@ -32,7 +32,7 @@ namespace HyzenAuth.Core.Models;
             .FirstOrDefaultAsync(s => s.UserId == userId && s.GroupId == groupId);
     }
     
-    public static async Task Add(User user, Group group)
+    public static async Task AddAsync(User user, Group group)
     {
         var userGroup = new UserGroup { User = user, Group = group };
         var userRoles = await UserRole.GetAsyncFromUser(user.Id);
@@ -43,7 +43,7 @@ namespace HyzenAuth.Core.Models;
             if (userRole != null)
                 continue;
             
-            await UserRole.Add(user, groupRole.Role);
+            await UserRole.Add(user.Id, groupRole.RoleId);
         }
         
         await AuthContext.Get().UsersGroupsSet.AddAsync(userGroup);

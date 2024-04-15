@@ -120,7 +120,7 @@ public class GroupController : ControllerBase
         if (groupRole is not null)
             return Conflict("Group already has this role");
         
-        await GroupRole.Add(group, role);
+        await GroupRole.AddAsync(group, role);
         await context.SaveChangesAsync();
 
         return Ok("Role added to group");

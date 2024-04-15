@@ -35,15 +35,13 @@ public class UserRole
     public static async Task<List<UserRole>> GetAsyncFromUser(int userId)
     {
         return await AuthContext.Get().UsersRolesSet
-            .Include(s => s.User)
-            .Include(s => s.Role)
             .Where(s => s.UserId == userId)
             .ToListAsync();
     }
     
-    public static async Task Add(User user, Role role)
+    public static async Task Add(int userId, int roleId)
     {
-        var userRole = new UserRole { User = user, Role = role };
+        var userRole = new UserRole { UserId = userId, RoleId = roleId };
         
         await AuthContext.Get().UsersRolesSet.AddAsync(userRole);
     }
@@ -56,7 +54,7 @@ public class UserRole
         foreach (var userGroup in userGroups)
         {
             var groupRoles = await GroupRole.GetAsyncFromGroup(userGroup.GroupId);
-            if (groupRoles.Any(gr => gr.RoleId == roleId && gr.GroupId != ignoreGroupId))
+            if (groupRoles.Any(gr => gr.RoleId == roleId && gr.GroupId != ignoreGroupId)) // Check if the user is associated with a group that contains this permission
                 return false;
         }
         
