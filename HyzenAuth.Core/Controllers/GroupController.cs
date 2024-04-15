@@ -145,7 +145,7 @@ public class GroupController : ControllerBase
         if (groupRole is null)
             return NotFound("Group does not have this role");
         
-        await GroupRole.Remove(group.Id, role.Id);
+        await GroupRole.DeleteAsync(group.Id, role.Id);
         await context.SaveChangesAsync();
 
         return Ok("Role removed from group");

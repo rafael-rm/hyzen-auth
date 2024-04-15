@@ -32,11 +32,6 @@ namespace HyzenAuth.Core.Models;
             .FirstOrDefaultAsync(s => s.UserId == userId && s.GroupId == groupId);
     }
     
-    public void Delete()
-    {
-        AuthContext.Get().UsersGroupsSet.Remove(this);
-    }
-    
     public static async Task Add(User user, Group group)
     {
         var userGroup = new UserGroup { User = user, Group = group };
@@ -63,7 +58,7 @@ namespace HyzenAuth.Core.Models;
             .ToListAsync();
     }
     
-    public static async Task Remove(int userId, int groupId)
+    public static async Task DeleteAsync(int userId, int groupId)
     {
         var group = await Group.GetAsync(groupId);
         var userGroups = await GetAsyncFromUser(userId);
@@ -77,7 +72,7 @@ namespace HyzenAuth.Core.Models;
             var userRole = await UserRole.GetAsync(userId, groupRole.RoleId);
             
             if (userRole != null)
-               _ = await UserRole.Remove(userId, groupRole.RoleId, groupId);
+               _ = await UserRole.DeleteAsync(userId, groupRole.RoleId, groupId);
         }
         
         AuthContext.Get().UsersGroupsSet.Remove(userGroups.First(s => s.UserId == userId && s.GroupId == groupId));

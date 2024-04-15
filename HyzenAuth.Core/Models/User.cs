@@ -52,7 +52,7 @@ public class User
     
     public void Delete()
     {
-        AuthContext.Get().UsersSet.Remove(this);
+        throw new NotImplementedException();
     }
     
     public static async Task<List<User>> SearchAsync(int? id = null, Guid? guid = null, string email = null, string password = null, bool? isActive = null)

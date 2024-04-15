@@ -48,7 +48,7 @@ public class UserRole
         await AuthContext.Get().UsersRolesSet.AddAsync(userRole);
     }
     
-    public static async Task<bool> Remove(int userId, int roleId, int? ignoreGroupId = null)
+    public static async Task<bool> DeleteAsync(int userId, int roleId, int? ignoreGroupId = null)
     {
         var userRole = await GetAsync(userId, roleId);
         

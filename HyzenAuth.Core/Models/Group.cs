@@ -55,20 +55,13 @@ public class Group
         var groupRoles = await GroupRole.GetAsyncFromGroup(Id);
         foreach (var groupRole in groupRoles)
         {
-            groupRole.Delete();
+            await GroupRole.DeleteAsync(groupRole.GroupId, groupRole.RoleId);
         }
 
         var userGroups = await UserGroup.GetAsyncFromGroup(Id);
         foreach (var userGroup in userGroups)
         {
-            userGroup.Delete();
-        }
-        
-
-        var userRoles = await UserRole.GetAsyncFromGroup(Id);
-        foreach (var userRole in userRoles)
-        {
-            _ = await UserRole.Remove(userRole.UserId, userRole.RoleId);
+            await UserGroup.DeleteAsync(userGroup.UserId, userGroup.GroupId);
         }
         
         AuthContext.Get().GroupsSet.Remove(this);

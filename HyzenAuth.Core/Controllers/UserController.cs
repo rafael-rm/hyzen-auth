@@ -138,7 +138,7 @@ public class UserController : ControllerBase
         if (!await user.HasRole(roleName))
             return Conflict("User does not have this role");
 
-        var wasRemoved = await UserRole.Remove(user.Id, role.Id);
+        var wasRemoved = await UserRole.DeleteAsync(user.Id, role.Id);
         
         if (!wasRemoved)
             return Conflict("The user is associated with a group that contains this permission");
@@ -191,7 +191,7 @@ public class UserController : ControllerBase
         if (!await user.HasGroup(groupName))
             return Conflict("User does not have this group");
 
-        await UserGroup.Remove(user.Id, group.Id);
+        await UserGroup.DeleteAsync(user.Id, group.Id);
         
         await context.SaveChangesAsync();
 
