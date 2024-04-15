@@ -41,7 +41,12 @@ public class GroupController : ControllerBase
         if (request.Roles is {Count: 0})
             return BadRequest("Roles not provided");
         
-        group = await Group.CreateAsync(request.Name, request.Roles);
+        var roles = await Role.SearchAsync(names: request.Roles);
+        
+        if (roles is {Count: 0})
+            return NotFound("To create a group, at least one valid role must be provided");
+        
+        group = await Group.CreateAsync(request.Name, roles);
         
         var response = GroupResponse.FromGroup(group);
         await context.SaveChangesAsync();

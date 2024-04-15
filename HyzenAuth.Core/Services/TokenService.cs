@@ -26,7 +26,7 @@ public class TokenService
             IssuedAt = DateTime.UtcNow
         };
         
-        request.Roles.ForEach(s =>
+        request.UserRoles.ForEach(s =>
         {
             descriptor.Subject.AddClaim(new Claim(ClaimTypes.Role, s.Role.Name));
         });

@@ -41,11 +41,6 @@ public class UserRole
             .ToListAsync();
     }
     
-    public void Delete()
-    {
-        AuthContext.Get().UsersRolesSet.Remove(this);
-    }
-    
     public static async Task Add(User user, Role role)
     {
         var userRole = new UserRole { User = user, Role = role };
@@ -53,11 +48,20 @@ public class UserRole
         await AuthContext.Get().UsersRolesSet.AddAsync(userRole);
     }
     
-    public static async Task Remove(int userId, int roleId)
+    public static async Task<bool> Remove(int userId, int roleId, int? ignoreGroupId = null)
     {
         var userRole = await GetAsync(userId, roleId);
         
+        var userGroups = await UserGroup.GetAsyncFromUser(userId);
+        foreach (var userGroup in userGroups)
+        {
+            var groupRoles = await GroupRole.GetAsyncFromGroup(userGroup.GroupId);
+            if (groupRoles.Any(gr => gr.RoleId == roleId && gr.GroupId != ignoreGroupId))
+                return false;
+        }
+        
         AuthContext.Get().UsersRolesSet.Remove(userRole);
+        return true;
     }
     
     public static async Task<List<UserRole>> GetAsyncFromGroup(int groupId)

@@ -26,7 +26,7 @@ public class Group
     public DateTime UpdatedAt { get; set; }
     
     [InverseProperty("Group")]
-    public List<GroupRole> Roles { get; set; }
+    public List<GroupRole> GroupRoles { get; set; }
     
     [InverseProperty("Group")]
     public List<UserGroup> UserGroups { get; set; }
@@ -37,7 +37,7 @@ public class Group
             return null;
         
         return await AuthContext.Get().GroupsSet
-            .Include(s => s.Roles)
+            .Include(s => s.GroupRoles)
             .ThenInclude(s => s.Role)
             .FirstOrDefaultAsync(s => s.Name.ToLower() == name.ToLower());
     }
@@ -45,7 +45,7 @@ public class Group
     public static async Task<Group> GetAsync(int id)
     {
         return await AuthContext.Get().GroupsSet
-            .Include(s => s.Roles)
+            .Include(s => s.GroupRoles)
             .ThenInclude(s => s.Role)
             .FirstOrDefaultAsync(s => s.Id == id);
     }
@@ -53,23 +53,28 @@ public class Group
     public async Task DeleteAsync()
     {
         var groupRoles = await GroupRole.GetAsyncFromGroup(Id);
-        
         foreach (var groupRole in groupRoles)
         {
             groupRole.Delete();
         }
 
         var userGroups = await UserGroup.GetAsyncFromGroup(Id);
-        
         foreach (var userGroup in userGroups)
         {
             userGroup.Delete();
         }
         
+
+        var userRoles = await UserRole.GetAsyncFromGroup(Id);
+        foreach (var userRole in userRoles)
+        {
+            _ = await UserRole.Remove(userRole.UserId, userRole.RoleId);
+        }
+        
         AuthContext.Get().GroupsSet.Remove(this);
     }
     
-    public static async Task<Group> CreateAsync(string  name, List<string> roles)
+    public static async Task<Group> CreateAsync(string  name, List<Role> roles)
     {
         var group = new Group
         {
@@ -77,13 +82,8 @@ public class Group
             Name = name
         };
         
-        foreach (var roleName in roles)
+        foreach (var role in roles)
         {
-            var role = await Role.GetAsync(roleName);
-            
-            if (role == null)
-                continue;
-            
             _ = new GroupRole(role, group);
         }
         

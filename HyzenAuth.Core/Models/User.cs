@@ -37,7 +37,7 @@ public class User
     public DateTime UpdatedAt { get; set; }
     
     [InverseProperty("User")] 
-    public List<UserRole> Roles { get; set; }
+    public List<UserRole> UserRoles { get; set; }
     
     [InverseProperty("User")]
     public List<UserGroup> UserGroups { get; set; } 
@@ -45,7 +45,7 @@ public class User
     public static async Task<User> GetAsync(Guid id)
     {
         return await AuthContext.Get().UsersSet
-            .Include(s => s.Roles)
+            .Include(s => s.UserRoles)
             .ThenInclude(s => s.Role)
             .FirstOrDefaultAsync(s => s.Guid == id);
     }
@@ -58,7 +58,7 @@ public class User
     public static async Task<List<User>> SearchAsync(int? id = null, Guid? guid = null, string email = null, string password = null, bool? isActive = null)
     {
         var queryable =  AuthContext.Get().UsersSet
-            .Include(s => s.Roles)
+            .Include(s => s.UserRoles)
             .ThenInclude(s => s.Role)
             .AsQueryable();
 
@@ -107,7 +107,7 @@ public class User
     public async Task LoadRoles()
     {
         await AuthContext.Get().Entry(this)
-            .Collection(s => s.Roles)
+            .Collection(s => s.UserRoles)
             .Query()
             .Include(x => x.Role)
             .LoadAsync();
@@ -115,10 +115,10 @@ public class User
 
     public async Task<bool> HasRole(string role)
     {
-        if (Roles is null)
+        if (UserRoles is null)
             await LoadRoles();
 
-        return Roles!.Any(s => s.Role.Name.ToLower() == role.ToLower());
+        return UserRoles!.Any(s => s.Role.Name.ToLower() == role.ToLower());
     }
     
     public async Task LoadUserGroups()

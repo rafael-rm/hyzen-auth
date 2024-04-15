@@ -68,7 +68,7 @@ public class GroupRole
         foreach (var userRole in userRoles)
         {
             if (userRole.RoleId == roleId)
-                await UserRole.Remove(userRole.UserId, userRole.RoleId);
+                _ = await UserRole.Remove(userRole.UserId, userRole.RoleId);
         }
         
         AuthContext.Get().GroupsRolesSet.Remove(groupRole);

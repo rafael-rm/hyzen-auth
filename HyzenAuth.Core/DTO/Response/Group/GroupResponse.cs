@@ -14,7 +14,7 @@ public class GroupResponse
         {
             Guid = group.Guid,
             Name = group.Name,
-            Roles = group.Roles?.Select(s => RoleResponse.FromRole(s.Role)).ToList()
+            Roles = group.GroupRoles?.Select(s => RoleResponse.FromRole(s.Role)).ToList()
         };
     }
 }

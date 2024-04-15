@@ -42,7 +42,7 @@ namespace HyzenAuth.Core.Models;
         var userGroup = new UserGroup { User = user, Group = group };
         var userRoles = await UserRole.GetAsyncFromUser(user.Id);
         
-        foreach (var groupRole in group.Roles)
+        foreach (var groupRole in group.GroupRoles)
         {
             var userRole = userRoles.FirstOrDefault(ur => ur.RoleId == groupRole.RoleId);
             if (userRole != null)
@@ -54,19 +54,34 @@ namespace HyzenAuth.Core.Models;
         await AuthContext.Get().UsersGroupsSet.AddAsync(userGroup);
     }
     
+    public static async Task<List<UserGroup>> GetAsyncFromUser(int userId)
+    {
+        return await AuthContext.Get().UsersGroupsSet
+            .Include(s => s.Group)
+            .ThenInclude(s => s.GroupRoles)
+            .Where(s => s.UserId == userId)
+            .ToListAsync();
+    }
+    
     public static async Task Remove(int userId, int groupId)
     {
-        var userGroup = await GetAsync(userId, groupId);
-
         var group = await Group.GetAsync(groupId);
-
-        foreach (var groupRole in group.Roles)
+        var userGroups = await GetAsyncFromUser(userId);
+        
+        foreach (var groupRole in group.GroupRoles)
         {
+            var otherGroupHasRole = userGroups.Any(ug => ug.GroupId != groupId && ug.Group.GroupRoles.Any(gr => gr.RoleId == groupRole.RoleId));
+            if (otherGroupHasRole)
+                continue;
+            
             var userRole = await UserRole.GetAsync(userId, groupRole.RoleId);
-            userRole?.Delete();
+            
+            if (userRole != null)
+               _ = await UserRole.Remove(userId, groupRole.RoleId, groupId);
         }
         
-        AuthContext.Get().UsersGroupsSet.Remove(userGroup);
+        AuthContext.Get().UsersGroupsSet.Remove(userGroups.First(s => s.UserId == userId && s.GroupId == groupId));
+           
     }
     
     public static async Task<List<UserGroup>> GetAsyncFromGroup(int groupId)
