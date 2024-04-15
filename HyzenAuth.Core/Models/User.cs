@@ -39,6 +39,9 @@ public class User
     [InverseProperty("User")] 
     public List<UserRole> Roles { get; set; }
     
+    [InverseProperty("User")]
+    public List<UserGroup> UserGroups { get; set; } 
+    
     public static async Task<User> GetAsync(Guid id)
     {
         return await AuthContext.Get().UsersSet
@@ -116,5 +119,22 @@ public class User
             await LoadRoles();
 
         return Roles!.Any(s => s.Role.Name.ToLower() == role.ToLower());
+    }
+    
+    public async Task LoadUserGroups()
+    {
+        await AuthContext.Get().Entry(this)
+            .Collection(s => s.UserGroups)
+            .Query()
+            .Include(x => x.Group)
+            .LoadAsync();
+    }
+    
+    public async Task<bool> HasGroup(string group)
+    {
+        if (UserGroups is null)
+            await LoadUserGroups();
+
+        return UserGroups!.Any(s => s.Group.Name.ToLower() == group.ToLower());
     }
 }

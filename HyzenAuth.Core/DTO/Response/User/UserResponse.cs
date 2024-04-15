@@ -19,7 +19,7 @@ public record UserResponse
             Name = user.Name,
             Email = user.Email,
             IsActive = user.IsActive,
-            CreatedAt = user.CreatedAt,
+            CreatedAt = user.CreatedAt == DateTime.MinValue ? DateTime.UtcNow : user.CreatedAt,
             Roles = user.Roles?.Select(s => RoleResponse.FromRole(s.Role)).ToList()
         };
     }

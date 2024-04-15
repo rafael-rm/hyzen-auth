@@ -138,10 +138,60 @@ public class UserController : ControllerBase
         if (!await user.HasRole(roleName))
             return Conflict("User does not have this role");
 
-        await UserRole.Remove(user, role);
+        await UserRole.Remove(user.Id, role.Id);
         
         await context.SaveChangesAsync();
 
         return Ok("Role removed from user");
+    }
+    
+    [HttpPost, Route("AddGroup")]
+    public async Task<IActionResult> AddGroup([FromForm] Guid userGuid, [FromForm] string groupName)
+    {
+        await using var context = AuthContext.Get("User.AddGroup");
+
+        var user = await Models.User.GetAsync(userGuid);
+
+        if (user is null)
+            return NotFound("User not found");
+
+        var group = await Group.GetAsync(groupName);
+        
+        if (group is null)
+            return NotFound("Group not found");
+
+        if (await user.HasGroup(groupName))
+            return Conflict("The user already has this group");
+
+        await UserGroup.Add(user, group);
+        
+        await context.SaveChangesAsync();
+
+        return Ok("Group added to user");
+    }
+    
+    [HttpPost, Route("RemoveGroup")]
+    public async Task<IActionResult> RemoveGroup([FromForm] Guid userGuid, [FromForm] string groupName)
+    {
+        await using var context = AuthContext.Get("User.RemoveGroup");
+
+        var user = await Models.User.GetAsync(userGuid);
+
+        if (user is null)
+            return NotFound("User not found");
+
+        var group = await Group.GetAsync(groupName);
+        
+        if (group is null)
+            return NotFound("Group not found");
+        
+        if (!await user.HasGroup(groupName))
+            return Conflict("User does not have this group");
+
+        await UserGroup.Remove(user.Id, group.Id);
+        
+        await context.SaveChangesAsync();
+
+        return Ok("Group removed from user");
     }
 }

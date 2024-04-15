@@ -33,8 +33,20 @@ public class Role
         return await AuthContext.Get().RolesSet.FirstOrDefaultAsync(s => s.Name.ToLower() == name.ToLower());
     }
     
-    public void Delete()
+    public async Task DeleteAsync()
     {
+        var groupsRole = await GroupRole.GetAsyncFromRole(Id);
+        foreach (var groupRole in groupsRole)
+        {
+            groupRole.Delete();
+        }
+        
+        var userRoles = await UserRole.GetAsyncFromRole(Id);
+        foreach (var userRole in userRoles)
+        {
+            userRole.Delete();
+        }
+        
         AuthContext.Get().RolesSet.Remove(this);
     }
     

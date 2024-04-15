@@ -54,7 +54,7 @@ public class RoleController : ControllerBase
         if (role is null)
             return NotFound("Role not found");
     
-        role.Delete();
+        await role.DeleteAsync();
         
         await context.SaveChangesAsync();
 
