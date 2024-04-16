@@ -20,7 +20,7 @@ public class AuthController : ControllerBase
         if (string.IsNullOrEmpty(request.Email))
             return BadRequest("Email not provided");
         
-        var user = (await Models.User.SearchAsync(email: request.Email, isActive: true)).FirstOrDefault();
+        var user = await Models.User.GetAsync(request.Email);
 
         if (user is null)
             return NotFound("User not found");

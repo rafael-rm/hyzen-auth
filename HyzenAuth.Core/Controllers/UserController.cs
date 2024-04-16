@@ -27,12 +27,12 @@ public class UserController : ControllerBase
         return Ok(response);
     }
     
-    [HttpPost]
+    [HttpPost, AllowAnonymous]
     public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
     {
         await using var context = AuthContext.Get("User.Create");
         
-        var user = (await Models.User.SearchAsync(email: request.Email)).FirstOrDefault();
+        var user = await Models.User.GetAsync(request.Email);
 
         if (user is not null)
             return Conflict("There is already a registered user with this email");

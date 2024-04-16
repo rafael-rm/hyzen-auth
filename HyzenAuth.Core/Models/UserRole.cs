@@ -67,7 +67,7 @@ public class UserRole
         return await AuthContext.Get().UsersRolesSet
             .Include(s => s.User)
             .Include(s => s.Role)
-            .Where(s => s.User.UserGroups.Any(g => g.GroupId == groupId))
+            .Where(s => s.User.Groups.Any(g => g.GroupId == groupId))
             .ToListAsync();
     }
     

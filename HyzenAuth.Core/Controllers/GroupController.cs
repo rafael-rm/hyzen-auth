@@ -23,7 +23,7 @@ public class GroupController : ControllerBase
         if (group is null)
             return NotFound("Group not found");
         
-        var response = GroupResponse.FromGroup(group);
+        var response = GroupResponseWithRoles.FromGroup(group);
 
         return Ok(response);
     }
@@ -48,7 +48,7 @@ public class GroupController : ControllerBase
         
         group = await Group.CreateAsync(request.Name, roles);
         
-        var response = GroupResponse.FromGroup(group);
+        var response = GroupResponseWithRoles.FromGroup(group);
         await context.SaveChangesAsync();
 
         return Ok(response);

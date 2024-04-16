@@ -37,7 +37,7 @@ namespace HyzenAuth.Core.Models;
         var userGroup = new UserGroup { User = user, Group = group };
         var userRoles = await UserRole.GetAsyncFromUser(user.Id);
         
-        foreach (var groupRole in group.GroupRoles)
+        foreach (var groupRole in group.Roles)
         {
             var userRole = userRoles.FirstOrDefault(ur => ur.RoleId == groupRole.RoleId);
             if (userRole != null)
@@ -53,7 +53,7 @@ namespace HyzenAuth.Core.Models;
     {
         return await AuthContext.Get().UsersGroupsSet
             .Include(s => s.Group)
-            .ThenInclude(s => s.GroupRoles)
+            .ThenInclude(s => s.Roles)
             .Where(s => s.UserId == userId)
             .ToListAsync();
     }
@@ -63,9 +63,9 @@ namespace HyzenAuth.Core.Models;
         var group = await Group.GetAsync(groupId);
         var userGroups = await GetAsyncFromUser(userId);
         
-        foreach (var groupRole in group.GroupRoles)
+        foreach (var groupRole in group.Roles)
         {
-            var otherGroupHasRole = userGroups.Any(ug => ug.GroupId != groupId && ug.Group.GroupRoles.Any(gr => gr.RoleId == groupRole.RoleId));
+            var otherGroupHasRole = userGroups.Any(ug => ug.GroupId != groupId && ug.Group.Roles.Any(gr => gr.RoleId == groupRole.RoleId));
             if (otherGroupHasRole)
                 continue;
             

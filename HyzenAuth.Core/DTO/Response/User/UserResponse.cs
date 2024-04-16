@@ -1,4 +1,5 @@
-﻿using HyzenAuth.Core.DTO.Response.Role;
+﻿using HyzenAuth.Core.DTO.Response.Group;
+using HyzenAuth.Core.DTO.Response.Role;
 
 namespace HyzenAuth.Core.DTO.Response.User;
 
@@ -9,6 +10,7 @@ public record UserResponse
     public string Email { get; set; }
     public bool IsActive { get; set; }
     public DateTime CreatedAt { get; set; }
+    public List<GroupResponse> Groups { get; set; }
     public List<RoleResponse> Roles { get; set; } 
     
     public static UserResponse FromUser(Models.User user)
@@ -20,7 +22,8 @@ public record UserResponse
             Email = user.Email,
             IsActive = user.IsActive,
             CreatedAt = user.CreatedAt == DateTime.MinValue ? DateTime.UtcNow : user.CreatedAt,
-            Roles = user.UserRoles?.Select(s => RoleResponse.FromRole(s.Role)).ToList()
+            Groups = user.Groups?.Select(s => GroupResponse.FromGroup(s.Group)).ToList(),
+            Roles = user.Roles?.Select(s => RoleResponse.FromRole(s.Role)).ToList()
         };
     }
 }

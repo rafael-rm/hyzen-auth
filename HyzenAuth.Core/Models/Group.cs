@@ -26,10 +26,7 @@ public class Group
     public DateTime UpdatedAt { get; set; }
     
     [InverseProperty("Group")]
-    public List<GroupRole> GroupRoles { get; set; }
-    
-    [InverseProperty("Group")]
-    public List<UserGroup> UserGroups { get; set; }
+    public List<GroupRole> Roles { get; set; }
     
     public static async Task<Group> GetAsync(string name)
     {
@@ -37,7 +34,7 @@ public class Group
             return null;
         
         return await AuthContext.Get().GroupsSet
-            .Include(s => s.GroupRoles)
+            .Include(s => s.Roles)
             .ThenInclude(s => s.Role)
             .FirstOrDefaultAsync(s => s.Name.ToLower() == name.ToLower());
     }
@@ -45,7 +42,7 @@ public class Group
     public static async Task<Group> GetAsync(int id)
     {
         return await AuthContext.Get().GroupsSet
-            .Include(s => s.GroupRoles)
+            .Include(s => s.Roles)
             .ThenInclude(s => s.Role)
             .FirstOrDefaultAsync(s => s.Id == id);
     }
@@ -83,6 +80,25 @@ public class Group
         await AuthContext.Get().GroupsSet.AddAsync(group);
         
         return group;
+    }
+    
+    public static async Task<List<Group>> SearchAsync(int? id = null, Guid? guid = null, List<string> names = null)
+    {
+        var queryable =  AuthContext.Get().GroupsSet
+            .Include(s => s.Roles)
+            .ThenInclude(s => s.Role)
+            .AsQueryable();
+        
+        if (id != null)
+            queryable = queryable.Where(s => s.Id == id);
+        
+        if (guid != null)
+            queryable = queryable.Where(s => s.Guid == guid);
+        
+        if (names != null)
+            queryable = queryable.Where(s => names.Contains(s.Name));
+        
+        return await queryable.ToListAsync();
     }
     
     public void Update(string name)
