@@ -1,3 +1,6 @@
+using HyzenAuth.Core.Controllers;
+using HyzenAuth.Core.Services;
+
 namespace HyzenAuth.Core;
 
 public class Program

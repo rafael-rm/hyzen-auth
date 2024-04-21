@@ -1,4 +1,5 @@
-﻿using HyzenAuth.Core.Services;
+﻿using HyzenAuth.Core.Filters;
+using HyzenAuth.Core.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -16,7 +17,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers(options => options.Filters.Add(new CustomExceptionFilterAttribute()));
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -25,14 +26,7 @@ public class Startup
         {
             options.SaveToken = true;
             options.RequireHttpsMetadata = false;
-            options.TokenValidationParameters = new TokenValidationParameters()
-            {
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(TokenService.ByteSecret)
-            };
+            options.TokenValidationParameters = TokenService.ValidationParameters;
         });
         
         services.AddSwaggerGen(c =>

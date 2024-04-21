@@ -3,9 +3,9 @@ using System.Text;
 
 namespace HyzenAuth.Core.Services;
 
-public class PasswordHelper
+public static class PasswordHelper
 {
-    private static readonly string Salt = "6FSx1+1AOUEImFI7KTMCFxceC7P0ZyiekaKTKTkGQGM="; // TODO: Save to an environment variable / AWS
+    private const string Salt = "6FSx1+1AOUEImFI7KTMCFxceC7P0ZyiekaKTKTkGQGM="; // TODO: Save to an environment variable / AWS
 
     public static string HashPassword(string password)
     {
@@ -25,7 +25,7 @@ public class PasswordHelper
         return Convert.ToBase64String(SHA256.HashData(bytes));
     }
         
-    private static byte[] Concatenate(string password, byte[] saltBytes)
+    private static byte[] Concatenate(string password, IEnumerable<byte> saltBytes)
     {
         var passwordBytes = Encoding.UTF8.GetBytes(password);
         return passwordBytes.Concat(saltBytes).ToArray();
