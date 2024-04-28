@@ -1,7 +1,6 @@
 ﻿using HyzenAuth.Core.Filters;
 using HyzenAuth.Core.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace HyzenAuth.Core;
@@ -17,6 +16,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddHttpClient();
         services.AddControllers(options => options.Filters.Add(new CustomExceptionFilterAttribute()));
         services.AddAuthentication(options =>
         {
@@ -65,7 +65,7 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hyzen Auth API v1"));
         }
-        
+
         app.UseCors(e => e.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
         app.UseHttpsRedirection();
         app.UseRouting();

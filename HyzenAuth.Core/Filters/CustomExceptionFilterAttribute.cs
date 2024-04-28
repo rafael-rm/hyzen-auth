@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Net;
+﻿using System.Net;
 using System.Security.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -29,6 +28,8 @@ public class CustomExceptionFilterAttribute : ExceptionFilterAttribute
         }
         else
         {
+            SentrySdk.CaptureException(context.Exception);
+            
             context.Result = new ObjectResult(new { error = "An unexpected error occurred" })
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError
