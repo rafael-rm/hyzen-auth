@@ -1,6 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using HyzenAuth.Core.DTO.Request.Auth;
+﻿using HyzenAuth.Core.DTO.Request.Auth;
 using HyzenAuth.Core.DTO.Response.Auth;
 using HyzenAuth.Core.Helper;
 using HyzenAuth.Core.Infrastructure;
@@ -38,7 +36,6 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Verify()
     {
         await using var context = AuthContext.Get("Auth.Verify");
-
         var token = TokenHelper.GetToken(HttpContext);
         var subject = TokenService.GetSubjectFromToken(token);
 

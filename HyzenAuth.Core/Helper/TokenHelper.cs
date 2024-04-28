@@ -7,7 +7,7 @@ public static class TokenHelper
         if (httpContext == null)
             throw new ArgumentNullException(nameof(httpContext));
 
-        var authorizationHeader = httpContext.Request.Headers["Authorization"].FirstOrDefault();
+        var authorizationHeader = httpContext.Request.Headers.Authorization.FirstOrDefault();
         
         if (string.IsNullOrEmpty(authorizationHeader) || !authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase))
             return null;

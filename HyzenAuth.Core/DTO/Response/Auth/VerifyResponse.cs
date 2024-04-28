@@ -1,7 +1,4 @@
-﻿using HyzenAuth.Core.DTO.Response.Group;
-using HyzenAuth.Core.DTO.Response.Role;
-
-namespace HyzenAuth.Core.DTO.Response.Auth;
+﻿namespace HyzenAuth.Core.DTO.Response.Auth;
 
 public class VerifyResponse
 {
