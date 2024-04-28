@@ -56,5 +56,17 @@ namespace HyzenAuth.Core.Infrastructure
                 optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 28)));
             }
         }
+        
+        public override void Dispose()
+        {
+            base.Dispose();
+            _instance.Value = null;
+        }
+		
+        public override async ValueTask DisposeAsync()
+        {
+            await base.DisposeAsync();
+            _instance.Value = null;
+        }
     }
 }
