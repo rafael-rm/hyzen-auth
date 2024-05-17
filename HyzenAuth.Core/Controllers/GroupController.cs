@@ -1,4 +1,6 @@
-﻿using HyzenAuth.Core.DTO.Request.Group;
+﻿using System.Net;
+using Hyzen.Util.Exceptions;
+using HyzenAuth.Core.DTO.Request.Group;
 using HyzenAuth.Core.DTO.Response.Group;
 using HyzenAuth.Core.Infrastructure;
 using HyzenAuth.Core.Models;
@@ -20,7 +22,7 @@ public class GroupController : ControllerBase
         var group = await Group.GetAsync(name);
         
         if (group is null)
-            return NotFound("Group not found");
+            throw new HException("Group not found", ExceptionType.ResourceNotFound);
         
         var response = GroupResponseWithRoles.FromGroup(group);
 
@@ -35,15 +37,15 @@ public class GroupController : ControllerBase
         var group = await Group.GetAsync(request.Name);
 
         if (group is not null)
-            return Conflict("There is already a group with this name");
+            throw new HException("There is already a group with this name", ExceptionType.InvalidOperation, HttpStatusCode.Conflict);
         
         if (request.Roles is {Count: 0})
-            return BadRequest("Roles not provided");
+            throw new HException("To create a group, at least one valid role must be provided", ExceptionType.MissingParams, HttpStatusCode.BadRequest);
         
         var roles = await Role.SearchAsync(names: request.Roles);
         
         if (roles is {Count: 0})
-            return NotFound("To create a group, at least one valid role must be provided");
+            throw new HException("No valid roles were found", ExceptionType.ResourceNotFound, HttpStatusCode.NotFound);
         
         group = await Group.CreateAsync(request.Name, roles);
         
@@ -61,7 +63,7 @@ public class GroupController : ControllerBase
         var group = await Group.GetAsync(name);
 
         if (group is null)
-            return NotFound("Group not found");
+            throw new HException("Group not found", ExceptionType.ResourceNotFound);
         
         await group.DeleteAsync();
         await context.SaveChangesAsync();
@@ -77,7 +79,7 @@ public class GroupController : ControllerBase
         var group = await Group.GetAsync(oldName);
 
         if (group is null)
-            return NotFound("Group not found");
+            throw new HException("Group not found", ExceptionType.ResourceNotFound);
         
         group.Update(newName);
         await context.SaveChangesAsync();
@@ -93,7 +95,7 @@ public class GroupController : ControllerBase
         var group = await Group.GetAsync(groupName);
         
         if (group is null)
-            return NotFound("Group not found");
+            throw new HException("Group not found", ExceptionType.ResourceNotFound);
 
         var hasRole = await group.HasRoleAsync(roleName);
 
@@ -109,10 +111,10 @@ public class GroupController : ControllerBase
         var role = await Role.GetAsync(roleName);
 
         if (group is null)
-            return NotFound("Group not found");
+            throw new HException("Group not found", ExceptionType.ResourceNotFound);
         
         if (role is null)
-            return NotFound("Role not found");
+            throw new HException("Role not found", ExceptionType.ResourceNotFound);
         
         var groupRole = await GroupRole.GetAsync(group.Id, role.Id);
         
@@ -134,15 +136,15 @@ public class GroupController : ControllerBase
         var role = await Role.GetAsync(roleName);
 
         if (group is null)
-            return NotFound("Group not found");
+            throw new HException("Group not found", ExceptionType.ResourceNotFound);
         
         if (role is null)
-            return NotFound("Role not found");
+            throw new HException("Role not found", ExceptionType.ResourceNotFound);
         
         var groupRole = await GroupRole.GetAsync(group.Id, role.Id);
         
         if (groupRole is null)
-            return NotFound("Group does not have this role");
+            throw new HException("Group does not have this role", ExceptionType.ResourceNotFound);
         
         await GroupRole.DeleteAsync(group.Id, role.Id);
         await context.SaveChangesAsync();

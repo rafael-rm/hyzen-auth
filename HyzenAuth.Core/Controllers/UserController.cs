@@ -1,4 +1,5 @@
-﻿using HyzenAuth.Core.DTO.Request.User;
+﻿using Hyzen.Util.Exceptions;
+using HyzenAuth.Core.DTO.Request.User;
 using HyzenAuth.Core.DTO.Response.User;
 using HyzenAuth.Core.Infrastructure;
 using HyzenAuth.Core.Models;
@@ -35,7 +36,7 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(request.Email);
 
         if (user is not null)
-            return Conflict("There is already a registered user with this email");
+            throw new HException("There is already a user with this email", ExceptionType.InvalidOperation);
 
         user = await Models.User.CreateAsync(request);
         
@@ -53,7 +54,7 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(id);
 
         if (user is null)
-            return NotFound("User not found");
+            throw new HException("User not found", ExceptionType.ResourceNotFound);
         
         user.Delete();
         
@@ -70,7 +71,7 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(userGuid);;
 
         if (user is null)
-            return NotFound("User not found");
+            throw new HException("User not found", ExceptionType.ResourceNotFound);
         
         user.Update(request);
         
@@ -88,7 +89,7 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(userGuid);
 
         if (user is null)
-            return NotFound("User not found");
+            throw new HException("User not found", ExceptionType.ResourceNotFound);
 
         var hasRole = await user.HasRole(roleName);
 
@@ -103,15 +104,15 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(userGuid);
 
         if (user is null)
-            return NotFound("User not found");
+            throw new HException("User not found", ExceptionType.ResourceNotFound);
 
         var role = await Role.GetAsync(roleName);
         
         if (role is null)
-            return NotFound("Role not found");
+            throw new HException("Role not found", ExceptionType.ResourceNotFound);
 
         if (await user.HasRole(roleName))
-            return Conflict("The user already has this role");
+            throw new HException("The user already has this role", ExceptionType.InvalidOperation);
 
         await UserRole.Add(user.Id, role.Id);
         
@@ -128,20 +129,20 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(userGuid);
 
         if (user is null)
-            return NotFound("User not found");
+            throw new HException("User not found", ExceptionType.ResourceNotFound);
 
         var role = await Role.GetAsync(roleName);
         
         if (role is null)
-            return NotFound("Role not found");
+            throw new HException("Role not found", ExceptionType.ResourceNotFound);
         
         if (!await user.HasRole(roleName))
-            return Conflict("User does not have this role");
+            throw new HException("User does not have this role", ExceptionType.InvalidOperation);
 
         var wasRemoved = await UserRole.DeleteAsync(user.Id, role.Id);
         
         if (!wasRemoved)
-            return Conflict("The user is associated with a group that contains this permission");
+            throw new HException("Role could not be removed", ExceptionType.InvalidOperation);
         
         await context.SaveChangesAsync();
 
@@ -156,15 +157,15 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(userGuid);
 
         if (user is null)
-            return NotFound("User not found");
+            throw new HException("User not found", ExceptionType.ResourceNotFound);
 
         var group = await Group.GetAsync(groupName);
         
         if (group is null)
-            return NotFound("Group not found");
+            throw new HException("Group not found", ExceptionType.ResourceNotFound);
 
         if (await user.HasGroup(groupName))
-            return Conflict("The user already has this group");
+            throw new HException("The user already has this group", ExceptionType.InvalidOperation);
 
         await UserGroup.AddAsync(user, group);
         
@@ -181,15 +182,15 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(userGuid);
 
         if (user is null)
-            return NotFound("User not found");
+            throw new HException("User not found", ExceptionType.ResourceNotFound);
 
         var group = await Group.GetAsync(groupName);
         
         if (group is null)
-            return NotFound("Group not found");
+            throw new HException("Group not found", ExceptionType.ResourceNotFound);
         
         if (!await user.HasGroup(groupName))
-            return Conflict("User does not have this group");
+            throw new HException("User does not have this group", ExceptionType.InvalidOperation);
 
         await UserGroup.DeleteAsync(user.Id, group.Id);
         

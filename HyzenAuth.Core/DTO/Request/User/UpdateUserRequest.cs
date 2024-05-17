@@ -4,15 +4,15 @@ namespace HyzenAuth.Core.DTO.Request.User;
 
 public record UpdateUserRequest
 {
-    [Required]
+    [Required (ErrorMessage = "Email is required")]
     public string Email { get; set; }
     
-    [Required]
+    [Required (ErrorMessage = "Name is required")]
     public string Name { get; set; }
     
-    [Required]
+    [Required (ErrorMessage = "Password is required")]
     public string Password { get; set; }
     
-    [Required]
+    [Required (ErrorMessage = "IsActive is required")]
     public bool IsActive { get; set; }
 }

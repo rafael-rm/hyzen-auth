@@ -1,4 +1,5 @@
-﻿using HyzenAuth.Core.DTO.Request.Auth;
+﻿using Hyzen.Util.Exceptions;
+using HyzenAuth.Core.DTO.Request.Auth;
 using HyzenAuth.Core.DTO.Response.Auth;
 using HyzenAuth.Core.Helper;
 using HyzenAuth.Core.Infrastructure;
@@ -19,12 +20,12 @@ public class AuthController : ControllerBase
         await using var context = AuthContext.Get("Auth.Login");
         
         var user = await Models.User.GetAsync(request.Email);
-
+        
         if (user is null || !PasswordHelper.Verify(request.Password, user.Password))
-            return NotFound("User not found or invalid password");
+            throw new HException("User not found or invalid password", ExceptionType.ResourceNotFound);
         
         if (!user.IsActive)
-            return Forbid("User is not active");
+            throw new HException("User is not active", ExceptionType.InvalidOperation);
 
         var token = TokenService.GenerateToken(user, 3);
         var response = new LoginResponse { Token = token };

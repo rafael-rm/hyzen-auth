@@ -1,6 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Authentication;
 using System.Security.Claims;
+using Hyzen.Util.Exceptions;
 using HyzenAuth.Core.DTO.Response.Auth;
 using HyzenAuth.Core.Models;
 using Microsoft.IdentityModel.Tokens;
@@ -61,7 +61,7 @@ public static class TokenService
         }
         catch
         {
-            throw new AuthenticationException("Invalid or expired token");
+            throw new HException("Invalid or expired token", ExceptionType.InvalidCredentials);
         }
     }
     
@@ -87,7 +87,7 @@ public static class TokenService
     {
         var principal = GetPrincipalFromToken(token);
         if (principal == null)
-            throw new AuthenticationException("Invalid or expired token");
+            throw new HException("Invalid or expired token", ExceptionType.InvalidCredentials);
         
         var claims = principal.Claims.ToList();
         

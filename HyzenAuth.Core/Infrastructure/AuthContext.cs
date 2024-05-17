@@ -1,4 +1,5 @@
-﻿using HyzenAuth.Core.Models;
+﻿using Hyzen.Util.Exceptions;
+using HyzenAuth.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HyzenAuth.Core.Infrastructure
@@ -13,7 +14,7 @@ namespace HyzenAuth.Core.Infrastructure
         public static AuthContext Get()
         {
             if (_instance.Value == null)
-                throw new Exception("A transaction cannot be initiated without title.");
+                throw new HException("A transaction cannot be initiated without title.", ExceptionType.InternalError);
             
             return _instance.Value;
         }
@@ -21,7 +22,7 @@ namespace HyzenAuth.Core.Infrastructure
         public static AuthContext Get(string title)
         {
             if (_instance.Value != null)
-                throw new Exception($"A transaction can only have one title {title}.");
+                throw new HException($"A transaction can only have one title {title}.", ExceptionType.InternalError);
             
             return _instance.Value = new AuthContext(title);
         }
