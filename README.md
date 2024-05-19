@@ -9,6 +9,7 @@ Este projeto é um micro-serviço de autenticação baseado em JWT, criado com .
 - Gerenciamento de usuários, grupos e roles.
 - Validações para garantir a consistência das permissões.
 - Criptografia de senhas usando SHA256 + Salt.
+- Integração com o Sentry para monitoramento de erros e falhas.
 
 ## Endpoints
 
