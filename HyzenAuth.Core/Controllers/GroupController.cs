@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Hyzen.Util.Exceptions;
+using Hyzen.SDK.Exception;
 using HyzenAuth.Core.DTO.Request.Group;
 using HyzenAuth.Core.DTO.Response.Group;
 using HyzenAuth.Core.Infrastructure;
@@ -22,7 +22,7 @@ public class GroupController : ControllerBase
         var group = await Group.GetAsync(name);
         
         if (group is null)
-            throw new HException("Group not found", ExceptionType.ResourceNotFound);
+            throw new HException("Group not found", ExceptionType.NotFound);
         
         var response = GroupResponseWithRoles.FromGroup(group);
 
@@ -45,7 +45,7 @@ public class GroupController : ControllerBase
         var roles = await Role.SearchAsync(names: request.Roles);
         
         if (roles is {Count: 0})
-            throw new HException("No valid roles were found", ExceptionType.ResourceNotFound, HttpStatusCode.NotFound);
+            throw new HException("No valid roles were found", ExceptionType.NotFound, HttpStatusCode.NotFound);
         
         group = await Group.CreateAsync(request.Name, roles);
         
@@ -63,7 +63,7 @@ public class GroupController : ControllerBase
         var group = await Group.GetAsync(name);
 
         if (group is null)
-            throw new HException("Group not found", ExceptionType.ResourceNotFound);
+            throw new HException("Group not found", ExceptionType.NotFound);
         
         await group.DeleteAsync();
         await context.SaveChangesAsync();
@@ -79,7 +79,7 @@ public class GroupController : ControllerBase
         var group = await Group.GetAsync(oldName);
 
         if (group is null)
-            throw new HException("Group not found", ExceptionType.ResourceNotFound);
+            throw new HException("Group not found", ExceptionType.NotFound);
         
         group.Update(newName);
         await context.SaveChangesAsync();
@@ -95,7 +95,7 @@ public class GroupController : ControllerBase
         var group = await Group.GetAsync(groupName);
         
         if (group is null)
-            throw new HException("Group not found", ExceptionType.ResourceNotFound);
+            throw new HException("Group not found", ExceptionType.NotFound);
 
         var hasRole = await group.HasRoleAsync(roleName);
 
@@ -111,10 +111,10 @@ public class GroupController : ControllerBase
         var role = await Role.GetAsync(roleName);
 
         if (group is null)
-            throw new HException("Group not found", ExceptionType.ResourceNotFound);
+            throw new HException("Group not found", ExceptionType.NotFound);
         
         if (role is null)
-            throw new HException("Role not found", ExceptionType.ResourceNotFound);
+            throw new HException("Role not found", ExceptionType.NotFound);
         
         var groupRole = await GroupRole.GetAsync(group.Id, role.Id);
         
@@ -136,15 +136,15 @@ public class GroupController : ControllerBase
         var role = await Role.GetAsync(roleName);
 
         if (group is null)
-            throw new HException("Group not found", ExceptionType.ResourceNotFound);
+            throw new HException("Group not found", ExceptionType.NotFound);
         
         if (role is null)
-            throw new HException("Role not found", ExceptionType.ResourceNotFound);
+            throw new HException("Role not found", ExceptionType.NotFound);
         
         var groupRole = await GroupRole.GetAsync(group.Id, role.Id);
         
         if (groupRole is null)
-            throw new HException("Group does not have this role", ExceptionType.ResourceNotFound);
+            throw new HException("Group does not have this role", ExceptionType.NotFound);
         
         await GroupRole.DeleteAsync(group.Id, role.Id);
         await context.SaveChangesAsync();

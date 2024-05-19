@@ -1,4 +1,4 @@
-﻿using Hyzen.Util.Exceptions;
+﻿using Hyzen.SDK.Exception;
 using HyzenAuth.Core.DTO.Request.User;
 using HyzenAuth.Core.DTO.Response.User;
 using HyzenAuth.Core.Infrastructure;
@@ -54,7 +54,7 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(id);
 
         if (user is null)
-            throw new HException("User not found", ExceptionType.ResourceNotFound);
+            throw new HException("User not found", ExceptionType.NotFound);
         
         user.Delete();
         
@@ -71,7 +71,7 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(userGuid);;
 
         if (user is null)
-            throw new HException("User not found", ExceptionType.ResourceNotFound);
+            throw new HException("User not found", ExceptionType.NotFound);
         
         user.Update(request);
         
@@ -89,7 +89,7 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(userGuid);
 
         if (user is null)
-            throw new HException("User not found", ExceptionType.ResourceNotFound);
+            throw new HException("User not found", ExceptionType.NotFound);
 
         var hasRole = await user.HasRole(roleName);
 
@@ -104,12 +104,12 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(userGuid);
 
         if (user is null)
-            throw new HException("User not found", ExceptionType.ResourceNotFound);
+            throw new HException("User not found", ExceptionType.NotFound);
 
         var role = await Role.GetAsync(roleName);
         
         if (role is null)
-            throw new HException("Role not found", ExceptionType.ResourceNotFound);
+            throw new HException("Role not found", ExceptionType.NotFound);
 
         if (await user.HasRole(roleName))
             throw new HException("The user already has this role", ExceptionType.InvalidOperation);
@@ -129,12 +129,12 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(userGuid);
 
         if (user is null)
-            throw new HException("User not found", ExceptionType.ResourceNotFound);
+            throw new HException("User not found", ExceptionType.NotFound);
 
         var role = await Role.GetAsync(roleName);
         
         if (role is null)
-            throw new HException("Role not found", ExceptionType.ResourceNotFound);
+            throw new HException("Role not found", ExceptionType.NotFound);
         
         if (!await user.HasRole(roleName))
             throw new HException("User does not have this role", ExceptionType.InvalidOperation);
@@ -157,12 +157,12 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(userGuid);
 
         if (user is null)
-            throw new HException("User not found", ExceptionType.ResourceNotFound);
+            throw new HException("User not found", ExceptionType.NotFound);
 
         var group = await Group.GetAsync(groupName);
         
         if (group is null)
-            throw new HException("Group not found", ExceptionType.ResourceNotFound);
+            throw new HException("Group not found", ExceptionType.NotFound);
 
         if (await user.HasGroup(groupName))
             throw new HException("The user already has this group", ExceptionType.InvalidOperation);
@@ -182,12 +182,12 @@ public class UserController : ControllerBase
         var user = await Models.User.GetAsync(userGuid);
 
         if (user is null)
-            throw new HException("User not found", ExceptionType.ResourceNotFound);
+            throw new HException("User not found", ExceptionType.NotFound);
 
         var group = await Group.GetAsync(groupName);
         
         if (group is null)
-            throw new HException("Group not found", ExceptionType.ResourceNotFound);
+            throw new HException("Group not found", ExceptionType.NotFound);
         
         if (!await user.HasGroup(groupName))
             throw new HException("User does not have this group", ExceptionType.InvalidOperation);

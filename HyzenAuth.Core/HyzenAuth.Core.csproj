@@ -9,8 +9,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Hyzen.SDK" Version="2024.2.15.2055" />
-        <PackageReference Include="Hyzen.Util" Version="2024.5.17.317" />
+        <PackageReference Include="Hyzen.SDK" Version="1.2405.1902.19" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />

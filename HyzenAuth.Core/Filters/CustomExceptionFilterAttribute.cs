@@ -1,5 +1,5 @@
 ﻿using System.Net;
-using Hyzen.Util.Exceptions;
+using Hyzen.SDK.Exception;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 

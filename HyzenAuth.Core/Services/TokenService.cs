@@ -1,6 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Hyzen.Util.Exceptions;
+using Hyzen.SDK.Exception;
 using HyzenAuth.Core.DTO.Response.Auth;
 using HyzenAuth.Core.Models;
 using Microsoft.IdentityModel.Tokens;

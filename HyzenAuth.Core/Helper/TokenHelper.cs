@@ -1,4 +1,4 @@
-﻿using Hyzen.Util.Exceptions;
+﻿using Hyzen.SDK.Exception;
 
 namespace HyzenAuth.Core.Helper;
 

@@ -1,4 +1,4 @@
-﻿using Hyzen.Util.Exceptions;
+﻿using Hyzen.SDK.Exception;
 using HyzenAuth.Core.DTO.Response.Role;
 using HyzenAuth.Core.Infrastructure;
 using HyzenAuth.Core.Models;
@@ -20,7 +20,7 @@ public class RoleController : ControllerBase
         var role = await Role.GetAsync(name);
 
         if (role is null)
-            throw new HException("Role not found", ExceptionType.ResourceNotFound);
+            throw new HException("Role not found", ExceptionType.NotFound);
     
         var response = RoleResponse.FromRole(role);
 
@@ -53,7 +53,7 @@ public class RoleController : ControllerBase
         var role = await Role.GetAsync(name);
 
         if (role is null)
-            throw new HException("Role not found", ExceptionType.ResourceNotFound);
+            throw new HException("Role not found", ExceptionType.NotFound);
     
         await role.DeleteAsync();
         
@@ -70,7 +70,7 @@ public class RoleController : ControllerBase
         var role = await Role.GetAsync(oldName);
 
         if (role is null)
-            throw new HException("Role not found", ExceptionType.ResourceNotFound);
+            throw new HException("Role not found", ExceptionType.NotFound);
         
         role.Update(newName);
 

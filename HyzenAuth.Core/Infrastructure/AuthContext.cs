@@ -1,4 +1,4 @@
-﻿using Hyzen.Util.Exceptions;
+﻿using Hyzen.SDK.Exception;
 using HyzenAuth.Core.Models;
 using Microsoft.EntityFrameworkCore;
 

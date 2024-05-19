@@ -1,4 +1,4 @@
-﻿using Hyzen.Util.Exceptions;
+﻿using Hyzen.SDK.Exception;
 using HyzenAuth.Core.DTO.Request.Auth;
 using HyzenAuth.Core.DTO.Response.Auth;
 using HyzenAuth.Core.Helper;
@@ -22,7 +22,7 @@ public class AuthController : ControllerBase
         var user = await Models.User.GetAsync(request.Email);
         
         if (user is null || !PasswordHelper.Verify(request.Password, user.Password))
-            throw new HException("User not found or invalid password", ExceptionType.ResourceNotFound);
+            throw new HException("User not found or invalid password", ExceptionType.NotFound);
         
         if (!user.IsActive)
             throw new HException("User is not active", ExceptionType.InvalidOperation);
