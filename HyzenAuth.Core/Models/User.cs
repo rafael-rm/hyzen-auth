@@ -99,7 +99,7 @@ public class User
             Guid = Guid.NewGuid(),
             Name = request.Name,
             Email = request.Email,
-            Password = PasswordHelper.HashPassword(request.Password),
+            Password = PasswordHelper.Hash(request.Password),
             IsActive = isActive,
         };
 
@@ -112,7 +112,7 @@ public class User
     {
         Name = request.Name;
         Email = request.Email;
-        Password = PasswordHelper.HashPassword(request.Password);
+        Password = PasswordHelper.Hash(request.Password);
         IsActive = request.IsActive;
     }
 
