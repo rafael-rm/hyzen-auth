@@ -1,6 +1,7 @@
 ﻿using Hyzen.SDK.Exception;
 using HyzenAuth.Core.DTO.Request.Auth;
 using HyzenAuth.Core.DTO.Response.Auth;
+using HyzenAuth.Core.Filters;
 using HyzenAuth.Core.Helper;
 using HyzenAuth.Core.Infrastructure;
 using HyzenAuth.Core.Services;
@@ -11,6 +12,7 @@ namespace HyzenAuth.Core.Controllers;
 
 [ApiController]
 [Route("api/v1/Auth")]
+[TypeFilter(typeof(CustomActionFilter))]
 [Authorize]
 public class AuthController : ControllerBase
 {

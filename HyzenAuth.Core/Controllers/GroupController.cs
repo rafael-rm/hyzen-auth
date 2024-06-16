@@ -2,6 +2,7 @@
 using Hyzen.SDK.Exception;
 using HyzenAuth.Core.DTO.Request.Group;
 using HyzenAuth.Core.DTO.Response.Group;
+using HyzenAuth.Core.Filters;
 using HyzenAuth.Core.Infrastructure;
 using HyzenAuth.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -11,6 +12,7 @@ namespace HyzenAuth.Core.Controllers;
 
 [ApiController]
 [Route("api/v1/Group")]
+[TypeFilter(typeof(CustomActionFilter))]
 [Authorize]
 public class GroupController : ControllerBase
 {

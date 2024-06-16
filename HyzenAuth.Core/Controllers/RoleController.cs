@@ -1,5 +1,6 @@
 ﻿using Hyzen.SDK.Exception;
 using HyzenAuth.Core.DTO.Response.Role;
+using HyzenAuth.Core.Filters;
 using HyzenAuth.Core.Infrastructure;
 using HyzenAuth.Core.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +10,7 @@ namespace HyzenAuth.Core.Controllers;
 
 [ApiController]
 [Route("api/v1/Role")]
+[TypeFilter(typeof(CustomActionFilter))]
 [Authorize]
 public class RoleController : ControllerBase
 {
