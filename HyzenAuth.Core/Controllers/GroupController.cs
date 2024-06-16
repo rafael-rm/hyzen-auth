@@ -119,7 +119,7 @@ public class GroupController : ControllerBase
         var groupRole = await GroupRole.GetAsync(group.Id, role.Id);
         
         if (groupRole is not null)
-            return Conflict("Group already has this role");
+            throw new HException("Group already has this role", ExceptionType.InvalidOperation);
         
         await GroupRole.AddAsync(group, role);
         await context.SaveChangesAsync();
