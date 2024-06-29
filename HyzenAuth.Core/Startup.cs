@@ -1,32 +1,20 @@
 ﻿using HyzenAuth.Core.Filters;
-using HyzenAuth.Core.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 
 namespace HyzenAuth.Core;
 
-public class Startup
+public class Startup(IConfiguration configuration)
 {
-    public Startup(IConfiguration configuration)
-    {
-        Configuration = configuration;
-    }
-
-    public IConfiguration Configuration { get; }
+    public IConfiguration Configuration { get; } = configuration;
 
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient();
-        services.AddControllers(options => options.Filters.Add(new CustomExceptionFilterAttribute()));
-        services.AddAuthentication(options =>
+        
+        services.AddControllers(options =>
         {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            options.SaveToken = true;
-            options.RequireHttpsMetadata = false;
-            options.TokenValidationParameters = TokenService.ValidationParameters;
+            options.Filters.Add(new CustomActionFilter());
+            options.Filters.Add(new CustomExceptionFilterAttribute());
         });
         
         services.AddSwaggerGen(c =>
@@ -37,7 +25,7 @@ public class Startup
             {
                 Name = "Authorization",
                 In = ParameterLocation.Header,
-                Type = SecuritySchemeType.ApiKey
+                Type = SecuritySchemeType.ApiKey,
             });
 				
             c.AddSecurityRequirement(new OpenApiSecurityRequirement
