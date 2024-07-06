@@ -14,7 +14,7 @@ public class Program
         return Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseSentry(ConfigureSentryOptions);
+                webBuilder.UseSentry(ConfigureSentryOptions); // TODO: Do not use sentry during debugging
                 webBuilder.UseStartup<Startup>();
             })
             .ConfigureLogging((hostingContext, logging) =>

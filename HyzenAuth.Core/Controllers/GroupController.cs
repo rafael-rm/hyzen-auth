@@ -4,7 +4,6 @@ using HyzenAuth.Core.DTO.Request.Group;
 using HyzenAuth.Core.DTO.Response.Group;
 using HyzenAuth.Core.Infrastructure;
 using HyzenAuth.Core.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HyzenAuth.Core.Controllers;

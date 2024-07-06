@@ -14,17 +14,17 @@ namespace HyzenAuth.Core.Infrastructure
         public static AuthContext Get()
         {
             if (_instance.Value == null)
-                throw new HException("A transaction cannot be initiated without title.", ExceptionType.InternalError);
+                throw new HException("No transaction was initiated in this context", ExceptionType.InternalError);
             
             return _instance.Value;
         }
 		
-        public static AuthContext Get(string title)
+        public static AuthContext Get(string name)
         {
             if (_instance.Value != null)
-                throw new HException($"A transaction can only have one title {title}.", ExceptionType.InternalError);
+                throw new HException("A transaction has already been started in this context.", ExceptionType.InternalError);
             
-            return _instance.Value = new AuthContext(title);
+            return _instance.Value = new AuthContext(name);
         }
 
         public DbSet<User> UsersSet { get; set; }
