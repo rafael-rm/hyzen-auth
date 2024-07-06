@@ -1,4 +1,4 @@
-﻿using Hyzen.SDK.Exception;
+using Hyzen.SDK.Exception;
 using HyzenAuth.Core.DTO.Response.Role;
 using HyzenAuth.Core.Infrastructure;
 using HyzenAuth.Core.Models;
@@ -9,7 +9,6 @@ namespace HyzenAuth.Core.Controllers;
 
 [ApiController]
 [Route("api/v1/Role")]
-[Authorize]
 public class RoleController : ControllerBase
 {
     [HttpGet]
