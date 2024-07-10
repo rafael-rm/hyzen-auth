@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HyzenAuth.Core", "HyzenAuth.Core\HyzenAuth.Core.csproj", "{49AF8FBC-A4D1-4E5E-8843-040CF1EB1810}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Core", "Auth.Core\Auth.Core.csproj", "{49AF8FBC-A4D1-4E5E-8843-040CF1EB1810}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
