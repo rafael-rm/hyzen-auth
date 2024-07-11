@@ -13,6 +13,7 @@ namespace Auth.Core.Controllers;
 public class GroupController : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(typeof(GroupResponseWithRoles), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromQuery] string name)
     {
         await using var context = AuthContext.Get("Group.Get");
@@ -28,6 +29,7 @@ public class GroupController : ControllerBase
     }
     
     [HttpPost]
+    [ProducesResponseType(typeof(GroupResponseWithRoles), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create([FromBody] CreateGroupRequest request)
     {
         await using var context = AuthContext.Get("Group.Create");
@@ -50,10 +52,11 @@ public class GroupController : ControllerBase
         var response = GroupResponseWithRoles.FromGroup(group);
         await context.SaveChangesAsync();
 
-        return Ok(response);
+        return Created(string.Empty, response);
     }
     
     [HttpDelete]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> Delete([FromForm] string name)
     {
         await using var context = AuthContext.Get("Group.Delete");
@@ -66,10 +69,11 @@ public class GroupController : ControllerBase
         await group.DeleteAsync();
         await context.SaveChangesAsync();
 
-        return Ok("Group deleted");
+        return Ok(true);
     }
 
     [HttpPut]
+    [ProducesResponseType(typeof(GroupResponseWithRoles), StatusCodes.Status200OK)]
     public async Task<IActionResult> Update([FromForm] string oldName, [FromForm] string newName)
     {
         await using var context = AuthContext.Get("Group.Update");
@@ -81,11 +85,14 @@ public class GroupController : ControllerBase
         
         group.Update(newName);
         await context.SaveChangesAsync();
+        
+        var response = GroupResponseWithRoles.FromGroup(group);
 
-        return Ok("Group updated");
+        return Ok(response);
     }
     
     [HttpPost, Route("HasRole")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> HasRole([FromForm] string groupName, [FromForm] string roleName)
     {
         await using var context = AuthContext.Get("Group.HasRole");
@@ -101,6 +108,7 @@ public class GroupController : ControllerBase
     }
     
     [HttpPost, Route("AddRole")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> AddRole([FromForm] string groupName, [FromForm] string roleName)
     {
         await using var context = AuthContext.Get("Group.AddRole");
@@ -122,10 +130,11 @@ public class GroupController : ControllerBase
         await GroupRole.AddAsync(group, role);
         await context.SaveChangesAsync();
 
-        return Ok("Role added to group");
+        return Ok(true);
     }
     
     [HttpPost, Route("RemoveRole")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> RemoveRole([FromForm] string groupName, [FromForm] string roleName)
     {
         await using var context = AuthContext.Get("Group.RemoveRole");
@@ -147,6 +156,6 @@ public class GroupController : ControllerBase
         await GroupRole.DeleteAsync(group.Id, role.Id);
         await context.SaveChangesAsync();
 
-        return Ok("Role removed from group");
+        return Ok(true);
     }
 }

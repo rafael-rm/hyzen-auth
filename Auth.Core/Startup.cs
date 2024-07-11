@@ -1,4 +1,5 @@
 ﻿using Auth.Core.Filters;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.OpenApi.Models;
 
 namespace Auth.Core;
@@ -10,6 +11,8 @@ public class Startup(IConfiguration configuration)
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddHttpClient();
+        
+        services.AddControllers(options => options.OutputFormatters.RemoveType<StringOutputFormatter>());
         
         services.AddControllers(options =>
         {

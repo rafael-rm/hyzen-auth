@@ -11,6 +11,7 @@ namespace Auth.Core.Controllers;
 public class RoleController : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromQuery] string name)
     {
         await using var context = AuthContext.Get("Role.Get");
@@ -26,6 +27,7 @@ public class RoleController : ControllerBase
     }
     
     [HttpPost]
+    [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create([FromForm] string name)
     {
         await using var context = AuthContext.Get("Role.Create");
@@ -44,6 +46,7 @@ public class RoleController : ControllerBase
     }
     
     [HttpDelete]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> Delete([FromForm] string name)
     {
         await using var context = AuthContext.Get("Role.Delete");
@@ -57,10 +60,11 @@ public class RoleController : ControllerBase
         
         await context.SaveChangesAsync();
 
-        return Ok("Role deleted");
+        return Ok(true);
     }
 
     [HttpPut]
+    [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Update([FromForm] string oldName, [FromForm] string newName)
     {
         await using var context = AuthContext.Get("Role.Update");

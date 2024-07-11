@@ -13,6 +13,7 @@ namespace Auth.Core.Controllers;
 public class AuthController : ControllerBase
 {
     [HttpPost, Route("Login")]
+    [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)] 
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         await using var context = AuthContext.Get("Auth.Login");
@@ -26,12 +27,14 @@ public class AuthController : ControllerBase
             throw new HException("User is not active", ExceptionType.InvalidOperation);
 
         var token = TokenService.GenerateToken(user, 3);
-        var response = new LoginResponse { Token = token };
+        
+        var response = new LoginResponse(token);
 
         return Ok(response);
     }
     
     [HttpPost, Route("Verify")]
+    [ProducesResponseType(typeof(VerifyResponse), StatusCodes.Status200OK)] 
     public async Task<IActionResult> Verify()
     {
         await using var context = AuthContext.Get("Auth.Verify");

@@ -20,7 +20,7 @@ public class CustomExceptionFilterAttribute : ExceptionFilterAttribute
         }
         else
         {
-            context.Result = new ObjectResult(new { error = "An unexpected error occurred" })
+            context.Result = new ObjectResult(new { error = "An unexpected error occurred while processing your request" })
             {
                 StatusCode = (int)HttpStatusCode.InternalServerError
             };
