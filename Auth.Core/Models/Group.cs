@@ -16,8 +16,11 @@ public class Group
     [Column("guid", TypeName = "CHAR(36)"), Required] 
     public Guid Guid { get; set; } 
     
-    [Column("name", TypeName = "VARCHAR(255)"), MaxLength(64), Required] 
+    [Column("name", TypeName = "VARCHAR(64)"), MaxLength(64), Required] 
     public string Name { get; set; }
+    
+    [Column("description", TypeName = "VARCHAR(255)"), MaxLength(255)]
+    public string Description { get; set; }
     
     [Column("created_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
     public DateTime CreatedAt { get; set; }
@@ -64,12 +67,13 @@ public class Group
         AuthContext.Get().GroupsSet.Remove(this);
     }
     
-    public static async Task<Group> CreateAsync(string  name, List<Role> roles)
+    public static async Task<Group> CreateAsync(string name, string description, List<Role> roles)
     {
         var group = new Group
         {
             Guid = Guid.NewGuid(),
-            Name = name
+            Name = name,
+            Description = description
         };
         
         foreach (var role in roles)
@@ -101,9 +105,10 @@ public class Group
         return await queryable.ToListAsync();
     }
     
-    public void Update(string name)
+    public void Update(string name, string description)
     {
         Name = name;
+        Description = description;
     }
     
     public async Task<bool> HasRoleAsync(string roleName)

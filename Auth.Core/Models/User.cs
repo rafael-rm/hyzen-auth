@@ -31,6 +31,9 @@ public class User
 
     [Column("password", TypeName = "VARCHAR(255)"), MaxLength(255), Required]
     public string Password { get; set; }
+    
+    [Column("last_login_at", TypeName = "DATETIME")]
+    public DateTime LastLoginAt { get; set; }
 
     [Column("created_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public DateTime CreatedAt { get; set; }
@@ -115,7 +118,12 @@ public class User
         Password = PasswordHelper.Hash(request.Password);
         IsActive = request.IsActive;
     }
-
+    
+    public void RegisterLoginEvent()
+    {
+        LastLoginAt = DateTime.Now;
+    }
+    
     public async Task LoadRoles()
     {
         await AuthContext.Get().Entry(this)

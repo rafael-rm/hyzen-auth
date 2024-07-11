@@ -1,6 +1,5 @@
 ﻿using Auth.Core.DTO.Request.User;
 using Auth.Core.DTO.Response.User;
-using Auth.Core.Filters;
 using Auth.Core.Infrastructure;
 using Auth.Core.Models;
 using Hyzen.SDK.Authentication;

@@ -21,7 +21,7 @@ public class GroupController : ControllerBase
         var group = await Group.GetAsync(name);
         
         if (group is null)
-            throw new HException("Group not found", ExceptionType.NotFound);
+            throw new HException($"Group {name} not found", ExceptionType.NotFound);
         
         var response = GroupResponseWithRoles.FromGroup(group);
 
@@ -47,7 +47,7 @@ public class GroupController : ControllerBase
         if (roles is {Count: 0})
             throw new HException("No valid roles were found", ExceptionType.NotFound, HttpStatusCode.NotFound);
         
-        group = await Group.CreateAsync(request.Name, roles);
+        group = await Group.CreateAsync(request.Name, request.Description, roles);
         
         var response = GroupResponseWithRoles.FromGroup(group);
         await context.SaveChangesAsync();
@@ -64,7 +64,7 @@ public class GroupController : ControllerBase
         var group = await Group.GetAsync(name);
 
         if (group is null)
-            throw new HException("Group not found", ExceptionType.NotFound);
+            throw new HException($"Group {name} not found", ExceptionType.NotFound);
         
         await group.DeleteAsync();
         await context.SaveChangesAsync();
@@ -74,16 +74,16 @@ public class GroupController : ControllerBase
 
     [HttpPut]
     [ProducesResponseType(typeof(GroupResponseWithRoles), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Update([FromForm] string oldName, [FromForm] string newName)
+    public async Task<IActionResult> Update([FromQuery] string name, [FromBody] UpdateGroupRequest request)
     {
         await using var context = AuthContext.Get("Group.Update");
 
-        var group = await Group.GetAsync(oldName);
+        var group = await Group.GetAsync(name);
 
         if (group is null)
-            throw new HException("Group not found", ExceptionType.NotFound);
-        
-        group.Update(newName);
+            throw new HException($"Group {name} not found", ExceptionType.NotFound);
+
+        group.Update(request.Name, request.Description);
         await context.SaveChangesAsync();
         
         var response = GroupResponseWithRoles.FromGroup(group);
@@ -100,7 +100,7 @@ public class GroupController : ControllerBase
         var group = await Group.GetAsync(groupName);
         
         if (group is null)
-            throw new HException("Group not found", ExceptionType.NotFound);
+            throw new HException($"Group {groupName} not found", ExceptionType.NotFound);
 
         var hasRole = await group.HasRoleAsync(roleName);
 
@@ -117,10 +117,10 @@ public class GroupController : ControllerBase
         var role = await Role.GetAsync(roleName);
 
         if (group is null)
-            throw new HException("Group not found", ExceptionType.NotFound);
+            throw new HException($"Group {groupName} not found", ExceptionType.NotFound);
         
         if (role is null)
-            throw new HException("Role not found", ExceptionType.NotFound);
+            throw new HException($"Role {roleName} not found", ExceptionType.NotFound);
         
         var groupRole = await GroupRole.GetAsync(group.Id, role.Id);
         
@@ -143,10 +143,10 @@ public class GroupController : ControllerBase
         var role = await Role.GetAsync(roleName);
 
         if (group is null)
-            throw new HException("Group not found", ExceptionType.NotFound);
+            throw new HException($"Group {groupName} not found", ExceptionType.NotFound);
         
         if (role is null)
-            throw new HException("Role not found", ExceptionType.NotFound);
+            throw new HException($"Role {roleName} not found", ExceptionType.NotFound);
         
         var groupRole = await GroupRole.GetAsync(group.Id, role.Id);
         

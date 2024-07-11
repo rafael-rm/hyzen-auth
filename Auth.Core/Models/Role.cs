@@ -19,6 +19,9 @@ public class Role
     [Column("name", TypeName = "VARCHAR(255)"), MaxLength(64), Required] 
     public string Name { get; set; }
     
+    [Column("description", TypeName = "VARCHAR(255)"), MaxLength(255)]
+    public string Description { get; set; }
+    
     [Column("created_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
     public DateTime CreatedAt { get; set; }
     
@@ -65,12 +68,13 @@ public class Role
         AuthContext.Get().RolesSet.Remove(this);
     }
     
-    public static async Task<Role> CreateAsync(string  name)
+    public static async Task<Role> CreateAsync(string  name, string description)
     {
         var role = new Role
         {
             Guid = Guid.NewGuid(),
-            Name = name
+            Name = name,
+            Description = description
         };
 
         await AuthContext.Get().RolesSet.AddAsync(role);
@@ -78,8 +82,9 @@ public class Role
         return role;
     }
     
-    public void Update(string name)
+    public void Update(string name, string description)
     {
         Name = name;
+        Description = description;
     }
 }

@@ -27,9 +27,11 @@ public class AuthController : ControllerBase
             throw new HException("User is not active", ExceptionType.InvalidOperation);
 
         var token = TokenService.GenerateToken(user, 3);
-        
-        var response = new LoginResponse(token);
+        user.RegisterLoginEvent();
 
+        await context.SaveChangesAsync();
+
+        var response = new LoginResponse(token);
         return Ok(response);
     }
     

@@ -1,3 +1,4 @@
+using Auth.Core.DTO.Request.Role;
 using Auth.Core.DTO.Response.Role;
 using Auth.Core.Infrastructure;
 using Auth.Core.Models;
@@ -19,7 +20,7 @@ public class RoleController : ControllerBase
         var role = await Role.GetAsync(name);
 
         if (role is null)
-            throw new HException("Role not found", ExceptionType.NotFound);
+            throw new HException($"Role {name} not found", ExceptionType.NotFound);
     
         var response = RoleResponse.FromRole(role);
 
@@ -28,16 +29,16 @@ public class RoleController : ControllerBase
     
     [HttpPost]
     [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Create([FromForm] string name)
+    public async Task<IActionResult> Create([FromBody] CreateRoleRequest request)
     {
         await using var context = AuthContext.Get("Role.Create");
 
-        var role = await Role.GetAsync(name);
+        var role = await Role.GetAsync(request.Name);
 
         if (role is not null)
             throw new HException("There is already a role with this name", ExceptionType.InvalidOperation);
 
-        role = await Role.CreateAsync(name);
+        role = await Role.CreateAsync(request.Name, request.Description);
 
         var response = RoleResponse.FromRole(role);
         await context.SaveChangesAsync();
@@ -54,7 +55,7 @@ public class RoleController : ControllerBase
         var role = await Role.GetAsync(name);
 
         if (role is null)
-            throw new HException("Role not found", ExceptionType.NotFound);
+            throw new HException($"Role {name} not found", ExceptionType.NotFound);
     
         await role.DeleteAsync();
         
@@ -65,16 +66,16 @@ public class RoleController : ControllerBase
 
     [HttpPut]
     [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Update([FromForm] string oldName, [FromForm] string newName)
+    public async Task<IActionResult> Update([FromQuery] string name, [FromBody] UpdateRoleRequest request)
     {
         await using var context = AuthContext.Get("Role.Update");
 
-        var role = await Role.GetAsync(oldName);
+        var role = await Role.GetAsync(name);
 
         if (role is null)
-            throw new HException("Role not found", ExceptionType.NotFound);
+            throw new HException($"Role {name} not found", ExceptionType.NotFound);
         
-        role.Update(newName);
+        role.Update(request.Name, request.Description);
 
         var response = RoleResponse.FromRole(role);
         await context.SaveChangesAsync();

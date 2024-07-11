@@ -9,4 +9,7 @@ public class CreateGroupRequest
     
     [Required (ErrorMessage = "Roles are required")]
     public List<string> Roles { get; set; }
+    
+    [Required (ErrorMessage = "Description is required")]
+    public string Description { get; set; }
 }
