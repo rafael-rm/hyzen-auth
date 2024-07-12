@@ -17,6 +17,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromQuery] Guid id)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:user:get");
         await using var context = AuthContext.Get("User.Get");
         
         var user = await Models.User.GetAsync(id);
@@ -29,7 +30,7 @@ public class UserController : ControllerBase
         return Ok(response);
     }
     
-    [HttpPost, AllowAnonymous]
+    [HttpPost]
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create([FromBody] CreateUserRequest request)
     {
@@ -52,6 +53,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> Delete([FromForm] Guid id)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:user:delete");
         await using var context = AuthContext.Get("User.Delete");
         
         var user = await Models.User.GetAsync(id);
@@ -70,6 +72,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Update([FromForm] Guid userGuid, [FromBody] UpdateUserRequest request)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:user:update");
         await using var context = AuthContext.Get("User.Update");
         
         var user = await Models.User.GetAsync(userGuid);;
@@ -89,6 +92,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> HasRole([FromForm] Guid userGuid, [FromForm] string roleName)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:user:has_role");
         await using var context = AuthContext.Get("Role.HasRole");
 
         var user = await Models.User.GetAsync(userGuid);
@@ -105,6 +109,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> AddRole([FromForm] Guid userGuid, [FromForm] string roleName)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:user:add_role");
         await using var context = AuthContext.Get("User.AddRole");
 
         var user = await Models.User.GetAsync(userGuid);
@@ -131,6 +136,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> RemoveRole([FromForm] Guid userGuid, [FromForm] string roleName)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:user:remove_role");
         await using var context = AuthContext.Get("User.RemoveRole");
 
         var user = await Models.User.GetAsync(userGuid);
@@ -160,7 +166,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> AddGroup([FromForm] Guid userGuid, [FromForm] string groupName)
     {
-        await HyzenAuth.EnsureRole("hyzen_auth:user:manage_group");
+        await HyzenAuth.EnsureRole("hyzen_auth:user:add_group");
         await using var context = AuthContext.Get("User.AddGroup");
         
         var group = await Group.GetAsync(groupName);
@@ -189,7 +195,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> RemoveGroup([FromForm] Guid userGuid, [FromForm] string groupName)
     {
-        await HyzenAuth.EnsureRole("hyzen_auth:user:manage_group");
+        await HyzenAuth.EnsureRole("hyzen_auth:user:remove_group");
         await using var context = AuthContext.Get("User.RemoveGroup");
 
         var user = await Models.User.GetAsync(userGuid);

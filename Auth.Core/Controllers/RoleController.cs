@@ -2,6 +2,7 @@ using Auth.Core.DTO.Request.Role;
 using Auth.Core.DTO.Response.Role;
 using Auth.Core.Infrastructure;
 using Auth.Core.Models;
+using Hyzen.SDK.Authentication;
 using Hyzen.SDK.Exception;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,6 +16,7 @@ public class RoleController : ControllerBase
     [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromQuery] string name)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:role:get");
         await using var context = AuthContext.Get("Role.Get");
     
         var role = await Role.GetAsync(name);
@@ -31,6 +33,7 @@ public class RoleController : ControllerBase
     [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create([FromBody] CreateRoleRequest request)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:role:create");
         await using var context = AuthContext.Get("Role.Create");
 
         var role = await Role.GetAsync(request.Name);
@@ -50,6 +53,7 @@ public class RoleController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> Delete([FromForm] string name)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:role:delete");
         await using var context = AuthContext.Get("Role.Delete");
     
         var role = await Role.GetAsync(name);
@@ -68,6 +72,7 @@ public class RoleController : ControllerBase
     [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Update([FromQuery] string name, [FromBody] UpdateRoleRequest request)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:role:update");
         await using var context = AuthContext.Get("Role.Update");
 
         var role = await Role.GetAsync(name);

@@ -3,6 +3,7 @@ using Auth.Core.DTO.Request.Group;
 using Auth.Core.DTO.Response.Group;
 using Auth.Core.Infrastructure;
 using Auth.Core.Models;
+using Hyzen.SDK.Authentication;
 using Hyzen.SDK.Exception;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,6 +17,7 @@ public class GroupController : ControllerBase
     [ProducesResponseType(typeof(GroupResponseWithRoles), StatusCodes.Status200OK)]
     public async Task<IActionResult> Get([FromQuery] string name)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:group:get");
         await using var context = AuthContext.Get("Group.Get");
     
         var group = await Group.GetAsync(name);
@@ -32,6 +34,7 @@ public class GroupController : ControllerBase
     [ProducesResponseType(typeof(GroupResponseWithRoles), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create([FromBody] CreateGroupRequest request)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:group:create");
         await using var context = AuthContext.Get("Group.Create");
         
         var group = await Group.GetAsync(request.Name);
@@ -59,6 +62,7 @@ public class GroupController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> Delete([FromForm] string name)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:group:delete");
         await using var context = AuthContext.Get("Group.Delete");
 
         var group = await Group.GetAsync(name);
@@ -76,6 +80,7 @@ public class GroupController : ControllerBase
     [ProducesResponseType(typeof(GroupResponseWithRoles), StatusCodes.Status200OK)]
     public async Task<IActionResult> Update([FromQuery] string name, [FromBody] UpdateGroupRequest request)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:group:update");
         await using var context = AuthContext.Get("Group.Update");
 
         var group = await Group.GetAsync(name);
@@ -95,6 +100,7 @@ public class GroupController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> HasRole([FromForm] string groupName, [FromForm] string roleName)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:group:has_role");
         await using var context = AuthContext.Get("Group.HasRole");
 
         var group = await Group.GetAsync(groupName);
@@ -111,6 +117,7 @@ public class GroupController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> AddRole([FromForm] string groupName, [FromForm] string roleName)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:group:add_role");
         await using var context = AuthContext.Get("Group.AddRole");
 
         var group = await Group.GetAsync(groupName);
@@ -137,6 +144,7 @@ public class GroupController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> RemoveRole([FromForm] string groupName, [FromForm] string roleName)
     {
+        await HyzenAuth.EnsureRole("hyzen_auth:group:remove_role");
         await using var context = AuthContext.Get("Group.RemoveRole");
 
         var group = await Group.GetAsync(groupName);
