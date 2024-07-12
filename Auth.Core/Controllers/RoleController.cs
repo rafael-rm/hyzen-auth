@@ -87,4 +87,61 @@ public class RoleController : ControllerBase
 
         return Ok(response);
     }
+    
+    [HttpPost, Route("AddRoleToUser")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    public async Task<IActionResult> AddRoleToUser([FromForm] Guid userGuid, [FromForm] string roleName)
+    {
+        await HyzenAuth.EnsureRole("hyzen_auth:user:add_role");
+        await using var context = AuthContext.Get("User.AddRole");
+
+        var user = await Models.User.GetAsync(userGuid);
+
+        if (user is null)
+            throw new HException("User not found", ExceptionType.NotFound);
+
+        var role = await Role.GetAsync(roleName);
+        
+        if (role is null)
+            throw new HException("Role not found", ExceptionType.NotFound);
+
+        if (await user.HasRole(roleName))
+            throw new HException("The user already has this role", ExceptionType.InvalidOperation);
+
+        await UserRole.Add(user.Id, role.Id);
+        
+        await context.SaveChangesAsync();
+
+        return Ok(true);
+    }
+    
+    [HttpPost, Route("RemoveRoleToUser")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RemoveRoleToUser([FromForm] Guid userGuid, [FromForm] string roleName)
+    {
+        await HyzenAuth.EnsureRole("hyzen_auth:user:remove_role");
+        await using var context = AuthContext.Get("User.RemoveRole");
+
+        var user = await Models.User.GetAsync(userGuid);
+
+        if (user is null)
+            throw new HException("User not found", ExceptionType.NotFound);
+
+        var role = await Role.GetAsync(roleName);
+        
+        if (role is null)
+            throw new HException("Role not found", ExceptionType.NotFound);
+        
+        if (!await user.HasRole(roleName))
+            throw new HException("User does not have this role", ExceptionType.InvalidOperation);
+
+        var wasRemoved = await UserRole.DeleteAsync(user.Id, role.Id);
+        
+        if (!wasRemoved)
+            throw new HException("Role could not be removed", ExceptionType.InvalidOperation);
+        
+        await context.SaveChangesAsync();
+
+        return Ok(true);
+    }
 }

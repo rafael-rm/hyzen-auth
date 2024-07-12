@@ -166,4 +166,60 @@ public class GroupController : ControllerBase
 
         return Ok(true);
     }
+    
+    [HttpPost, Route("AddGroupToUser")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    public async Task<IActionResult> AddGroupToUser([FromForm] Guid userGuid, [FromForm] string groupName)
+    {
+        await HyzenAuth.EnsureRole("hyzen_auth:user:add_group");
+        await using var context = AuthContext.Get("User.AddGroup");
+        
+        var group = await Group.GetAsync(groupName);
+        if (group is null)
+            throw new HException("Group not found", ExceptionType.NotFound);
+
+        var actor = await HyzenAuth.GetSubject();
+        if (!actor.HasGroup(group.Name))
+            throw new HException("You do not have permission to add this group", ExceptionType.InvalidOperation);
+        
+        var user = await Models.User.GetAsync(userGuid);
+        if (user is null)
+            throw new HException("User not found", ExceptionType.NotFound);
+
+        if (await user.HasGroup(groupName))
+            throw new HException("The user already has this group", ExceptionType.InvalidOperation);
+
+        await UserGroup.AddAsync(user, group);
+        
+        await context.SaveChangesAsync();
+
+        return Ok(true);
+    }
+    
+    [HttpPost, Route("RemoveGroupToUser")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RemoveGroupToUser([FromForm] Guid userGuid, [FromForm] string groupName)
+    {
+        await HyzenAuth.EnsureRole("hyzen_auth:user:remove_group");
+        await using var context = AuthContext.Get("User.RemoveGroup");
+
+        var user = await Models.User.GetAsync(userGuid);
+
+        if (user is null)
+            throw new HException("User not found", ExceptionType.NotFound);
+
+        var group = await Group.GetAsync(groupName);
+        
+        if (group is null)
+            throw new HException("Group not found", ExceptionType.NotFound);
+        
+        if (!await user.HasGroup(groupName))
+            throw new HException("User does not have this group", ExceptionType.InvalidOperation);
+
+        await UserGroup.DeleteAsync(user.Id, group.Id);
+        
+        await context.SaveChangesAsync();
+
+        return Ok(true);
+    }
 }
