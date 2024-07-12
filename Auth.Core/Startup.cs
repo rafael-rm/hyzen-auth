@@ -53,9 +53,10 @@ public class Startup(IConfiguration configuration)
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hyzen Auth API v1"));
         }
+        
+        app.UseSwagger();
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hyzen Auth API v1"));
 
         app.UseCors(e => e.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
         app.UseHttpsRedirection();
