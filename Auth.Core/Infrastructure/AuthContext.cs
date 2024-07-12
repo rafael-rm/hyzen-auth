@@ -1,4 +1,5 @@
-﻿using Auth.Core.Models;
+﻿using System.Diagnostics;
+using Auth.Core.Models;
 using Hyzen.SDK.Exception;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,9 +51,13 @@ namespace Auth.Core.Infrastructure
                     .AddUserSecrets<Program>()
                     .Build();
 
-                var connectionString = string.IsNullOrEmpty(configuration.GetConnectionString("DefaultConnection"))
-                    ? Environment.GetEnvironmentVariable("HYZEN_DATABASE_ALFA", EnvironmentVariableTarget.User)
-                    : configuration.GetConnectionString("DefaultConnection");
+                var connectionString = Environment.GetEnvironmentVariable("HYZEN_DATABASE_ALFA");
+                
+                if (Debugger.IsAttached)
+                {
+                    connectionString = Environment.GetEnvironmentVariable("HYZEN_DATABASE_ALFA", EnvironmentVariableTarget.User)
+                                       ?? configuration.GetConnectionString("DefaultConnection");
+                }
 
                 optionsBuilder.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 28)));
             }
