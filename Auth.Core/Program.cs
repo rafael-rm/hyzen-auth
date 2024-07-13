@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Sentry.Profiling;
 
 namespace Auth.Core;
@@ -14,7 +15,9 @@ public class Program
         return Host.CreateDefaultBuilder(args)
             .ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseSentry(ConfigureSentryOptions); // TODO: Do not use sentry during debugging
+                if (!Debugger.IsAttached) // Don't use Sentry when debugging
+                    webBuilder.UseSentry(ConfigureSentryOptions);
+                
                 webBuilder.UseStartup<Startup>();
             })
             .ConfigureLogging((hostingContext, logging) =>
@@ -34,12 +37,18 @@ public class Program
             .AddUserSecrets<Program>()
             .Build();
         
-        options.Dsn = Environment.GetEnvironmentVariable("SENTRY_DSN", EnvironmentVariableTarget.User) ?? appSettings["Sentry:DSN"];
+        options.Dsn = Environment.GetEnvironmentVariable("HYZEN_AUTH_SENTRY_DSN") ?? appSettings["Sentry:DSN"];
+
+        options.Debug = Debugger.IsAttached;
+        options.AutoSessionTracking = true;
+        options.StackTraceMode = StackTraceMode.Enhanced;
+        options.IsGlobalModeEnabled = false;
         
-        options.Debug = appSettings.GetValue<bool>("Sentry:Debug");
         options.TracesSampleRate = 1.0;
         options.ProfilesSampleRate = 1.0;
+        
         options.AddIntegration(new ProfilingIntegration(TimeSpan.FromMilliseconds(500)));
+        
         options.CaptureFailedRequests = true;
         options.ExperimentalMetrics = new ExperimentalMetricsOptions { EnableCodeLocations = true };
         options.AttachStacktrace = true;
