@@ -6,10 +6,8 @@ public class LoginResponse : VerifyResponse
 {
     public string Token { get; set; }
     
-    public LoginResponse(string token)
+    public LoginResponse(VerifyResponse subject, string token)
     {
-        var subject = TokenService.GetSubjectFromToken(token);
-        
         Guid = subject.Guid;
         Name = subject.Name;
         Email = subject.Email;

@@ -70,21 +70,26 @@ public static class TokenService
         }
     }
     
-    public static VerifyResponse GetSubjectFromToken(string token)
+    public static async Task<VerifyResponse> GetSubjectFromToken(string token)
     {
         var principal = GetPrincipalFromToken(token);
         if (principal == null)
             throw new HException("Invalid or expired token", ExceptionType.InvalidCredentials);
         
         var claims = principal.Claims.ToList();
+        var subjectId = Guid.Parse(claims.First(s => s.Type == ClaimTypes.PrimarySid).Value);
+        
+        var user = await User.GetAsync(subjectId);
+        var roles = user.Roles.Select(s => s.Role.Name).ToList();
+        var groups = user.Groups.Select(s => s.Group.Name).ToList();
         
         return new VerifyResponse
         {
-            Guid = Guid.Parse(claims.First(s => s.Type == ClaimTypes.PrimarySid).Value),
+            Guid = subjectId,
             Name = claims.First(s => s.Type == ClaimTypes.GivenName).Value,
             Email = claims.First(s => s.Type == ClaimTypes.Email).Value,
-            Groups = claims.Where(s => s.Type == ClaimTypes.GroupSid).Select(s => s.Value).ToList(),
-            Roles = claims.Where(s => s.Type == ClaimTypes.Role).Select(s => s.Value).ToList()
+            Groups = groups,
+            Roles = roles
         };
     }
 }

@@ -30,8 +30,10 @@ public class AuthController : ControllerBase
         user.RegisterLoginEvent();
 
         await context.SaveChangesAsync();
+        
+        var subject = await TokenService.GetSubjectFromToken(token);
 
-        var response = new LoginResponse(token);
+        var response = new LoginResponse(subject, token);
         return Ok(response);
     }
     
