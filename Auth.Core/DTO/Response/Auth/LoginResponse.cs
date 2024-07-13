@@ -1,5 +1,3 @@
-using Auth.Core.Services;
-
 namespace Auth.Core.DTO.Response.Auth;
 
 public class LoginResponse : VerifyResponse

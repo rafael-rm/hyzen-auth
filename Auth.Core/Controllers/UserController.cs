@@ -1,10 +1,8 @@
 ﻿using Auth.Core.DTO.Request.User;
 using Auth.Core.DTO.Response.User;
 using Auth.Core.Infrastructure;
-using Auth.Core.Models;
 using Hyzen.SDK.Authentication;
 using Hyzen.SDK.Exception;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.Core.Controllers;
@@ -62,7 +60,6 @@ public class UserController : ControllerBase
             throw new HException("User not found", ExceptionType.NotFound);
         
         user.Delete();
-        
         await context.SaveChangesAsync();
 
         return Ok(true);
@@ -72,7 +69,7 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Update([FromForm] Guid userGuid, [FromBody] UpdateUserRequest request)
     {
-        await HyzenAuth.EnsureRole("hyzen_auth:user:update");
+        await HyzenAuth.EnsureAdmin(); // TODO: Ensure user is admin or user is updating itself
         await using var context = AuthContext.Get("User.Update");
         
         var user = await Models.User.GetAsync(userGuid);;

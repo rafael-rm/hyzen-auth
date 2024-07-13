@@ -33,7 +33,7 @@ public class RoleController : ControllerBase
     [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create([FromBody] CreateRoleRequest request)
     {
-        await HyzenAuth.EnsureRole("hyzen_auth:role:create");
+        await HyzenAuth.EnsureAdmin();
         await using var context = AuthContext.Get("Role.Create");
 
         var role = await Role.GetAsync(request.Name);
@@ -53,7 +53,7 @@ public class RoleController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> Delete([FromForm] string name)
     {
-        await HyzenAuth.EnsureRole("hyzen_auth:role:delete");
+        await HyzenAuth.EnsureAdmin();
         await using var context = AuthContext.Get("Role.Delete");
     
         var role = await Role.GetAsync(name);
@@ -62,7 +62,6 @@ public class RoleController : ControllerBase
             throw new HException($"Role {name} not found", ExceptionType.NotFound);
     
         await role.DeleteAsync();
-        
         await context.SaveChangesAsync();
 
         return Ok(true);
@@ -72,13 +71,17 @@ public class RoleController : ControllerBase
     [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Update([FromQuery] string name, [FromBody] UpdateRoleRequest request)
     {
-        await HyzenAuth.EnsureRole("hyzen_auth:role:update");
+        await HyzenAuth.EnsureAdmin();
         await using var context = AuthContext.Get("Role.Update");
 
         var role = await Role.GetAsync(name);
 
         if (role is null)
             throw new HException($"Role {name} not found", ExceptionType.NotFound);
+        
+        var roleWithSameName = await Role.GetAsync(request.Name);
+        if (roleWithSameName is not null && roleWithSameName.Id != role.Id)
+            throw new HException("There is already a group with this name", ExceptionType.InvalidOperation);
         
         role.Update(request.Name, request.Description);
 
@@ -92,8 +95,8 @@ public class RoleController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> AddRoleToUser([FromForm] Guid userGuid, [FromForm] string roleName)
     {
-        await HyzenAuth.EnsureRole("hyzen_auth:user:add_role");
-        await using var context = AuthContext.Get("User.AddRole");
+        await HyzenAuth.EnsureAdmin();
+        await using var context = AuthContext.Get("Role.AddRoleToUser");
 
         var user = await Models.User.GetAsync(userGuid);
 
@@ -109,7 +112,6 @@ public class RoleController : ControllerBase
             throw new HException("The user already has this role", ExceptionType.InvalidOperation);
 
         await UserRole.Add(user.Id, role.Id);
-        
         await context.SaveChangesAsync();
 
         return Ok(true);
@@ -119,8 +121,8 @@ public class RoleController : ControllerBase
     [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
     public async Task<IActionResult> RemoveRoleToUser([FromForm] Guid userGuid, [FromForm] string roleName)
     {
-        await HyzenAuth.EnsureRole("hyzen_auth:user:remove_role");
-        await using var context = AuthContext.Get("User.RemoveRole");
+        await HyzenAuth.EnsureAdmin();
+        await using var context = AuthContext.Get("Role.RemoveRoleToUser");
 
         var user = await Models.User.GetAsync(userGuid);
 
