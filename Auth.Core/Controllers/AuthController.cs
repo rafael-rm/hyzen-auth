@@ -42,7 +42,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Verify()
     {
         await using var context = AuthContext.Get("Auth.Verify");
-        var subject = TokenService.GetSubjectFromToken(HyzenAuth.GetToken());
+        var subject = await TokenService.GetSubjectFromToken(HyzenAuth.GetToken());
         return Ok(subject);
     }
 }
