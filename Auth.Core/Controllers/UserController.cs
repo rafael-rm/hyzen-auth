@@ -90,7 +90,7 @@ public class UserController : ControllerBase
     public async Task<IActionResult> HasRole([FromForm] Guid userGuid, [FromForm] string roleName)
     {
         await HyzenAuth.EnsureRole("hyzen_auth:user:has_role");
-        await using var context = AuthContext.Get("Role.HasRole");
+        await using var context = AuthContext.Get("User.HasRole");
 
         var user = await Models.User.GetAsync(userGuid);
 
@@ -100,5 +100,22 @@ public class UserController : ControllerBase
         var hasRole = await user.HasRole(roleName);
 
         return Ok(hasRole);
+    }
+    
+    [HttpPost, Route("HasGroup")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    public async Task<IActionResult> HasGroup([FromForm] Guid userGuid, [FromForm] string groupName)
+    {
+        await HyzenAuth.EnsureRole("hyzen_auth:user:has_group");
+        await using var context = AuthContext.Get("User.HasGroup");
+
+        var user = await Models.User.GetAsync(userGuid);
+
+        if (user is null)
+            throw new HException("User not found", ExceptionType.NotFound);
+
+        var hasGroup = await user.HasGroup(groupName);
+
+        return Ok(hasGroup);
     }
 }

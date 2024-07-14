@@ -21,8 +21,9 @@ public static class TokenService
         IssuerSigningKey = new SymmetricSecurityKey(ByteSecret)
     };
 
-    public static string GenerateToken(User request, int expirationHours = 6)
+    public static string GenerateToken(User request, out long issuedAt, int expirationHours = 6)
     {
+        var issuanceDate = DateTime.UtcNow;
         var securityKey = new SymmetricSecurityKey(ByteSecret);
         var descriptor = new SecurityTokenDescriptor
         {
@@ -34,7 +35,7 @@ public static class TokenService
             }),
             SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),
             Expires = DateTime.UtcNow.AddHours(expirationHours),
-            IssuedAt = DateTime.UtcNow
+            IssuedAt = issuanceDate
         };
         
         request.Groups.ForEach(s =>
@@ -49,6 +50,8 @@ public static class TokenService
         
         var handler = new JwtSecurityTokenHandler();
         var token = handler.CreateJwtSecurityToken(descriptor);
+        
+        issuedAt = ((DateTimeOffset)issuanceDate).ToUnixTimeSeconds();
         return handler.WriteToken(token);
     }
     
@@ -79,9 +82,14 @@ public static class TokenService
         var claims = principal.Claims.ToList();
         var subjectId = Guid.Parse(claims.First(s => s.Type == ClaimTypes.PrimarySid).Value);
         
+        
         var user = await User.GetAsync(subjectId);
         var roles = user.Roles.Select(s => s.Role.Name).ToList();
         var groups = user.Groups.Select(s => s.Group.Name).ToList();
+        var issuedAt = DateTimeOffset.FromUnixTimeSeconds(long.Parse(claims.First(s => s.Type == "iat").Value)).UtcDateTime;
+        
+        if (user.LastLoginAt > issuedAt)
+            throw new HException("Invalid or expired token", ExceptionType.InvalidCredentials);
         
         return new VerifyResponse
         {

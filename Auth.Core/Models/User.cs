@@ -119,9 +119,9 @@ public class User
         IsActive = request.IsActive;
     }
     
-    public void RegisterLoginEvent()
+    public void RegisterLoginEvent(long lastLoginAt)
     {
-        LastLoginAt = DateTime.Now;
+        LastLoginAt = DateTimeOffset.FromUnixTimeSeconds(lastLoginAt).UtcDateTime;
     }
     
     public async Task LoadRoles()
