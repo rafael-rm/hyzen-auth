@@ -30,6 +30,19 @@ public class GroupController : ControllerBase
         return Ok(response);
     }
     
+    [HttpGet, Route("List")]
+    [ProducesResponseType(typeof(List<GroupResponseWithRoles>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> List()
+    {
+        await HyzenAuth.EnsureRole("hyzen_auth:group:list");
+        await using var context = AuthContext.Get("Group.List");
+    
+        var groups = await Group.ListAsync();
+        var response = GroupResponseWithRoles.FromGroups(groups);
+
+        return Ok(response);
+    }
+    
     [HttpPost]
     [ProducesResponseType(typeof(GroupResponseWithRoles), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create([FromBody] CreateGroupRequest request)

@@ -15,4 +15,9 @@ public record RoleResponse
             Description = role.Description
         };
     }
+    
+    public static List<RoleResponse> FromRoles(List<Models.Role> roles)
+    {
+        return roles.Select(FromRole).ToList();
+    }
 }

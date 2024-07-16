@@ -29,6 +29,19 @@ public class RoleController : ControllerBase
         return Ok(response);
     }
     
+    [HttpGet, Route("List")]
+    [ProducesResponseType(typeof(List<RoleResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> List()
+    {
+        await HyzenAuth.EnsureRole("hyzen_auth:role:list");
+        await using var context = AuthContext.Get("Role.List");
+    
+        var roles = await Role.ListAsync();
+        var response = RoleResponse.FromRoles(roles);
+
+        return Ok(response);
+    }
+    
     [HttpPost]
     [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Create([FromBody] CreateRoleRequest request)

@@ -33,4 +33,9 @@ public class GroupResponseWithRoles : GroupResponse
             Roles = group.Roles?.Select(s => RoleResponse.FromRole(s.Role)).ToList()
         };
     }
+    
+    public static List<GroupResponseWithRoles> FromGroups(List<Models.Group> groups)
+    {
+        return groups.Select(FromGroup).ToList();
+    }
 }

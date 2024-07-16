@@ -36,6 +36,11 @@ public class Role
         return await AuthContext.Get().RolesSet.FirstOrDefaultAsync(s => s.Name.ToLower() == name.ToLower());
     }
     
+    public static async Task<List<Role>> ListAsync()
+    {
+        return await AuthContext.Get().RolesSet.ToListAsync();
+    }
+    
     public static async Task<List<Role>> SearchAsync(int? id = null, Guid? guid = null, List<string> names = null)
     {
         var queryable =  AuthContext.Get().RolesSet.AsQueryable();

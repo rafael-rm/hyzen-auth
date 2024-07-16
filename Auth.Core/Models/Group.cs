@@ -42,6 +42,14 @@ public class Group
             .FirstOrDefaultAsync(s => s.Name.ToLower() == name.ToLower());
     }
     
+    public static async Task<List<Group>> ListAsync()
+    {
+        return await AuthContext.Get().GroupsSet
+            .Include(s => s.Roles)
+            .ThenInclude(s => s.Role)
+            .ToListAsync();
+    }
+    
     public static async Task<Group> GetAsync(int id)
     {
         return await AuthContext.Get().GroupsSet
