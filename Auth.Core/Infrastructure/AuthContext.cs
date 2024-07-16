@@ -27,6 +27,11 @@ namespace Auth.Core.Infrastructure
             
             return _instance.Value = new AuthContext(name);
         }
+        
+        public static void Reset()
+        {
+            _instance.Value = null;
+        }
 
         public DbSet<User> UsersSet { get; set; }
         public DbSet<Role> RolesSet { get; set; }
