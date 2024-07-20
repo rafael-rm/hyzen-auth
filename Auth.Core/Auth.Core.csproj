@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Hyzen.SDK" Version="1.2407.2013.16" />
+        <PackageReference Include="Hyzen.SDK" Version="1.2407.2014" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.7" />
         <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.2" />
         <PackageReference Include="Sentry.AspNetCore" Version="4.9.0" />
