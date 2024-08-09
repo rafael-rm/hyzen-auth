@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Auth.Core.DTO.Request.User;
+using Auth.Core.DTOs.Request.User;
 using Auth.Core.Infrastructure;
 using Auth.Core.Services;
 using Microsoft.EntityFrameworkCore;
@@ -102,7 +102,7 @@ public class User
             Guid = Guid.NewGuid(),
             Name = request.Name,
             Email = request.Email,
-            Password = PasswordHelper.Hash(request.Password),
+            Password = HashService.Hash(request.Password),
             IsActive = isActive,
         };
 
@@ -115,13 +115,19 @@ public class User
     {
         Name = request.Name;
         Email = request.Email;
-        Password = PasswordHelper.Hash(request.Password);
+        Password = HashService.Hash(request.Password);
         IsActive = request.IsActive;
     }
     
     public void RegisterLoginEvent(long lastLoginAt)
     {
         LastLoginAt = DateTimeOffset.FromUnixTimeSeconds(lastLoginAt).UtcDateTime;
+    }
+    
+    public void RegisterRecoveryPasswordEvent()
+    {
+        // TODO: Implement
+        return;
     }
     
     public async Task LoadRoles()

@@ -1,5 +1,5 @@
-﻿using Auth.Core.DTO.Request.Auth;
-using Auth.Core.DTO.Response.Auth;
+﻿using Auth.Core.DTOs.Request.Auth;
+using Auth.Core.DTOs.Response.Auth;
 using Auth.Core.Infrastructure;
 using Auth.Core.Services;
 using Hyzen.SDK.Authentication;
@@ -20,7 +20,7 @@ public class AuthController : ControllerBase
         
         var user = await Models.User.GetAsync(request.Email);
         
-        if (user is null || !PasswordHelper.Verify(request.Password, user.Password))
+        if (user is null || !HashService.Verify(request.Password, user.Password))
             throw new HException("User not found or invalid password", ExceptionType.NotFound);
         
         if (!user.IsActive)

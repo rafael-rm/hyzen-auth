@@ -1,4 +1,4 @@
-namespace Auth.Core.DTO.Response.Role;
+namespace Auth.Core.DTOs.Response.Role;
 
 public record RoleResponse
 {

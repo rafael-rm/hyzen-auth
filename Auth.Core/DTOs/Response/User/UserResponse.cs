@@ -1,7 +1,7 @@
-﻿using Auth.Core.DTO.Response.Group;
-using Auth.Core.DTO.Response.Role;
+﻿using Auth.Core.DTOs.Response.Group;
+using Auth.Core.DTOs.Response.Role;
 
-namespace Auth.Core.DTO.Response.User;
+namespace Auth.Core.DTOs.Response.User;
 
 public record UserResponse
 {

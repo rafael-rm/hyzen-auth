@@ -1,4 +1,4 @@
-namespace Auth.Core.DTO.Response.Auth;
+namespace Auth.Core.DTOs.Response.Auth;
 
 public class LoginResponse : VerifyResponse
 {

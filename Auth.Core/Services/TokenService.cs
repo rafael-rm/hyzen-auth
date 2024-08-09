@@ -1,6 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Auth.Core.DTO.Response.Auth;
+using Auth.Core.DTOs.Response.Auth;
 using Auth.Core.Models;
 using Hyzen.SDK.Exception;
 using Microsoft.IdentityModel.Tokens;

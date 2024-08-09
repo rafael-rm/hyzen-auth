@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Auth.Core.DTO.Request.Role;
+namespace Auth.Core.DTOs.Request.Role;
 
 public class CreateRoleRequest
 {
