@@ -1,15 +1,16 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Auth.Core.DTO.Response.Auth;
+using Auth.Core.DTOs.Response.Auth;
 using Auth.Core.Models;
 using Hyzen.SDK.Exception;
+using Hyzen.SDK.SecretManager;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Auth.Core.Services;
 
 public static class TokenService
 {
-    private const string Secret = "6FSx1+1AOUEImFI7KTMCFxceC7P0ZyiekaKTKTkGQGM="; // TODO: Save to an environment variable / AWS
+    private static readonly string Secret = HyzenSecret.GetSecret("HYZEN-AUTH-TOKEN-SECRET");
     private static byte[] ByteSecret => Convert.FromBase64String(Secret);
 
     private static readonly TokenValidationParameters ValidationParameters = new()

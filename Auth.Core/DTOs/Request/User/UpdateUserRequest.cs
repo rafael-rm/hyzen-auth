@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Auth.Core.DTO.Request.User;
+namespace Auth.Core.DTOs.Request.User;
 
-public record CreateUserRequest
+public record UpdateUserRequest
 {
     [Required (ErrorMessage = "Email is required")]
     public string Email { get; set; }
@@ -12,4 +12,7 @@ public record CreateUserRequest
     
     [Required (ErrorMessage = "Password is required")]
     public string Password { get; set; }
+    
+    [Required (ErrorMessage = "IsActive is required")]
+    public bool IsActive { get; set; }
 }

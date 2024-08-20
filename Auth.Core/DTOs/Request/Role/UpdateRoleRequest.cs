@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Auth.Core.DTO.Request.Group;
+namespace Auth.Core.DTOs.Request.Role;
 
-public class UpdateGroupRequest
+public class UpdateRoleRequest
 {
     [Required(ErrorMessage = "Name is required")]
     public string Name { get; set; }

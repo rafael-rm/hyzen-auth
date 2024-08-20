@@ -1,5 +1,5 @@
-using Auth.Core.DTO.Request.Role;
-using Auth.Core.DTO.Response.Role;
+using Auth.Core.DTOs.Request.Role;
+using Auth.Core.DTOs.Response.Role;
 using Auth.Core.Infrastructure;
 using Auth.Core.Models;
 using Hyzen.SDK.Authentication;

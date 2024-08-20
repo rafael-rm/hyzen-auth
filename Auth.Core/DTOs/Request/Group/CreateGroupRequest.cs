@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Auth.Core.DTO.Request.Group;
+namespace Auth.Core.DTOs.Request.Group;
 
 public class CreateGroupRequest
 {

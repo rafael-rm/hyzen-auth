@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Hyzen.SDK.SecretManager;
 using Sentry.Profiling;
 
 namespace Auth.Core;
@@ -37,7 +38,7 @@ public class Program
             .AddUserSecrets<Program>()
             .Build();
         
-        options.Dsn = Environment.GetEnvironmentVariable("HYZEN_AUTH_SENTRY_DSN") ?? appSettings["Sentry:DSN"];
+        options.Dsn = HyzenSecret.GetSecret("HYZEN-AUTH-SENTRY-DSN");
 
         options.Debug = Debugger.IsAttached;
         options.AutoSessionTracking = true;

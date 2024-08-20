@@ -1,6 +1,6 @@
-﻿using Auth.Core.DTO.Response.Role;
+﻿using Auth.Core.DTOs.Response.Role;
 
-namespace Auth.Core.DTO.Response.Group;
+namespace Auth.Core.DTOs.Response.Group;
 
 public class GroupResponse
 {

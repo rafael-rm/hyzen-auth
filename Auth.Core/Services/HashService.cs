@@ -2,7 +2,7 @@
 
 namespace Auth.Core.Services
 {
-    public static class PasswordHelper
+    public static class HashService
     {
         private const int SaltSize = 64;
         private const int HashSize = 64;

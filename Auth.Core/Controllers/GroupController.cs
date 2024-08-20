@@ -1,6 +1,6 @@
 ﻿using System.Net;
-using Auth.Core.DTO.Request.Group;
-using Auth.Core.DTO.Response.Group;
+using Auth.Core.DTOs.Request.Group;
+using Auth.Core.DTOs.Response.Group;
 using Auth.Core.Infrastructure;
 using Auth.Core.Models;
 using Hyzen.SDK.Authentication;
