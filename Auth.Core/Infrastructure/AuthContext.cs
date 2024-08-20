@@ -57,7 +57,7 @@ namespace Auth.Core.Infrastructure
                     .AddUserSecrets<Program>()
                     .Build();
 
-                var connectionString = HyzenSecret.GetSecret("CS-HYZEN-DATABASE-ALFA");
+                var connectionString = HyzenSecret.GetSecret("DATABASE-HYZEN-ALFA-CS");
                 
                 if (Debugger.IsAttached && string.IsNullOrWhiteSpace(connectionString))
                 {
