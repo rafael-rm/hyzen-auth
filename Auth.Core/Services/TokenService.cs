@@ -23,7 +23,7 @@ public static class TokenService
         IssuerSigningKey = new SymmetricSecurityKey(ByteSecret)
     };
 
-    public static string GenerateToken(User request, SubjectType type, int expirationHours, out long issuedAt)
+    public static string GenerateToken(User request, TokenType type, int expirationHours, out long issuedAt)
     {
         var issuanceDate = DateTime.UtcNow;
         var securityKey = new SymmetricSecurityKey(ByteSecret);
@@ -83,14 +83,14 @@ public static class TokenService
         
         var claims = principal.Claims.ToList();
         var subjectId = Guid.Parse(claims.First(s => s.Type == ClaimTypes.PrimarySid).Value);
-        var type = (SubjectType)Enum.Parse(typeof(SubjectType), claims.First(s => s.Type == "type").Value);
+        var type = (TokenType)Enum.Parse(typeof(TokenType), claims.First(s => s.Type == "type").Value);
         
         var user = await User.GetAsync(subjectId);
         var roles = user.Roles.Select(s => s.Role.Name).ToList();
         var groups = user.Groups.Select(s => s.Group.Name).ToList();
         var issuedAt = DateTimeOffset.FromUnixTimeSeconds(long.Parse(claims.First(s => s.Type == "iat").Value)).UtcDateTime;
         
-        if (type == SubjectType.User && user.LastLoginAt > issuedAt)
+        if (type == TokenType.User && user.LastLoginAt > issuedAt)
             throw new HException("Invalid or expired token", ExceptionType.InvalidCredentials);
         
         return new VerifyResponse
