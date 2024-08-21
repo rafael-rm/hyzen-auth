@@ -4,6 +4,7 @@ using Auth.Core.Infrastructure;
 using Auth.Core.Services;
 using Hyzen.SDK.Authentication;
 using Hyzen.SDK.Authentication.DTO;
+using Hyzen.SDK.Email;
 using Hyzen.SDK.Exception;
 using Microsoft.AspNetCore.Mvc;
 
@@ -45,5 +46,36 @@ public class AuthController : ControllerBase
         await using var context = AuthContext.Get("Auth.Verify");
         var subject = await TokenService.GetSubjectFromToken(HyzenAuth.GetToken());
         return Ok(subject);
+    }
+    
+    [HttpPost, Route("RecoveryPassword")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RecoveryPassword([FromForm] string email)
+    {
+        await using var context = AuthContext.Get("Auth.RecoveryPassword");
+
+        var user = await Models.User.GetAsync(email);
+
+        if (user is null)
+            throw new HException("User not found", ExceptionType.NotFound);
+        
+        var recoveryToken = TokenService.GenerateToken(user, TokenType.Recovery, 1, out _);
+        
+        var dynamicTemplateData = new
+        {
+            displayName = user.Name,
+            recoveryUrl = $"https://hyzen.com.br/auth/recovery/{recoveryToken}"
+        };
+        
+        var response = await HyzenMail.SendTemplateMail("noreply@hyzen.com.br", user.Email, "d-22d1b8b0c8df4ce9ae516cf171a1fa58", dynamicTemplateData);
+        
+        if (!response)
+            throw new HException("Failed to send recovery email", ExceptionType.InvalidOperation);
+        
+        user.RegisterRecoveryPasswordEvent();
+        
+        await context.SaveChangesAsync();
+
+        return Ok(true);
     }
 }

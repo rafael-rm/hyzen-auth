@@ -12,7 +12,7 @@ public class CustomActionFilter : Attribute, IAsyncActionFilter
         
         var route = context.HttpContext.Request.Path.Value;
 
-        var noAuthentication = new List<string> { "/api/v1/Auth/Login", "/api/v1/Auth/Verify" };
+        var noAuthentication = new List<string> { "/api/v1/Auth/Login", "/api/v1/Auth/Verify", "/api/v1/Auth/RecoveryPassword" };
 
         if (!noAuthentication.Any(s => route is not null && route.StartsWith(s)))
         {
