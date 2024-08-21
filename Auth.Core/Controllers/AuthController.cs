@@ -3,6 +3,7 @@ using Auth.Core.DTOs.Response.Auth;
 using Auth.Core.Infrastructure;
 using Auth.Core.Services;
 using Hyzen.SDK.Authentication;
+using Hyzen.SDK.Authentication.DTO;
 using Hyzen.SDK.Exception;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,7 +27,7 @@ public class AuthController : ControllerBase
         if (!user.IsActive)
             throw new HException("User is not active", ExceptionType.InvalidOperation);
 
-        var token = TokenService.GenerateToken(user, out var issuedAt, 3);
+        var token = TokenService.GenerateToken(user, SubjectType.User, 3, out var issuedAt);
         user.RegisterLoginEvent(issuedAt);
 
         await context.SaveChangesAsync();

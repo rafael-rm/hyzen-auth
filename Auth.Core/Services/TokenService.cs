@@ -23,7 +23,7 @@ public static class TokenService
         IssuerSigningKey = new SymmetricSecurityKey(ByteSecret)
     };
 
-    public static string GenerateToken(User request, out long issuedAt, int expirationHours = 6)
+    public static string GenerateToken(User request, SubjectType type, int expirationHours, out long issuedAt)
     {
         var issuanceDate = DateTime.UtcNow;
         var securityKey = new SymmetricSecurityKey(ByteSecret);
@@ -31,7 +31,7 @@ public static class TokenService
         {
             Subject = new ClaimsIdentity([
                 new Claim(ClaimTypes.PrimarySid, request.Guid.ToString()),
-                new Claim("type", SubjectType.User.ToString()),
+                new Claim("type", type.ToString()),
                 new Claim(ClaimTypes.GivenName, request.Name),
                 new Claim(ClaimTypes.Email, request.Email)
             ]),
@@ -83,13 +83,14 @@ public static class TokenService
         
         var claims = principal.Claims.ToList();
         var subjectId = Guid.Parse(claims.First(s => s.Type == ClaimTypes.PrimarySid).Value);
+        var type = (SubjectType)Enum.Parse(typeof(SubjectType), claims.First(s => s.Type == "type").Value);
         
         var user = await User.GetAsync(subjectId);
         var roles = user.Roles.Select(s => s.Role.Name).ToList();
         var groups = user.Groups.Select(s => s.Group.Name).ToList();
         var issuedAt = DateTimeOffset.FromUnixTimeSeconds(long.Parse(claims.First(s => s.Type == "iat").Value)).UtcDateTime;
         
-        if (user.LastLoginAt > issuedAt)
+        if (type == SubjectType.User && user.LastLoginAt > issuedAt)
             throw new HException("Invalid or expired token", ExceptionType.InvalidCredentials);
         
         return new VerifyResponse
@@ -97,7 +98,7 @@ public static class TokenService
             Guid = subjectId,
             Name = claims.FirstOrDefault(s => s.Type == ClaimTypes.GivenName)?.Value,
             Email = claims.FirstOrDefault(s => s.Type == ClaimTypes.Email)?.Value,
-            Type = (SubjectType)Enum.Parse(typeof(SubjectType), claims.First(s => s.Type == "type").Value),
+            Type = type,
             Groups = groups,
             Roles = roles
         };
