@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Auth.Core.DTOs.Response.Auth;
 using Auth.Core.Models;
+using Hyzen.SDK.Authentication.DTO;
 using Hyzen.SDK.Exception;
 using Hyzen.SDK.SecretManager;
 using Microsoft.IdentityModel.Tokens;
@@ -28,12 +29,12 @@ public static class TokenService
         var securityKey = new SymmetricSecurityKey(ByteSecret);
         var descriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
+            Subject = new ClaimsIdentity([
                 new Claim(ClaimTypes.PrimarySid, request.Guid.ToString()),
+                new Claim("type", SubjectType.User.ToString()),
                 new Claim(ClaimTypes.GivenName, request.Name),
-                new Claim(ClaimTypes.Email, request.Email),
-            }),
+                new Claim(ClaimTypes.Email, request.Email)
+            ]),
             SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),
             Expires = DateTime.UtcNow.AddHours(expirationHours),
             IssuedAt = issuanceDate
@@ -83,7 +84,6 @@ public static class TokenService
         var claims = principal.Claims.ToList();
         var subjectId = Guid.Parse(claims.First(s => s.Type == ClaimTypes.PrimarySid).Value);
         
-        
         var user = await User.GetAsync(subjectId);
         var roles = user.Roles.Select(s => s.Role.Name).ToList();
         var groups = user.Groups.Select(s => s.Group.Name).ToList();
@@ -95,8 +95,9 @@ public static class TokenService
         return new VerifyResponse
         {
             Guid = subjectId,
-            Name = claims.First(s => s.Type == ClaimTypes.GivenName).Value,
-            Email = claims.First(s => s.Type == ClaimTypes.Email).Value,
+            Name = claims.FirstOrDefault(s => s.Type == ClaimTypes.GivenName)?.Value,
+            Email = claims.FirstOrDefault(s => s.Type == ClaimTypes.Email)?.Value,
+            Type = (SubjectType)Enum.Parse(typeof(SubjectType), claims.First(s => s.Type == "type").Value),
             Groups = groups,
             Roles = roles
         };
