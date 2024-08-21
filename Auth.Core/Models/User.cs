@@ -127,7 +127,6 @@ public class User
     public void RegisterRecoveryPasswordEvent()
     {
         // TODO: Implement
-        return;
     }
     
     public async Task LoadRoles()

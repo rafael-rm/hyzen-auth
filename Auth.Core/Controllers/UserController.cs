@@ -1,13 +1,10 @@
-﻿using System.Net;
-using Auth.Core.DTOs.Request.User;
+﻿using Auth.Core.DTOs.Request.User;
 using Auth.Core.DTOs.Response.User;
 using Auth.Core.Infrastructure;
 using Hyzen.SDK.Authentication;
 using Hyzen.SDK.Email;
 using Hyzen.SDK.Exception;
 using Microsoft.AspNetCore.Mvc;
-using SendGrid;
-using SendGrid.Helpers.Mail;
 
 namespace Auth.Core.Controllers;
 

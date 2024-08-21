@@ -39,16 +39,6 @@ public static class TokenService
             IssuedAt = issuanceDate
         };
         
-        request.Groups.ForEach(s =>
-        {
-            descriptor.Subject.AddClaim(new Claim(ClaimTypes.GroupSid, s.Group.Name));
-        });
-        
-        request.Roles.ForEach(s =>
-        {
-            descriptor.Subject.AddClaim(new Claim(ClaimTypes.Role, s.Role.Name));
-        });
-        
         var handler = new JwtSecurityTokenHandler();
         var token = handler.CreateJwtSecurityToken(descriptor);
         
@@ -82,12 +72,11 @@ public static class TokenService
         
         var claims = principal.Claims.ToList();
         var subjectId = Guid.Parse(claims.First(s => s.Type == ClaimTypes.PrimarySid).Value);
-        
+        var issuedAt = DateTimeOffset.FromUnixTimeSeconds(long.Parse(claims.First(s => s.Type == "iat").Value)).UtcDateTime;
         
         var user = await User.GetAsync(subjectId);
         var roles = user.Roles.Select(s => s.Role.Name).ToList();
         var groups = user.Groups.Select(s => s.Group.Name).ToList();
-        var issuedAt = DateTimeOffset.FromUnixTimeSeconds(long.Parse(claims.First(s => s.Type == "iat").Value)).UtcDateTime;
         
         if (user.LastLoginAt > issuedAt)
             throw new HException("Invalid or expired token", ExceptionType.InvalidCredentials);
