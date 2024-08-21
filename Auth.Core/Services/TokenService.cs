@@ -2,7 +2,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Auth.Core.DTOs.Response.Auth;
 using Auth.Core.Models;
-using Hyzen.SDK.Authentication.DTO;
 using Hyzen.SDK.Exception;
 using Hyzen.SDK.SecretManager;
 using Microsoft.IdentityModel.Tokens;
@@ -23,18 +22,18 @@ public static class TokenService
         IssuerSigningKey = new SymmetricSecurityKey(ByteSecret)
     };
 
-    public static string GenerateToken(User request, TokenType type, int expirationHours, out long issuedAt)
+    public static string GenerateToken(User request, out long issuedAt, int expirationHours = 6)
     {
         var issuanceDate = DateTime.UtcNow;
         var securityKey = new SymmetricSecurityKey(ByteSecret);
         var descriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity([
+            Subject = new ClaimsIdentity(new[]
+            {
                 new Claim(ClaimTypes.PrimarySid, request.Guid.ToString()),
-                new Claim("type", type.ToString()),
                 new Claim(ClaimTypes.GivenName, request.Name),
-                new Claim(ClaimTypes.Email, request.Email)
-            ]),
+                new Claim(ClaimTypes.Email, request.Email),
+            }),
             SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),
             Expires = DateTime.UtcNow.AddHours(expirationHours),
             IssuedAt = issuanceDate
@@ -83,22 +82,21 @@ public static class TokenService
         
         var claims = principal.Claims.ToList();
         var subjectId = Guid.Parse(claims.First(s => s.Type == ClaimTypes.PrimarySid).Value);
-        var type = (TokenType)Enum.Parse(typeof(TokenType), claims.First(s => s.Type == "type").Value);
+        
         
         var user = await User.GetAsync(subjectId);
         var roles = user.Roles.Select(s => s.Role.Name).ToList();
         var groups = user.Groups.Select(s => s.Group.Name).ToList();
         var issuedAt = DateTimeOffset.FromUnixTimeSeconds(long.Parse(claims.First(s => s.Type == "iat").Value)).UtcDateTime;
         
-        if (type == TokenType.User && user.LastLoginAt > issuedAt)
+        if (user.LastLoginAt > issuedAt)
             throw new HException("Invalid or expired token", ExceptionType.InvalidCredentials);
         
         return new VerifyResponse
         {
             Guid = subjectId,
-            Name = claims.FirstOrDefault(s => s.Type == ClaimTypes.GivenName)?.Value,
-            Email = claims.FirstOrDefault(s => s.Type == ClaimTypes.Email)?.Value,
-            Type = type,
+            Name = claims.First(s => s.Type == ClaimTypes.GivenName).Value,
+            Email = claims.First(s => s.Type == ClaimTypes.Email).Value,
             Groups = groups,
             Roles = roles
         };
