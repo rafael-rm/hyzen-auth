@@ -1,0 +1,74 @@
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Cryptography;
+using System.Text;
+using Auth.Core.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+
+namespace Auth.Core.Models;
+
+[Table("verification_code")]
+public class VerificationCode
+{
+    [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("id", TypeName = "INT")]
+    public int Id { get; set; }
+
+    [Column("code", TypeName = "VARCHAR(12)"), MaxLength(12), Required]
+    public string Code { get; set; }
+
+    [Column("created_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed), Required]
+    public DateTime CreatedAt { get; set; }
+
+    [Column("expires_at", TypeName = "DATETIME"), Required]
+    public DateTime ExpiresAt { get; set; }
+
+    [Column("used_at", TypeName = "DATETIME")]
+    public DateTime? UsedAt { get; set; }
+    
+    [ForeignKey("User"), Column("user_id", TypeName = "INT"), Required] public int UserId { get; set; }
+    public User User { get; set; }
+    
+    public static async Task<VerificationCode> GetAsync(int userId, string code)
+    {
+        return await AuthContext.Get().VerificationCodesSet
+            .FirstOrDefaultAsync(s => s.UserId == userId && s.Code == code);
+    }
+    
+    public static async Task<VerificationCode> CreateAsync(int userId, DateTime expiresAt)
+    {
+        var code = new VerificationCode
+        {
+            Code = GenerateRandomCode(12),
+            UserId = userId,
+            ExpiresAt = expiresAt
+        };
+        
+        await AuthContext.Get().VerificationCodesSet.AddAsync(code);
+        return code;
+    }
+    
+    private static string GenerateRandomCode(int length) // TODO: Migrate to SDK
+    {
+        if (length <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(length), "Length must be positive.");
+        }
+
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        var code = new StringBuilder(length);
+
+        using (var rng = RandomNumberGenerator.Create())
+        {
+            var buffer = new byte[length];
+
+            for (var i = 0; i < length; i++)
+            {
+                rng.GetBytes(buffer, i, 1);
+                var index = buffer[i] % chars.Length;
+                code.Append(chars[index]);
+            }
+        }
+
+        return code.ToString();
+    }
+}

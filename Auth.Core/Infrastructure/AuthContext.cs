@@ -17,6 +17,7 @@ namespace Auth.Core.Infrastructure
         public DbSet<Group> GroupsSet { get; set; }
         public DbSet<GroupRole> GroupsRolesSet { get; set; }
         public DbSet<UserGroup> UsersGroupsSet { get; set; }
+        public DbSet<VerificationCode> VerificationCodesSet { get; set; }
         
         private AuthContext(string title) { }
 
