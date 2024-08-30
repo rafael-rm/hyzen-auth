@@ -115,8 +115,6 @@ public class User
     {
         Name = request.Name;
         Email = request.Email;
-        Password = HashService.Hash(request.Password);
-        IsActive = request.IsActive;
     }
     
     public void RegisterLoginEvent(long lastLoginAt)
