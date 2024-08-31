@@ -47,14 +47,24 @@ public class VerificationCode
         return code;
     }
     
-    private static string GenerateRandomCode(int length) // TODO: Migrate to SDK
+    public static string FormatVerificationCode(string code)
+    {
+        if (code.Length != 12)
+        {
+            throw new ArgumentException("O código de verificação deve ter 12 caracteres.");
+        }
+
+        return $"{code.Substring(0, 3)}-{code.Substring(3, 3)}-{code.Substring(6, 3)}-{code.Substring(9, 3)}";
+    }
+    
+    private static string GenerateRandomCode(int length)
     {
         if (length <= 0)
         {
             throw new ArgumentOutOfRangeException(nameof(length), "Length must be positive.");
         }
 
-        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         var code = new StringBuilder(length);
 
         using (var rng = RandomNumberGenerator.Create())

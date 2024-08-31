@@ -35,8 +35,8 @@ create table users (
     name varchar(255) not null,
     email varchar(255) not null,
     password varchar(255) not null,
-    is_active bit default b'1' not null,
-    last_login_at datetime,
+    is_active bit default b '1' not null,
+    last_login_at datetime null,
     created_at datetime default CURRENT_TIMESTAMP not null,
     updated_at datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
     constraint email_uindex unique (email),
@@ -60,3 +60,14 @@ create table users_roles (
     constraint users_roles_roles_id_fk foreign key (role_id) references roles (id),
     constraint users_roles_users_id_fk foreign key (user_id) references users (id)
 );
+
+create table verification_code (
+    id int auto_increment primary key,
+    code varchar(12) not null,
+    created_at datetime default CURRENT_TIMESTAMP not null,
+    expires_at datetime not null,
+    used_at datetime null,
+    user_id int not null
+);
+
+create index verification_code_created_at_index on verification_code (created_at desc);

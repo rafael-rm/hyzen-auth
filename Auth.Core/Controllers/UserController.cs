@@ -1,9 +1,7 @@
 ﻿using Auth.Core.DTOs.Request.User;
 using Auth.Core.DTOs.Response.User;
 using Auth.Core.Infrastructure;
-using Auth.Core.Models;
 using Hyzen.SDK.Authentication;
-using Hyzen.SDK.Email;
 using Hyzen.SDK.Exception;
 using Microsoft.AspNetCore.Mvc;
 
@@ -119,37 +117,5 @@ public class UserController : ControllerBase
         var hasGroup = await user.HasGroup(groupName);
 
         return Ok(hasGroup);
-    }
-    
-    [HttpPost, Route("SendRecoveryEmail")]
-    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
-    public async Task<IActionResult> SendRecoveryEmail([FromForm] string email)
-    {
-        await using var context = AuthContext.Get("User.SendRecoveryEmail");
-
-        var user = await Models.User.GetAsync(email);
-
-        if (user is null)
-            throw new HException("User not found", ExceptionType.NotFound);
-
-        var verificationCode = await VerificationCode.CreateAsync(user.Id, DateTime.Now.AddMinutes(15));
-        
-        // TODO: Ajustar template para exibir o código de recuperação no email
-        var dynamicTemplateData = new
-        {
-            displayName = user.Name,
-            recoveryUrl = $"https://hyzen.com.br/{verificationCode.Code}"
-        };
-        
-        var response = await HyzenMail.SendTemplateMail("noreply@hyzen.com.br", user.Email, "d-22d1b8b0c8df4ce9ae516cf171a1fa58", dynamicTemplateData);
-        
-        if (!response)
-            throw new HException("Failed to send recovery email", ExceptionType.InvalidOperation);
-        
-        user.RegisterRecoveryPasswordEvent();
-        
-        await context.SaveChangesAsync();
-
-        return Ok(true);
     }
 }
