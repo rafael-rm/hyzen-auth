@@ -1,6 +1,7 @@
 ﻿using Auth.Core.DTOs.Request.User;
 using Auth.Core.DTOs.Response.User;
 using Auth.Core.Infrastructure;
+using Auth.Core.Services;
 using Hyzen.SDK.Authentication;
 using Hyzen.SDK.Exception;
 using Microsoft.AspNetCore.Mvc;
@@ -69,8 +70,12 @@ public class UserController : ControllerBase
     [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     public async Task<IActionResult> Update([FromForm] Guid userGuid, [FromBody] UpdateUserRequest request)
     {
-        await HyzenAuth.EnsureAdmin(); // TODO: Ensure user is admin or user is updating itself
+        await HyzenAuth.EnsureRole("hyzen_auth:user:update");
         await using var context = AuthContext.Get("User.Update");
+        
+        var subject = await TokenService.GetSubjectFromToken(HyzenAuth.GetToken());
+        if (subject.Guid != userGuid && !await HyzenAuth.IsAdmin())
+            throw new HException("You can only update your own user", ExceptionType.InvalidOperation);
         
         var user = await Models.User.GetAsync(userGuid);;
 

@@ -11,10 +11,14 @@ public class CustomActionFilter : Attribute, IAsyncActionFilter
         HyzenAuth.SetToken(context.HttpContext.Request.Headers.Authorization);
         
         var route = context.HttpContext.Request.Path.Value;
-
+        
+        // TODO: Create function to check if the route needs authentication
         var noAuthentication = new List<string>
         {
-            "/api/v1/Auth/Login", "/api/v1/Auth/Verify", "/api/v1/Auth/SendRecoveryEmail"
+            "/api/v1/Auth/Login", 
+            "/api/v1/Auth/Verify", 
+            "/api/v1/Auth/SendRecoveryEmail",
+            "/api/v1/User/Create"
         };
 
         if (!noAuthentication.Any(s => route is not null && route.StartsWith(s)))
