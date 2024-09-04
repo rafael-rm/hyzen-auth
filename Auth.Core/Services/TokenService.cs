@@ -1,7 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Auth.Core.DTOs.Response.Auth;
 using Auth.Core.Models;
+using Hyzen.SDK.Authentication.DTO;
 using Hyzen.SDK.Exception;
 using Hyzen.SDK.SecretManager;
 using Microsoft.IdentityModel.Tokens;
@@ -64,7 +64,7 @@ public static class TokenService
         }
     }
     
-    public static async Task<VerifyResponse> GetSubjectFromToken(string token)
+    public static async Task<AuthSubject> GetSubjectFromToken(string token)
     {
         var principal = GetPrincipalFromToken(token);
         if (principal == null)
@@ -81,7 +81,7 @@ public static class TokenService
         if (user.LastLoginAt > issuedAt)
             throw new HException("Invalid or expired token", ExceptionType.InvalidCredentials);
         
-        return new VerifyResponse
+        return new AuthSubject
         {
             Guid = subjectId,
             Name = claims.First(s => s.Type == ClaimTypes.GivenName).Value,

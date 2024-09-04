@@ -1,9 +1,9 @@
 ﻿using Auth.Core.DTOs.Request.Auth;
-using Auth.Core.DTOs.Response.Auth;
 using Auth.Core.Infrastructure;
 using Auth.Core.Models;
 using Auth.Core.Services;
 using Hyzen.SDK.Authentication;
+using Hyzen.SDK.Authentication.DTO;
 using Hyzen.SDK.Email;
 using Hyzen.SDK.Exception;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +15,7 @@ namespace Auth.Core.Controllers;
 public class AuthController : ControllerBase
 {
     [HttpPost, Route("Login")]
-    [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)] 
+    [ProducesResponseType(typeof(string), StatusCodes.Status200OK)] 
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         await using var context = AuthContext.Get("Auth.Login");
@@ -33,14 +33,11 @@ public class AuthController : ControllerBase
 
         await context.SaveChangesAsync();
         
-        var subject = await TokenService.GetSubjectFromToken(token);
-
-        var response = new LoginResponse(subject, token);
-        return Ok(response);
+        return Ok(token);
     }
     
     [HttpPost, Route("Verify")]
-    [ProducesResponseType(typeof(VerifyResponse), StatusCodes.Status200OK)] 
+    [ProducesResponseType(typeof(AuthSubject), StatusCodes.Status200OK)] 
     public async Task<IActionResult> Verify()
     {
         await using var context = AuthContext.Get("Auth.Verify");
