@@ -26,7 +26,6 @@ public class GroupController : ControllerBase
             throw new HException($"Group {name} not found", ExceptionType.NotFound);
         
         var response = GroupResponseWithRoles.FromGroup(group);
-
         return Ok(response);
     }
     
@@ -39,7 +38,7 @@ public class GroupController : ControllerBase
     
         var groups = await Group.ListAsync();
         var response = GroupResponseWithRoles.FromGroups(groups);
-
+        
         return Ok(response);
     }
     
@@ -124,7 +123,7 @@ public class GroupController : ControllerBase
             throw new HException($"Group {groupName} not found", ExceptionType.NotFound);
 
         var hasRole = await group.HasRoleAsync(roleName);
-
+        
         return Ok(hasRole);
     }
     

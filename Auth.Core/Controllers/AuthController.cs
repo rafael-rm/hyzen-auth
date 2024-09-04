@@ -31,9 +31,15 @@ public class AuthController : ControllerBase
         var token = TokenService.GenerateToken(user, out var issuedAt, 3);
         user.RegisterLoginEvent(issuedAt);
 
-        await context.SaveChangesAsync();
+        var subject = await TokenService.GetSubjectFromToken(token);
+        var response = new LoginResponse
+        {
+            Token = token,
+            Subject = subject
+        };
         
-        return Ok(token);
+        await context.SaveChangesAsync();
+        return Ok(response);
     }
     
     [HttpPost, Route("Verify")]
@@ -71,9 +77,8 @@ public class AuthController : ControllerBase
             throw new HException("Failed to send recovery email", ExceptionType.InvalidOperation);
         
         user.RegisterRecoveryPasswordEvent();
-        
         await context.SaveChangesAsync();
-
+        
         return Ok(true);
     }
 }
