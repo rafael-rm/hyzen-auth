@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
 using System.Text;
 using Auth.Core.Infrastructure;
+using Hyzen.SDK.Exception;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Core.Models;
@@ -32,6 +33,23 @@ public class VerificationCode
     {
         return await AuthContext.Get().VerificationCodesSet
             .FirstOrDefaultAsync(s => s.UserId == userId && s.Code == code);
+    }
+    
+    public void Ensure(User user)
+    {
+        if (UsedAt.HasValue)
+            throw new HException("This code has already been used.", ExceptionType.InvalidOperation);
+
+        if (DateTime.Now > ExpiresAt)
+            throw new HException("This code has expired.", ExceptionType.InvalidOperation);
+
+        if (UserId != user.Id)
+            throw new HException("This code is not valid for this user.", ExceptionType.InvalidOperation);
+    }
+    
+    public void UseAsync()
+    {
+        UsedAt = DateTime.Now;
     }
     
     public static async Task<VerificationCode> CreateAsync(int userId, DateTime expiresAt)

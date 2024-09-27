@@ -18,6 +18,7 @@ public class CustomActionFilter : Attribute, IAsyncActionFilter
             "/api/v1/Auth/Login", 
             "/api/v1/Auth/Verify", 
             "/api/v1/Auth/SendRecoveryEmail",
+            "/api/v1/Auth/RecoverPassword",
             "/api/v1/User/Create"
         };
 

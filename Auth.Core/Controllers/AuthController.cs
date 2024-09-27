@@ -81,4 +81,26 @@ public class AuthController : ControllerBase
         
         return Ok(true);
     }
+    
+    [HttpPost, Route("RecoverPassword")]
+    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RecoverPassword([FromBody] RecoverPasswordRequest request)
+    {
+        await using var context = AuthContext.Get("User.RecoverPassword");
+
+        var user = await Models.User.GetAsync(request.Email);
+
+        if (user is null)
+            throw new HException("User not found", ExceptionType.NotFound);
+
+        var verificationCode = await VerificationCode.GetAsync(user.Id, request.VerificationCode);
+        verificationCode.Ensure(user);
+        verificationCode.UseAsync();
+        
+        user.ChangePassword(request.NewPassword);
+        
+        await context.SaveChangesAsync();
+        
+        return Ok(true);
+    }
 }

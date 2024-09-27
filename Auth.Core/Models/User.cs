@@ -117,6 +117,11 @@ public class User
         Email = request.Email;
     }
     
+    public void ChangePassword(string password)
+    {
+        Password = HashService.Hash(password);
+    }
+    
     public void RegisterLoginEvent(long lastLoginAt)
     {
         LastLoginAt = DateTimeOffset.FromUnixTimeSeconds(lastLoginAt).UtcDateTime;
