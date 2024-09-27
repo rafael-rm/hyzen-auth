@@ -94,6 +94,10 @@ public class AuthController : ControllerBase
             throw new HException("User not found", ExceptionType.NotFound);
 
         var verificationCode = await VerificationCode.GetAsync(user.Id, request.VerificationCode);
+
+        if (verificationCode is null)
+            throw new HException("Invalid verification code", ExceptionType.InvalidOperation);
+        
         verificationCode.Ensure(user);
         verificationCode.UseAsync();
         
