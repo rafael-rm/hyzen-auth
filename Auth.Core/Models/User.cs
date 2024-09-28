@@ -70,27 +70,24 @@ public class User
         throw new NotImplementedException();
     }
 
-    public static async Task<List<User>> SearchAsync(int? id = null, Guid? guid = null, string email = null, string password = null, bool? isActive = null)
+    public static async Task<List<User>> SearchAsync(List<int> ids = null, List<Guid> guids = null, List<string> emails = null, bool includeInactive = false)
     {
         var queryable = AuthContext.Get().UsersSet
             .Include(s => s.Roles)
             .ThenInclude(s => s.Role)
             .AsQueryable();
 
-        if (id is not null)
-            queryable = queryable.Where(s => s.Id == id);
+        if (ids is {Count: > 0})
+            queryable = queryable.Where(s => ids.Contains(s.Id));
+        
+        if (guids is {Count: > 0})
+            queryable = queryable.Where(s => guids.Contains(s.Guid));
+        
+        if (emails is {Count: > 0})
+            queryable = queryable.Where(s => emails.Contains(s.Email));
 
-        if (guid is not null)
-            queryable = queryable.Where(s => s.Guid == guid);
-
-        if (!string.IsNullOrEmpty(email))
-            queryable = queryable.Where(s => s.Email == email);
-
-        if (!string.IsNullOrEmpty(password))
-            queryable = queryable.Where(s => s.Password == password);
-
-        if (isActive is not null)
-            queryable = queryable.Where(s => s.IsActive == isActive);
+        if (!includeInactive)
+            queryable = queryable.Where(s => s.IsActive);
 
         return await queryable.ToListAsync();
     }

@@ -5,6 +5,7 @@ using Auth.Core.Services;
 using Hyzen.SDK.Authentication;
 using Hyzen.SDK.Exception;
 using Microsoft.AspNetCore.Mvc;
+using UserModel = Auth.Core.Models.User;
 
 namespace Auth.Core.Controllers;
 
@@ -19,12 +20,25 @@ public class UserController : ControllerBase
         await HyzenAuth.EnsureRole("hyzen_auth:user:get");
         await using var context = AuthContext.Get("User.Get");
         
-        var user = await Models.User.GetAsync(id);
+        var user = await UserModel.GetAsync(id);
 
         if (user is null)
             return NotFound("User not found");
         
         var response = UserResponse.FromUser(user);
+
+        return Ok(response);
+    }
+    
+    [HttpGet, Route("Search")]
+    [ProducesResponseType(typeof(List<UserResponse>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Search(SearchUserRequest request)
+    {
+        await HyzenAuth.EnsureRole("hyzen_auth:user:search");
+        await using var context = AuthContext.Get("User.Search");
+        
+        var users = await UserModel.SearchAsync(guids: request.Ids, emails: request.Emails, includeInactive: request.IncludeInactive);
+        var response = users.Select(UserResponse.FromUser).ToList();
 
         return Ok(response);
     }
@@ -35,12 +49,12 @@ public class UserController : ControllerBase
     {
         await using var context = AuthContext.Get("User.Create");
         
-        var user = await Models.User.GetAsync(request.Email);
+        var user = await UserModel.GetAsync(request.Email);
 
         if (user is not null)
             throw new HException("There is already a user with this email", ExceptionType.InvalidOperation);
 
-        user = await Models.User.CreateAsync(request);
+        user = await UserModel.CreateAsync(request);
         
         var response = UserResponse.FromUser(user);
         await context.SaveChangesAsync();
@@ -55,7 +69,7 @@ public class UserController : ControllerBase
         await HyzenAuth.EnsureRole("hyzen_auth:user:delete");
         await using var context = AuthContext.Get("User.Delete");
         
-        var user = await Models.User.GetAsync(id);
+        var user = await UserModel.GetAsync(id);
 
         if (user is null)
             throw new HException("User not found", ExceptionType.NotFound);
@@ -77,7 +91,7 @@ public class UserController : ControllerBase
         if (subject.Guid != userGuid && !await HyzenAuth.IsAdmin())
             throw new HException("You can only update your own user", ExceptionType.InvalidOperation);
         
-        var user = await Models.User.GetAsync(userGuid);;
+        var user = await UserModel.GetAsync(userGuid);
 
         if (user is null)
             throw new HException("User not found", ExceptionType.NotFound);
@@ -97,7 +111,7 @@ public class UserController : ControllerBase
         await HyzenAuth.EnsureRole("hyzen_auth:user:has_role");
         await using var context = AuthContext.Get("User.HasRole");
 
-        var user = await Models.User.GetAsync(userGuid);
+        var user = await UserModel.GetAsync(userGuid);
 
         if (user is null)
             throw new HException("User not found", ExceptionType.NotFound);
@@ -114,7 +128,7 @@ public class UserController : ControllerBase
         await HyzenAuth.EnsureRole("hyzen_auth:user:has_group");
         await using var context = AuthContext.Get("User.HasGroup");
 
-        var user = await Models.User.GetAsync(userGuid);
+        var user = await UserModel.GetAsync(userGuid);
 
         if (user is null)
             throw new HException("User not found", ExceptionType.NotFound);
