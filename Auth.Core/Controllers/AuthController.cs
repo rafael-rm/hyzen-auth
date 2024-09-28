@@ -52,7 +52,7 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost, Route("SendRecoveryEmail")]
-    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     public async Task<IActionResult> SendRecoveryEmail([FromForm] string email)
     {
         await using var context = AuthContext.Get("User.SendRecoveryEmail");
@@ -79,11 +79,11 @@ public class AuthController : ControllerBase
         user.RegisterRecoveryPasswordEvent();
         await context.SaveChangesAsync();
         
-        return Ok(true);
+        return Ok();
     }
     
     [HttpPost, Route("RecoverPassword")]
-    [ProducesResponseType(typeof(bool), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(void), StatusCodes.Status200OK)]
     public async Task<IActionResult> RecoverPassword([FromBody] RecoverPasswordRequest request)
     {
         await using var context = AuthContext.Get("User.RecoverPassword");
@@ -105,6 +105,6 @@ public class AuthController : ControllerBase
         
         await context.SaveChangesAsync();
         
-        return Ok(true);
+        return Ok();
     }
 }
