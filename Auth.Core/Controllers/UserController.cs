@@ -30,7 +30,7 @@ public class UserController : ControllerBase
         return Ok(response);
     }
     
-    [HttpGet, Route("Search")]
+    [HttpPost, Route("Search")]
     [ProducesResponseType(typeof(List<UserResponse>), StatusCodes.Status200OK)]
     public async Task<IActionResult> Search(SearchUserRequest request)
     {
