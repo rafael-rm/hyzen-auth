@@ -11,8 +11,19 @@ public class CustomActionFilter : Attribute, IAsyncActionFilter
         HyzenAuth.SetToken(context.HttpContext.Request.Headers.Authorization);
         
         var route = context.HttpContext.Request.Path.Value;
+
+        if (NeedsAuthentication(route))
+        {
+            // Ensures that the user is authenticated and pre-loads the subject
+            var subject = await HyzenAuth.GetSubject();
+            HyzenAuth.SetSubject(subject);
+        }
         
-        // TODO: Create function to check if the route needs authentication
+        await next();
+    }
+    
+    private bool NeedsAuthentication(string route)
+    {
         var noAuthentication = new List<string>
         {
             "/api/v1/Auth/Login", 
@@ -21,14 +32,7 @@ public class CustomActionFilter : Attribute, IAsyncActionFilter
             "/api/v1/Auth/RecoverPassword",
             "/api/v1/User/Create"
         };
-
-        if (!noAuthentication.Any(s => route is not null && route.StartsWith(s)))
-        {
-            // Ensures that the user is authenticated and pre-loads the subject
-            var subject = await HyzenAuth.GetSubject();
-            HyzenAuth.SetSubject(subject);
-        }
         
-        await next();
+        return !noAuthentication.Any(s => route is not null && route.StartsWith(s));
     }
 }
