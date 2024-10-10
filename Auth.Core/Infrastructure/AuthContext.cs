@@ -18,7 +18,7 @@ public class AuthContext : DbContext
     public DbSet<GroupRole> GroupsRolesSet { get; set; }
     public DbSet<UserGroup> UsersGroupsSet { get; set; }
     public DbSet<VerificationCode> VerificationCodesSet { get; set; }
-    public DbSet<Event> EventSet { get; set; }
+    public DbSet<Event> EventsSet { get; set; }
         
     private AuthContext(string title) { }
 

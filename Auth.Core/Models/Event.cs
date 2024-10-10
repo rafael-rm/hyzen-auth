@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Core.Models;
 
-[Table("event")]
+[Table("events")]
 public class Event
 {
     private Event() { }
@@ -37,7 +37,7 @@ public class Event
 
     public static async Task<int> CountAsync(int userId, EventType eventType, DateTime? from = null, DateTime? to = null)
     {
-        var query = AuthContext.Get().EventSet
+        var query = AuthContext.Get().EventsSet
             .Where(s => s.UserId == userId && s.EventType == eventType);
 
         if (from.HasValue)
@@ -52,6 +52,6 @@ public class Event
     public static async Task Register(int userId, EventType eventType, string description)
     {
         var @event = new Event(userId, eventType, description);
-        await AuthContext.Get().EventSet.AddAsync(@event);
+        await AuthContext.Get().EventsSet.AddAsync(@event);
     }
 }
