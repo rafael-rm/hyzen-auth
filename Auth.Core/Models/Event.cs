@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Auth.Core.DTOs.Enum;
 using Auth.Core.Infrastructure;
+using Hyzen.SDK.Exception;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Core.Models;
@@ -48,7 +49,7 @@ public class Event
         return await query.CountAsync();
     }
     
-    public static async Task Register(int userId, EventType eventType, string description = null)
+    public static async Task Register(int userId, EventType eventType, string description)
     {
         var @event = new Event(userId, eventType, description);
         await AuthContext.Get().EventSet.AddAsync(@event);

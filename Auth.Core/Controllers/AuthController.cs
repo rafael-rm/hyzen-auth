@@ -26,6 +26,14 @@ public class AuthController : ControllerBase
         if (user is null)
             throw new HException("User not found or invalid password", ExceptionType.NotFound);
         
+        var requestCount = await Event.CountAsync(user.Id, EventType.PasswordRecoveryRequested, DateTime.Now.AddHours(-1), DateTime.Now);
+
+        if (requestCount >= 10)
+        {
+            await Event.Register(user.Id, EventType.LoginAttemptAfterLockout, "Login attempt after lockout");
+            throw new HException("You have reached the limit of login attempts. Please try again later.", ExceptionType.InvalidOperation);
+        }
+
         if (!HashService.Verify(request.Password, user.Password))
         {
             await Event.Register(user.Id, EventType.LoginFailed, "Invalid password");
@@ -71,6 +79,14 @@ public class AuthController : ControllerBase
 
         if (user is null)
             throw new HException("User not found", ExceptionType.NotFound);
+        
+        var requestCount = await Event.CountAsync(user.Id, EventType.PasswordRecoveryRequested, DateTime.Now.AddHours(-1), DateTime.Now);
+        
+        if (requestCount >= 5)
+        {
+            await Event.Register(user.Id, EventType.PasswordRecoveryRequestLimitReached, "Password recovery request limit reached");
+            throw new HException("You have reached the limit of password recovery requests. Please try again later.", ExceptionType.InvalidOperation);
+        }
 
         var verificationCode = await VerificationCode.CreateAsync(user.Id, DateTime.Now.AddMinutes(15), VerificationCodeType.PasswordRecovery);
         
@@ -102,6 +118,13 @@ public class AuthController : ControllerBase
 
         if (user is null)
             throw new HException("User not found", ExceptionType.NotFound);
+        
+        var requestCount = await Event.CountAsync(user.Id, EventType.PasswordRecoveryFailed, DateTime.Now.AddHours(-1), DateTime.Now);
+        if (requestCount >= 5)
+        {
+            await Event.Register(user.Id, EventType.PasswordRecoveryAttemptAfterLockout, "Password recovery limit reached");
+            throw new HException("You have reached the limit of password recovery attempts. Please try again later.", ExceptionType.InvalidOperation);
+        }
 
         var verificationCode = await VerificationCode.GetAsync(user.Id, request.VerificationCode, VerificationCodeType.PasswordRecovery);
 

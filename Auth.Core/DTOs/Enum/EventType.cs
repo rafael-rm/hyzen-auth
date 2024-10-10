@@ -27,16 +27,17 @@ public enum EventType
     AccountUnlocked = 16,
     LoginBlockedDueToSuspiciousActivity = 17,
     LoginAttemptAfterLockout = 18,
+    PasswordRecoveryAttemptAfterLockout = 19,
 
     // Emails de notificação
-    EmailVerificationSent = 19,
-    EmailVerified = 20,
-    EmailVerificationFailed = 21,
-    PasswordRecoveryRequestLimitReached = 22,
-    AccountConfirmationResent = 23,
+    EmailVerificationSent = 20,
+    EmailVerified = 21,
+    EmailVerificationFailed = 22,
+    PasswordRecoveryRequestLimitReached = 23,
+    AccountConfirmationResent = 24,
 
     // Outros eventos
-    AccountProfileUpdated = 24,
-    AccountTermsAccepted = 25,
-    AccountPrivacySettingsUpdated = 26
+    AccountProfileUpdated = 25,
+    AccountTermsAccepted = 26,
+    AccountPrivacySettingsUpdated = 27
 }

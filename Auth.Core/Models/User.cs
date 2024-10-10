@@ -118,13 +118,13 @@ public class User
     public async Task ChangePassword(string password)
     {
         Password = HashService.Hash(password);
-        await Event.Register(Id, EventType.AccountPasswordChanged);
+        await Event.Register(Id, EventType.AccountPasswordChanged, "Password changed");
     }
     
     public async Task RegisterLoginEvent(long lastLoginAt)
     {
         LastLoginAt = DateTimeOffset.FromUnixTimeSeconds(lastLoginAt).UtcDateTime;
-        await Event.Register(Id, EventType.LoginSuccess);
+        await Event.Register(Id, EventType.LoginSuccess, "Login success");
     }
     
     public async Task LoadRoles()
