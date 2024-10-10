@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Auth.Core.DTOs.Enum;
 using Auth.Core.DTOs.Request.User;
 using Auth.Core.Infrastructure;
 using Auth.Core.Services;
@@ -114,19 +115,16 @@ public class User
         Email = request.Email;
     }
     
-    public void ChangePassword(string password)
+    public async Task ChangePassword(string password)
     {
         Password = HashService.Hash(password);
+        await Event.Register(Id, EventType.AccountPasswordChanged);
     }
     
-    public void RegisterLoginEvent(long lastLoginAt)
+    public async Task RegisterLoginEvent(long lastLoginAt)
     {
         LastLoginAt = DateTimeOffset.FromUnixTimeSeconds(lastLoginAt).UtcDateTime;
-    }
-    
-    public void RegisterRecoveryPasswordEvent()
-    {
-        // TODO: Implement
+        await Event.Register(Id, EventType.LoginSuccess);
     }
     
     public async Task LoadRoles()

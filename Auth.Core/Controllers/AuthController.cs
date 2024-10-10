@@ -1,4 +1,5 @@
-﻿using Auth.Core.DTOs.Request.Auth;
+﻿using Auth.Core.DTOs.Enum;
+using Auth.Core.DTOs.Request.Auth;
 using Auth.Core.Infrastructure;
 using Auth.Core.Models;
 using Auth.Core.Services;
@@ -21,15 +22,24 @@ public class AuthController : ControllerBase
         await using var context = AuthContext.Get("Auth.Login");
         
         var user = await Models.User.GetAsync(request.Email);
-        
-        if (user is null || !HashService.Verify(request.Password, user.Password))
+
+        if (user is null)
             throw new HException("User not found or invalid password", ExceptionType.NotFound);
         
+        if (!HashService.Verify(request.Password, user.Password))
+        {
+            await Event.Register(user.Id, EventType.LoginFailed, "Invalid password");
+            throw new HException("User not found or invalid password", ExceptionType.NotFound);
+        }
+
         if (!user.IsActive)
+        {
+            await Event.Register(user.Id, EventType.LoginFailed, "User is not active");
             throw new HException("User is not active", ExceptionType.InvalidOperation);
+        }
 
         var token = TokenService.GenerateToken(user, out var issuedAt, 3);
-        user.RegisterLoginEvent(issuedAt);
+        await user.RegisterLoginEvent(issuedAt);
 
         var subject = await TokenService.GetSubjectFromToken(token);
         var response = new LoginResponse
@@ -62,7 +72,7 @@ public class AuthController : ControllerBase
         if (user is null)
             throw new HException("User not found", ExceptionType.NotFound);
 
-        var verificationCode = await VerificationCode.CreateAsync(user.Id, DateTime.Now.AddMinutes(15));
+        var verificationCode = await VerificationCode.CreateAsync(user.Id, DateTime.Now.AddMinutes(15), VerificationCodeType.PasswordRecovery);
         
         var dynamicTemplateData = new
         {
@@ -76,7 +86,7 @@ public class AuthController : ControllerBase
         if (!response)
             throw new HException("Failed to send recovery email", ExceptionType.InvalidOperation);
         
-        user.RegisterRecoveryPasswordEvent();
+        await Event.Register(user.Id, EventType.PasswordRecoveryRequested, "Recovery email sent");
         await context.SaveChangesAsync();
         
         return Ok();
@@ -93,16 +103,19 @@ public class AuthController : ControllerBase
         if (user is null)
             throw new HException("User not found", ExceptionType.NotFound);
 
-        var verificationCode = await VerificationCode.GetAsync(user.Id, request.VerificationCode);
+        var verificationCode = await VerificationCode.GetAsync(user.Id, request.VerificationCode, VerificationCodeType.PasswordRecovery);
 
         if (verificationCode is null)
+        {
+            await Event.Register(user.Id, EventType.PasswordRecoveryFailed, $"Invalid verification code {request.VerificationCode}");
             throw new HException("Invalid verification code", ExceptionType.InvalidOperation);
-        
-        verificationCode.Ensure(user);
+        }
+
+        verificationCode.Ensure(user, VerificationCodeType.PasswordRecovery);
         verificationCode.UseAsync();
         
-        user.ChangePassword(request.NewPassword);
-        
+        await user.ChangePassword(request.NewPassword);
+        await Event.Register(user.Id, EventType.PasswordRecovered, $"Password recovered using code {request.VerificationCode}");
         await context.SaveChangesAsync();
         
         return Ok();

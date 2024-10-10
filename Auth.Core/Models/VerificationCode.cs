@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
 using System.Text;
+using Auth.Core.DTOs.Enum;
 using Auth.Core.Infrastructure;
 using Hyzen.SDK.Exception;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,9 @@ public class VerificationCode
 
     [Column("code", TypeName = "VARCHAR(12)"), MaxLength(12), Required]
     public string Code { get; set; }
+    
+    [Column("type", TypeName = "INT"), Required]
+    public VerificationCodeType Type { get; set; }
 
     [Column("created_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed), Required]
     public DateTime CreatedAt { get; set; }
@@ -29,14 +33,25 @@ public class VerificationCode
     [ForeignKey("User"), Column("user_id", TypeName = "INT"), Required] public int UserId { get; set; }
     public User User { get; set; }
     
-    public static async Task<VerificationCode> GetAsync(int userId, string code)
+    private VerificationCode(string code, VerificationCodeType type, DateTime expiresAt, int userId)
     {
-        return await AuthContext.Get().VerificationCodesSet
-            .FirstOrDefaultAsync(s => s.UserId == userId && s.Code == code);
+        Code = code;
+        Type = type;
+        ExpiresAt = expiresAt;
+        UserId = userId;
     }
     
-    public void Ensure(User user)
+    public static async Task<VerificationCode> GetAsync(int userId, string code, VerificationCodeType type)
     {
+        return await AuthContext.Get().VerificationCodesSet
+            .FirstOrDefaultAsync(s => s.UserId == userId && s.Code == code && s.Type == type);
+    }
+    
+    public void Ensure(User user, VerificationCodeType expectedType)
+    {
+        if (expectedType != Type)
+            throw new HException("This code is not valid for this operation.", ExceptionType.InvalidOperation);
+        
         if (UsedAt.HasValue)
             throw new HException("This code has already been used.", ExceptionType.InvalidOperation);
 
@@ -52,14 +67,9 @@ public class VerificationCode
         UsedAt = DateTime.Now;
     }
     
-    public static async Task<VerificationCode> CreateAsync(int userId, DateTime expiresAt)
+    public static async Task<VerificationCode> CreateAsync(int userId, DateTime expiresAt, VerificationCodeType type)
     {
-        var code = new VerificationCode
-        {
-            Code = GenerateRandomCode(12),
-            UserId = userId,
-            ExpiresAt = expiresAt
-        };
+        var code = new VerificationCode(GenerateRandomCode(12), type, expiresAt, userId);
         
         await AuthContext.Get().VerificationCodesSet.AddAsync(code);
         return code;
