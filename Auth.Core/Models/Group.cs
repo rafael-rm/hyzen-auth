@@ -63,13 +63,13 @@ public class Group
         var groupRoles = await GroupRole.GetAsyncFromGroup(Id);
         foreach (var groupRole in groupRoles)
         {
-            await GroupRole.DeleteAsync(groupRole.GroupId, groupRole.RoleId);
+            await groupRole.DeleteAsync();
         }
 
         var userGroups = await UserGroup.GetAsyncFromGroup(Id);
         foreach (var userGroup in userGroups)
         {
-            await UserGroup.DeleteAsync(userGroup.UserId, userGroup.GroupId);
+            await userGroup.DeleteAsync();
         }
         
         AuthContext.Get().GroupsSet.Remove(this);

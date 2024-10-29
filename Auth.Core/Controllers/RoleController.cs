@@ -149,11 +149,15 @@ public class RoleController : ControllerBase
         
         if (!await user.HasRole(roleName))
             throw new HException("User does not have this role", ExceptionType.InvalidOperation);
+        
+        var userRole = await UserRole.GetAsync(user.Id, role.Id);
+        if (userRole is null)
+            throw new HException("User does not have this role", ExceptionType.NotFound);
 
-        var wasRemoved = await UserRole.DeleteAsync(user.Id, role.Id);
+        var wasRemoved = await userRole.DeleteAsync();
         
         if (!wasRemoved)
-            throw new HException("Role could not be removed", ExceptionType.InvalidOperation);
+            throw new HException("Role could not be removed, user is associated with a group that contains this role", ExceptionType.InvalidOperation);
         
         await context.SaveChangesAsync();
 

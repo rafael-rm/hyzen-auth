@@ -44,19 +44,18 @@ public class UserRole
         await AuthContext.Get().UsersRolesSet.AddAsync(userRole);
     }
     
-    public static async Task<bool> DeleteAsync(int userId, int roleId, int? ignoreGroupId = null)
+    public async Task<bool> DeleteAsync(int? excludedGroupId = null)
     {
-        var userRole = await GetAsync(userId, roleId);
+        var userGroups = await UserGroup.ListAsyncFromUser(UserId);
         
-        var userGroups = await UserGroup.GetAsyncFromUser(userId);
         foreach (var userGroup in userGroups)
         {
             var groupRoles = await GroupRole.GetAsyncFromGroup(userGroup.GroupId);
-            if (groupRoles.Any(gr => gr.RoleId == roleId && gr.GroupId != ignoreGroupId)) // Check if the user is associated with a group that contains this permission
+            if (groupRoles.Any(gr => gr.RoleId == RoleId && gr.GroupId != excludedGroupId )) // Check if the user is associated with a group that contains this permission
                 return false;
         }
         
-        AuthContext.Get().UsersRolesSet.Remove(userRole);
+        AuthContext.Get().UsersRolesSet.Remove(this);
         return true;
     }
     

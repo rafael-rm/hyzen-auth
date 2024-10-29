@@ -47,7 +47,7 @@ namespace Auth.Core.Models;
         await AuthContext.Get().UsersGroupsSet.AddAsync(userGroup);
     }
     
-    public static async Task<List<UserGroup>> GetAsyncFromUser(int userId)
+    public static async Task<List<UserGroup>> ListAsyncFromUser(int userId)
     {
         return await AuthContext.Get().UsersGroupsSet
             .Include(s => s.Group)
@@ -56,25 +56,19 @@ namespace Auth.Core.Models;
             .ToListAsync();
     }
     
-    public static async Task DeleteAsync(int userId, int groupId)
+    public async Task DeleteAsync()
     {
-        var group = await Group.GetAsync(groupId);
-        var userGroups = await GetAsyncFromUser(userId);
+        var group = await Group.GetAsync(GroupId);
         
         foreach (var groupRole in group.Roles)
         {
-            var otherGroupHasRole = userGroups.Any(ug => ug.GroupId != groupId && ug.Group.Roles.Any(gr => gr.RoleId == groupRole.RoleId));
-            if (otherGroupHasRole)
-                continue;
-            
-            var userRole = await UserRole.GetAsync(userId, groupRole.RoleId);
+            var userRole = await UserRole.GetAsync(UserId, groupRole.RoleId);
             
             if (userRole != null)
-               _ = await UserRole.DeleteAsync(userId, groupRole.RoleId, groupId);
+               _ = await userRole.DeleteAsync(excludedGroupId: GroupId);
         }
         
-        AuthContext.Get().UsersGroupsSet.Remove(userGroups.First(s => s.UserId == userId && s.GroupId == groupId));
-           
+        AuthContext.Get().UsersGroupsSet.Remove(this);
     }
     
     public static async Task<List<UserGroup>> GetAsyncFromGroup(int groupId)

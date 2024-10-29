@@ -59,15 +59,16 @@ public class Role
     public async Task DeleteAsync()
     {
         var groupsRole = await GroupRole.GetAsyncFromRole(Id);
+        
         foreach (var groupRole in groupsRole)
         {
-            await GroupRole.DeleteAsync(groupRole.GroupId, groupRole.RoleId);
+            await groupRole.DeleteAsync();
         }
         
         var userRoles = await UserRole.GetAsyncFromRole(Id);
         foreach (var userRole in userRoles)
         {
-            _ = await UserRole.DeleteAsync(userRole.UserId, userRole.RoleId);
+            _ = await userRole.DeleteAsync();
         }
         
         AuthContext.Get().RolesSet.Remove(this);

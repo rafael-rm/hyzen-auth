@@ -175,7 +175,7 @@ public class GroupController : ControllerBase
         if (groupRole is null)
             throw new HException("Group does not have this role", ExceptionType.NotFound);
         
-        await GroupRole.DeleteAsync(group.Id, role.Id);
+        await groupRole.DeleteAsync();
         await context.SaveChangesAsync();
 
         return Ok(true);
@@ -221,11 +221,13 @@ public class GroupController : ControllerBase
         
         if (group is null)
             throw new HException("Group not found", ExceptionType.NotFound);
-        
-        if (!await user.HasGroup(groupName))
-            throw new HException("User does not have this group", ExceptionType.InvalidOperation);
 
-        await UserGroup.DeleteAsync(user.Id, group.Id);
+        var userGroup = await UserGroup.GetAsync(user.Id, group.Id);
+        
+        if (userGroup is null)
+            throw new HException("User does not have this group", ExceptionType.InvalidOperation);
+        
+        await userGroup.DeleteAsync();
         await context.SaveChangesAsync();
 
         return Ok(true);

@@ -54,18 +54,17 @@ public class GroupRole
         await AuthContext.Get().GroupsRolesSet.AddAsync(groupRole);
     }
     
-    public static async Task DeleteAsync(int groupId, int roleId)
+    public async Task DeleteAsync()
     {
-        var groupRole = await GetAsync(groupId, roleId);
-        var userRoles = await UserRole.GetAsyncFromGroup(groupId);
+        var userRoles = await UserRole.GetAsyncFromGroup(GroupId);
         
         foreach (var userRole in userRoles)
         {
-            if (userRole.RoleId == roleId)
-                _ = await UserRole.DeleteAsync(userRole.UserId, userRole.RoleId, groupId);
+            if (userRole.RoleId == RoleId)
+                _ = await userRole.DeleteAsync(GroupId);
         }
         
-        AuthContext.Get().GroupsRolesSet.Remove(groupRole);
+        AuthContext.Get().GroupsRolesSet.Remove(this);
     }
     
     public static async Task<List<GroupRole>> GetAsyncFromRole(int roleId)
