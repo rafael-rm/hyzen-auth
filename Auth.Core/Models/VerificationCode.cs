@@ -21,13 +21,13 @@ public class VerificationCode
     [Column("type", TypeName = "INT"), Required]
     public VerificationCodeType Type { get; set; }
 
-    [Column("created_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed), Required]
+    [Column("created_at", TypeName = "TIMESTAMP"), DatabaseGenerated(DatabaseGeneratedOption.Computed), Required]
     public DateTime CreatedAt { get; set; }
 
-    [Column("expires_at", TypeName = "DATETIME"), Required]
+    [Column("expires_at", TypeName = "TIMESTAMP"), Required]
     public DateTime ExpiresAt { get; set; }
 
-    [Column("used_at", TypeName = "DATETIME")]
+    [Column("used_at", TypeName = "TIMESTAMP")]
     public DateTime? UsedAt { get; set; }
     
     [ForeignKey("User"), Column("user_id", TypeName = "INT"), Required] public int UserId { get; set; }

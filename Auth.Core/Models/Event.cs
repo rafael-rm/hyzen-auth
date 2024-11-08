@@ -22,7 +22,7 @@ public class Event
     [Column("event_type", TypeName = "INT"), Required] 
     public EventType EventType { get; set; }
     
-    [Column("created_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+    [Column("created_at", TypeName = "TIMESTAMP"), DatabaseGenerated(DatabaseGeneratedOption.Computed)]
     public DateTime CreatedAt { get; set; }
     
     [Column("description", TypeName = "TEXT"), MaxLength(32768)] 

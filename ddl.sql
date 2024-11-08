@@ -1,73 +1,141 @@
-create table `groups` (
-    id int auto_increment primary key,
-    guid char(36) not null,
-    name varchar(64) not null,
-    description varchar(255) not null,
-    created_at datetime default CURRENT_TIMESTAMP not null,
-    updated_at datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
-    constraint guid_uindex unique (guid),
-    constraint name_uindex unique (name)
+create table groups
+(
+    id          serial
+        primary key,
+    guid        uuid                                not null
+        constraint groups_guid_uindex
+            unique,
+    name        varchar(64)                         not null
+        constraint groups_name_uindex
+            unique,
+    description varchar(255)                        not null,
+    created_at  timestamp default CURRENT_TIMESTAMP not null,
+    updated_at  timestamp default CURRENT_TIMESTAMP not null
 );
 
-create table roles (
-    id int auto_increment primary key,
-    guid char(36) not null,
-    name varchar(64) not null,
-    description varchar(255) not null,
-    created_at datetime default CURRENT_TIMESTAMP not null,
-    updated_at datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
-    constraint guid_uindex unique (guid),
-    constraint name_uindex unique (name)
+alter table groups
+    owner to hyzen;
+
+create table roles
+(
+    id          serial
+        primary key,
+    guid        uuid                                not null
+        constraint roles_guid_uindex
+            unique,
+    name        varchar(64)                         not null
+        constraint roles_name_uindex
+            unique,
+    description varchar(255)                        not null,
+    created_at  timestamp default CURRENT_TIMESTAMP not null,
+    updated_at  timestamp default CURRENT_TIMESTAMP not null
 );
 
-create table groups_roles (
-    id int auto_increment primary key,
-    group_id int not null,
-    role_id int not null,
-    assigned_at datetime default CURRENT_TIMESTAMP not null,
-    constraint groups_roles_groups_id_fk foreign key (group_id) references `groups` (id),
-    constraint groups_roles_roles_id_fk foreign key (role_id) references roles (id)
+alter table roles
+    owner to hyzen;
+
+create table groups_roles
+(
+    id          serial
+        primary key,
+    group_id    integer                             not null
+        references groups
+            on delete cascade,
+    role_id     integer                             not null
+        references roles
+            on delete cascade,
+    assigned_at timestamp default CURRENT_TIMESTAMP not null
 );
 
-create table users (
-    id int auto_increment primary key,
-    guid char(36) not null,
-    name varchar(255) not null,
-    email varchar(255) not null,
-    password varchar(255) not null,
-    is_active bit default b '1' not null,
-    last_login_at datetime null,
-    created_at datetime default CURRENT_TIMESTAMP not null,
-    updated_at datetime default CURRENT_TIMESTAMP not null on update CURRENT_TIMESTAMP,
-    constraint email_uindex unique (email),
-    constraint guid_uindex unique (guid)
+alter table groups_roles
+    owner to hyzen;
+
+create table users
+(
+    id            serial
+        primary key,
+    guid          uuid                                not null
+        constraint users_guid_uindex
+            unique,
+    name          varchar(255)                        not null,
+    email         varchar(255)                        not null
+        constraint users_email_uindex
+            unique,
+    password      varchar(255)                        not null,
+    is_active     boolean   default true              not null,
+    last_login_at timestamp,
+    created_at    timestamp default CURRENT_TIMESTAMP not null,
+    updated_at    timestamp default CURRENT_TIMESTAMP not null
 );
 
-create table users_groups (
-    id int auto_increment primary key,
-    user_id int not null,
-    group_id int not null,
-    assigned_at datetime default CURRENT_TIMESTAMP not null,
-    constraint users_groups_groups_id_fk foreign key (group_id) references `groups` (id),
-    constraint users_groups_users_id_fk foreign key (user_id) references users (id)
+alter table users
+    owner to hyzen;
+
+create table users_groups
+(
+    id          serial
+        primary key,
+    user_id     integer                             not null
+        references users
+            on delete cascade,
+    group_id    integer                             not null
+        references groups
+            on delete cascade,
+    assigned_at timestamp default CURRENT_TIMESTAMP not null
 );
 
-create table users_roles (
-    id int auto_increment primary key,
-    user_id int not null,
-    role_id int not null,
-    assigned_at datetime default CURRENT_TIMESTAMP not null,
-    constraint users_roles_roles_id_fk foreign key (role_id) references roles (id),
-    constraint users_roles_users_id_fk foreign key (user_id) references users (id)
+alter table users_groups
+    owner to hyzen;
+
+create table users_roles
+(
+    id          serial
+        primary key,
+    user_id     integer                             not null
+        references users
+            on delete cascade,
+    role_id     integer                             not null
+        references roles
+            on delete cascade,
+    assigned_at timestamp default CURRENT_TIMESTAMP not null
 );
 
-create table verification_code (
-    id int auto_increment primary key,
-    code varchar(12) not null,
-    created_at datetime default CURRENT_TIMESTAMP not null,
-    expires_at datetime not null,
-    used_at datetime null,
-    user_id int not null
+alter table users_roles
+    owner to hyzen;
+
+create table verification_code
+(
+    id         serial
+        primary key,
+    code       varchar(12)                         not null,
+    type       integer                             not null,
+    created_at timestamp default CURRENT_TIMESTAMP not null,
+    expires_at timestamp                           not null,
+    used_at    timestamp,
+    user_id    integer                             not null
+        references users
+            on delete cascade
 );
 
-create index verification_code_created_at_index on verification_code (created_at desc);
+alter table verification_code
+    owner to hyzen;
+
+create index verification_code_created_at_index
+    on verification_code (created_at desc);
+
+create table events
+(
+    id          serial
+        primary key,
+    user_id     integer not null
+        constraint fk_user_event
+            references users
+            on delete cascade,
+    event_type  integer not null,
+    created_at  timestamp default CURRENT_TIMESTAMP,
+    description text
+);
+
+alter table events
+    owner to hyzen;
+

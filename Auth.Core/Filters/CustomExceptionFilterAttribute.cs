@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using Hyzen.SDK.Exception;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;

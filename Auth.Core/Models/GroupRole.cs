@@ -19,7 +19,7 @@ public class GroupRole
     [Column("role_id", TypeName = "INT"), ForeignKey("Role")] public int RoleId { get; set; } 
     public Role Role { get; set; } 
     
-    [Column("assigned_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
+    [Column("assigned_at", TypeName = "TIMESTAMP"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
     public DateTime AssignedAt { get; set; }
     
     public GroupRole(Role role, Group group)

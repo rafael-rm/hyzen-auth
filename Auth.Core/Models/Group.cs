@@ -13,7 +13,7 @@ public class Group
     [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity), Column("id", TypeName = "INT")] 
     public int Id { get; set; }
     
-    [Column("guid", TypeName = "CHAR(36)"), Required] 
+    [Column("guid", TypeName = "UUID"), Required] 
     public Guid Guid { get; set; } 
     
     [Column("name", TypeName = "VARCHAR(64)"), MaxLength(64), Required] 
@@ -22,10 +22,10 @@ public class Group
     [Column("description", TypeName = "VARCHAR(255)"), MaxLength(255)]
     public string Description { get; set; }
     
-    [Column("created_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
+    [Column("created_at", TypeName = "TIMESTAMP"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
     public DateTime CreatedAt { get; set; }
     
-    [Column("updated_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
+    [Column("updated_at", TypeName = "TIMESTAMP"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
     public DateTime UpdatedAt { get; set; }
     
     [InverseProperty("Group")]

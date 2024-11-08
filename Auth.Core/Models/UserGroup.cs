@@ -21,7 +21,7 @@ namespace Auth.Core.Models;
         public int GroupId { get; set; }
         public Group Group { get; set; }
     
-        [Column("assigned_at", TypeName = "DATETIME"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
+        [Column("assigned_at", TypeName = "TIMESTAMP"), DatabaseGenerated(DatabaseGeneratedOption.Computed)] 
         public DateTime AssignedAt { get; set; }
     
     public static async Task<UserGroup> GetAsync(int userId, int groupId)

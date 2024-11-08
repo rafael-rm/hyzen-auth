@@ -12,7 +12,7 @@ public class CustomActionFilter : Attribute, IAsyncActionFilter
         
         var route = context.HttpContext.Request.Path.Value;
 
-        if (NeedsAuthentication(route))
+        if (NeedsAuthentication(route, context.HttpContext.Request.Method))
         {
             // Ensures that the user is authenticated and pre-loads the subject
             var subject = await HyzenAuth.GetSubject();
@@ -22,17 +22,18 @@ public class CustomActionFilter : Attribute, IAsyncActionFilter
         await next();
     }
     
-    private bool NeedsAuthentication(string route)
+    private bool NeedsAuthentication(string route, string method)
     {
-        var noAuthentication = new List<string>
+        var noAuthentication = new List<(string route, string method)>
         {
-            "/api/v1/Auth/Login", 
-            "/api/v1/Auth/Verify", 
-            "/api/v1/Auth/SendRecoveryEmail",
-            "/api/v1/Auth/RecoverPassword",
-            "/api/v1/User/Create"
+            new("/api/v1/Auth/Login", "POST"),
+            new("/api/v1/Auth/Verify", "POST"),
+            new("/api/v1/Auth/SendRecoveryEmail", "POST"),
+            new("/api/v1/Auth/RecoverPassword", "POST"),
+            new("/api/v1/User", "POST")
         };
-        
-        return !noAuthentication.Any(s => route is not null && route.StartsWith(s));
+    
+        return !noAuthentication.Any(s => route is not null && method is not null && route.StartsWith(s.route) && method.Equals(s.method, StringComparison.OrdinalIgnoreCase));
     }
+
 }
