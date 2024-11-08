@@ -51,7 +51,10 @@ public class Event
     
     public static async Task Register(int userId, EventType eventType, string description)
     {
+        AuthContext.Reset();
+        await using var context = AuthContext.Get("Event.Register");
         var @event = new Event(userId, eventType, description);
         await AuthContext.Get().EventsSet.AddAsync(@event);
+        await context.SaveChangesAsync();
     }
 }

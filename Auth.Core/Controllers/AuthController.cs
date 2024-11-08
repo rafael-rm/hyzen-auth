@@ -123,7 +123,6 @@ public class AuthController : ControllerBase
         if (requestCount >= 5)
         {
             await Event.Register(user.Id, EventType.PasswordRecoveryAttemptAfterLockout, "Password recovery limit reached");
-            await context.SaveChangesAsync();
             throw new HException("You have reached the limit of password recovery attempts. Please try again later.", ExceptionType.InvalidOperation);
         }
 
@@ -132,7 +131,6 @@ public class AuthController : ControllerBase
         if (verificationCode is null)
         {
             await Event.Register(user.Id, EventType.PasswordRecoveryFailed, $"Invalid verification code {request.VerificationCode}");
-            await context.SaveChangesAsync();
             throw new HException("Invalid verification code", ExceptionType.InvalidOperation);
         }
 
