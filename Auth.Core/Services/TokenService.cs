@@ -28,12 +28,11 @@ public static class TokenService
         var securityKey = new SymmetricSecurityKey(ByteSecret);
         var descriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
+            Subject = new ClaimsIdentity([
                 new Claim(ClaimTypes.PrimarySid, request.Guid.ToString()),
                 new Claim(ClaimTypes.GivenName, request.Name),
-                new Claim(ClaimTypes.Email, request.Email),
-            }),
+                new Claim(ClaimTypes.Email, request.Email)
+            ]),
             SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),
             Expires = DateTime.UtcNow.AddHours(expirationHours),
             IssuedAt = issuanceDate

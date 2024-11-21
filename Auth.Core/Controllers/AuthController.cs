@@ -26,7 +26,7 @@ public class AuthController : ControllerBase
         if (user is null)
             throw new HException("User not found or invalid password", ExceptionType.NotFound);
         
-        var requestCount = await Event.CountAsync(user.Id, EventType.PasswordRecoveryRequested, DateTime.Now.AddHours(-1), DateTime.Now);
+        var requestCount = await Event.CountAsync(user.Id, EventType.LoginFailed, DateTime.Now.AddHours(-1), DateTime.Now);
 
         if (requestCount >= 10)
         {
