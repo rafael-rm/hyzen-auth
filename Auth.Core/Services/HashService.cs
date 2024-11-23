@@ -31,7 +31,8 @@ public static class HashService
         Buffer.BlockCopy(hashWithSaltBytes, SaltSize, hashBytes, 0, hashBytes.Length);
 
         var hashAttempt = ComputeHash(password, saltBytes, Iterations, HashSize);
-        return hashAttempt.SequenceEqual(hashBytes);
+        
+        return CryptographicOperations.FixedTimeEquals(hashAttempt, hashBytes);
     }
 
     private static byte[] ComputeHash(string password, byte[] saltBytes, int iterations, int hashSize)
