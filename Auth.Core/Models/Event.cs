@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Auth.Core.DTOs.Enum;
 using Auth.Core.Infrastructure;
-using Hyzen.SDK.Exception;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Core.Models;

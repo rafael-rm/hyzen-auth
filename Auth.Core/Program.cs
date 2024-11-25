@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using Hyzen.SDK.SecretManager;
-using Sentry.Profiling;
 
 namespace Auth.Core;
 

@@ -27,23 +27,29 @@ public class AuthController : ControllerBase
             throw new HException("User not found or invalid password", ExceptionType.NotFound);
         
         var requestCount = await Event.CountAsync(user.Id, EventType.LoginFailed, DateTime.Now.AddHours(-1), DateTime.Now);
+        
+        if (requestCount == 10)
+        {
+            await Event.Register(user.Id, EventType.LoginAttemptLimitReached, "Login attempt limit reached");
+            throw new HException("You have reached the limit of login attempts. Please try again later.", ExceptionType.InvalidOperation);
+        }
 
-        if (requestCount >= 10)
+        if (requestCount > 10)
         {
             await Event.Register(user.Id, EventType.LoginAttemptAfterLockout, "Login attempt after lockout");
             throw new HException("You have reached the limit of login attempts. Please try again later.", ExceptionType.InvalidOperation);
+        }
+        
+        if (!user.IsActive)
+        {
+            await Event.Register(user.Id, EventType.LoginFailed, "User is not active");
+            throw new HException("User is not active", ExceptionType.InvalidOperation);
         }
 
         if (!HashService.Verify(request.Password, user.Password))
         {
             await Event.Register(user.Id, EventType.LoginFailed, "Invalid password");
             throw new HException("User not found or invalid password", ExceptionType.NotFound);
-        }
-
-        if (!user.IsActive)
-        {
-            await Event.Register(user.Id, EventType.LoginFailed, "User is not active");
-            throw new HException("User is not active", ExceptionType.InvalidOperation);
         }
 
         var token = TokenService.GenerateToken(user, out var issuedAt, 3);
