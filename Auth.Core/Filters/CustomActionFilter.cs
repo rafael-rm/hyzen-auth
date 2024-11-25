@@ -33,7 +33,7 @@ public class CustomActionFilter : Attribute, IAsyncActionFilter
             new("/api/v1/User", "POST")
         };
     
-        return !noAuthentication.Any(s => route is not null && method is not null && route.StartsWith(s.route) && method.Equals(s.method, StringComparison.OrdinalIgnoreCase));
+        return !noAuthentication.Any(s => route is not null && method is not null && route.StartsWith(s.route, StringComparison.OrdinalIgnoreCase) && method.Equals(s.method, StringComparison.OrdinalIgnoreCase));
     }
 
 }
