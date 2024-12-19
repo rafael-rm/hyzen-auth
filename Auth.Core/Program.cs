@@ -31,12 +31,6 @@ public class Program
     
     private static void ConfigureSentryOptions(SentryOptions options)
     {
-        var appSettings = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddUserSecrets<Program>()
-            .Build();
-        
         options.Dsn = HyzenSecret.GetSecret("HYZEN-AUTH-SENTRY-DSN");
 
         options.Debug = Debugger.IsAttached;
@@ -50,7 +44,6 @@ public class Program
         options.AddIntegration(new ProfilingIntegration(TimeSpan.FromMilliseconds(500)));
         
         options.CaptureFailedRequests = true;
-        options.ExperimentalMetrics = new ExperimentalMetricsOptions { EnableCodeLocations = true };
         options.AttachStacktrace = true;
     }
 }
