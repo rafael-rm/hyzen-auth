@@ -9,24 +9,14 @@ public class CustomExceptionFilterAttribute : ExceptionFilterAttribute
 {
     public override void OnException(ExceptionContext context)
     {
-        context.Exception = HException.FromException(context.Exception);
-
-        if (((HException)context.Exception).Type != ExceptionType.InternalError)
-        {
-            context.Result = new ObjectResult(new { error = context.Exception.Message })
-            {
-                StatusCode = (int)((HException)context.Exception).StatusCode
-            };
-        }
-        else
-        {
-            context.Result = new ObjectResult(new { error = "An unexpected error occurred while processing your request" })
-            {
-                StatusCode = (int)HttpStatusCode.InternalServerError
-            };
-        }
-        
         SentrySdk.CaptureException(context.Exception);
+        
+        context.Exception = HException.FromException(context.Exception);
+        
+        context.Result = new ObjectResult(((HException)context.Exception).ToErrorObject())
+        {
+            StatusCode = (int)((HException)context.Exception).StatusCode
+        };
         
         context.Exception = null!;
     }
