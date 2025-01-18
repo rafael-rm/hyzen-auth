@@ -4,5 +4,7 @@ namespace Auth.Domain.Core.Interfaces.Services;
 
 public interface IUserService
 {
-    Task AddAsync(User user);
+    Task CreateAsync(User user);
+    Task<User?> GetByGuidAsync(Guid guid);
+    Task<User?> GetByEmailAsync(string email);
 }

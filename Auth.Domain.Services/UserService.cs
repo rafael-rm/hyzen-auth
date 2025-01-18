@@ -14,7 +14,7 @@ public class UserService : IUserService
         _userRepository = userRepository;
     }
     
-    public async Task AddAsync(User user)
+    public async Task CreateAsync(User user)
     {
         var existingUser = await _userRepository.GetByEmailAsync(user.Email);
         
@@ -22,5 +22,15 @@ public class UserService : IUserService
             throw new UserAlreadyExistsException(existingUser.Email);
         
         await _userRepository.AddAsync(user);
+    }
+    
+    public async Task<User?> GetByGuidAsync(Guid guid)
+    {
+        return await _userRepository.GetByGuidAsync(guid);
+    }
+    
+    public async Task<User?> GetByEmailAsync(string email)
+    {
+        return await _userRepository.GetByEmailAsync(email);
     }
 }

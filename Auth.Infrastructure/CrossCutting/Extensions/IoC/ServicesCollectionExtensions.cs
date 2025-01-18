@@ -44,6 +44,7 @@ namespace Auth.Infrastructure.CrossCutting.Extensions.IoC
         public static void AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IUserApplicationService, UserApplicationService>();
+            services.AddScoped<IHashService, HashService>();
         }
     }
 }
