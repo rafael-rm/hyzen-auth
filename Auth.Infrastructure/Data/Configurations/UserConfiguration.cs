@@ -8,7 +8,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.ToTable("users");
+        builder.ToTable("users", "hyzen_auth");
 
         builder.HasKey(u => u.Id);
 
@@ -47,18 +47,18 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.LastLoginAt)
             .HasColumnName("last_login_at")
-            .HasColumnType("TIMESTAMP")
+            .HasColumnType("TIMESTAMPTZ")
             .IsRequired(false);
 
         builder.Property(u => u.CreatedAt)
             .HasColumnName("created_at")
-            .HasColumnType("TIMESTAMP")
+            .HasColumnType("TIMESTAMPTZ")
             .ValueGeneratedOnAddOrUpdate()
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
         builder.Property(u => u.UpdatedAt)
             .HasColumnName("updated_at")
-            .HasColumnType("TIMESTAMP")
+            .HasColumnType("TIMESTAMPTZ")
             .ValueGeneratedOnAddOrUpdate()
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
