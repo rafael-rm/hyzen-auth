@@ -34,7 +34,7 @@ public class UserController : ControllerBase
         }
     }
     
-    [HttpGet("guid/{guid}")]
+    [HttpGet("guid/{guid:guid}")]
     [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -61,6 +61,23 @@ public class UserController : ControllerBase
         {
             var user = await _userApplicationService.GetByEmailAsync(email);
             return Ok(user);
+        }
+        catch (UserNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+    
+    [HttpDelete("guid/{guid:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> DeleteByGuidAsync(Guid guid)
+    {
+        try
+        {
+            await _userApplicationService.DeleteAsync(guid);
+            return NoContent();
         }
         catch (UserNotFoundException ex)
         {

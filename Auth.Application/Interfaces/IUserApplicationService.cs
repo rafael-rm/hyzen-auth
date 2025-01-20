@@ -5,8 +5,7 @@ namespace Auth.Application.Interfaces;
 public interface IUserApplicationService
 {
     Task CreateAsync(CreateUserDto user);
-    Task<UserDto> GetByGuidAsync(Guid guid);
+    Task<UserDto> GetByGuidAsync(Guid userId);
     Task<UserDto> GetByEmailAsync(string email);
-    Task UpdateAsync(UserDto user);
-    Task DeleteAsync(UserDto user);
+    Task DeleteAsync(Guid userId);
 }

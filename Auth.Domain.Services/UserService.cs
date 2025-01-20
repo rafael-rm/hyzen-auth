@@ -24,13 +24,18 @@ public class UserService : IUserService
         await _userRepository.AddAsync(user);
     }
     
-    public async Task<User?> GetByGuidAsync(Guid guid)
+    public async Task<User?> GetByGuidAsync(Guid userId)
     {
-        return await _userRepository.GetByGuidAsync(guid);
+        return await _userRepository.GetByGuidAsync(userId);
     }
     
     public async Task<User?> GetByEmailAsync(string email)
     {
         return await _userRepository.GetByEmailAsync(email);
+    }
+
+    public Task DeleteAsync(User user)
+    {
+        return _userRepository.DeleteAsync(user);
     }
 }

@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using Auth.Domain.Core.Interfaces.Services;
 
-namespace Auth.Application.Services;
+namespace Auth.Infrastructure.Services;
 
 public class HashService : IHashService
 {

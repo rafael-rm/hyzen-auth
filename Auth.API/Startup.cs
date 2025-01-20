@@ -16,9 +16,10 @@ public class Startup(IConfiguration configuration)
         
         services.AddAuthDbContext();
         services.AddRepositories();
-        services.AddDomainServices();
         services.AddMappers();
+        services.AddDomainServices();
         services.AddApplicationServices();
+        services.AddInfrastructureServices();
         
         // TODO: Avaliar filters
         /*services.AddControllers(options =>

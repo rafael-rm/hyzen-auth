@@ -33,12 +33,12 @@ public class UserApplicationService : IUserApplicationService
         await _userService.CreateAsync(user);
     }
 
-    public async Task<UserDto> GetByGuidAsync(Guid guid)
+    public async Task<UserDto> GetByGuidAsync(Guid userId)
     {
-        var user = await _userService.GetByGuidAsync(guid);
+        var user = await _userService.GetByGuidAsync(userId);
 
         if (user is null)
-            throw new UserNotFoundException(guid);
+            throw new UserNotFoundException(userId);
         
         return _mapperDto.Map(user);
     }
@@ -53,13 +53,13 @@ public class UserApplicationService : IUserApplicationService
         return _mapperDto.Map(user);
     }
 
-    public Task UpdateAsync(UserDto user)
+    public async Task DeleteAsync(Guid userId)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task DeleteAsync(UserDto user)
-    {
-        throw new NotImplementedException();
+        var user = await _userService.GetByGuidAsync(userId);
+        
+        if (user is null)
+            throw new UserNotFoundException(userId);
+        
+        await _userService.DeleteAsync(user);
     }
 }

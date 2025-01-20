@@ -9,6 +9,7 @@ using Auth.Domain.Entities;
 using Auth.Domain.Services;
 using Auth.Infrastructure.Data;
 using Auth.Infrastructure.Data.Repositories;
+using Auth.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -44,6 +45,10 @@ namespace Auth.Infrastructure.CrossCutting.Extensions.IoC
         public static void AddApplicationServices(this IServiceCollection services)
         {
             services.AddScoped<IUserApplicationService, UserApplicationService>();
+        }
+        
+        public static void AddInfrastructureServices(this IServiceCollection services)
+        {
             services.AddScoped<IHashService, HashService>();
         }
     }
