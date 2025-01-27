@@ -1,9 +1,10 @@
 ﻿using System.Security.Cryptography;
+using Auth.Application.Services;
 using Auth.Domain.Core.Interfaces.Services;
 
 namespace Auth.Infrastructure.Services;
 
-public class HashService : IHashService
+public class Pbkdf2HashService : IHashService
 {
     private const int SaltSize = 64;
     private const int HashSize = 64;
