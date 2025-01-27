@@ -16,7 +16,6 @@ public class UserRepository : IUserRepository
     public async Task AddAsync(User user)
     {
         await _context.Users.AddAsync(user);
-        await _context.SaveChangesAsync();
     }
 
     public async Task<User?> GetByIdAsync(int id)
@@ -39,9 +38,8 @@ public class UserRepository : IUserRepository
         throw new NotImplementedException();
     }
 
-    public async Task DeleteAsync(User user)
+    public void Delete(User user)
     {
         _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
     }
 }

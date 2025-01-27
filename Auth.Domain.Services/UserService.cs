@@ -7,11 +7,13 @@ namespace Auth.Domain.Services;
 
 public class UserService : IUserService
 {
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRepository _userRepository;
     
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
     }
     
     public async Task CreateAsync(User user)
@@ -22,6 +24,8 @@ public class UserService : IUserService
             throw new UserAlreadyExistsException(existingUser.Email);
         
         await _userRepository.AddAsync(user);
+        
+        await _unitOfWork.CommitAsync();
     }
     
     public async Task<User?> GetByGuidAsync(Guid userId)
@@ -34,8 +38,9 @@ public class UserService : IUserService
         return await _userRepository.GetByEmailAsync(email);
     }
 
-    public Task DeleteAsync(User user)
+    public async Task DeleteAsync(User user)
     {
-        return _userRepository.DeleteAsync(user);
+        _userRepository.Delete(user);
+        await _unitOfWork.CommitAsync();
     }
 }
