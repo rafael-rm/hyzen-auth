@@ -16,7 +16,7 @@ public class UserService : IUserService
         _unitOfWork = unitOfWork;
     }
     
-    public async Task CreateAsync(User user)
+    public async Task<User> CreateAsync(User user)
     {
         var existingUser = await _userRepository.GetByEmailAsync(user.Email);
         
@@ -24,8 +24,9 @@ public class UserService : IUserService
             throw new UserAlreadyExistsException(existingUser.Email);
         
         await _userRepository.AddAsync(user);
-        
         await _unitOfWork.CommitAsync();
+        
+        return user;
     }
     
     public async Task<User?> GetByGuidAsync(Guid userId)

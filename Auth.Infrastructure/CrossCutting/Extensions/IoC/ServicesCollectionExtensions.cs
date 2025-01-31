@@ -11,17 +11,18 @@ using Auth.Infrastructure.Data;
 using Auth.Infrastructure.Data.Repositories;
 using Auth.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Auth.Infrastructure.CrossCutting.Extensions.IoC;
 
 public static class ServicesCollectionExtensions
 {
-    public static void AddAuthDbContext(this IServiceCollection services)
+    public static void AddAuthDbContext(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<AuthDbContext>(options =>
         {
-            options.UseNpgsql("");
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
         });
     }
     

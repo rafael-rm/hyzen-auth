@@ -17,7 +17,7 @@ public class UserController : ControllerBase
     }
     
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(UserDto),StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -25,8 +25,8 @@ public class UserController : ControllerBase
     {
         try
         {
-            await _userApplicationService.CreateAsync(userDto);
-            return Created("", userDto);
+            var user = await _userApplicationService.CreateAsync(userDto);
+            return Created(string.Empty, user);
         }
         catch (UserAlreadyExistsException ex)
         {

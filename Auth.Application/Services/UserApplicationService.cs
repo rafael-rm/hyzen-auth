@@ -22,7 +22,7 @@ public class UserApplicationService : IUserApplicationService
         _mapperDto = mapperDto;
     }
     
-    public async Task CreateAsync(CreateUserDto createUserDto)
+    public async Task<UserDto> CreateAsync(CreateUserDto createUserDto)
     {
         var user = _mapperCreate.Map(createUserDto);
         
@@ -31,6 +31,8 @@ public class UserApplicationService : IUserApplicationService
         user.Password = _hashService.Hash(createUserDto.Password);
         
         await _userService.CreateAsync(user);
+        
+        return _mapperDto.Map(user);
     }
 
     public async Task<UserDto> GetByGuidAsync(Guid userId)

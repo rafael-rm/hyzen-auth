@@ -14,7 +14,7 @@ public class Startup(IConfiguration configuration)
         
         services.AddControllers(options => options.OutputFormatters.RemoveType<StringOutputFormatter>());
         
-        services.AddAuthDbContext();
+        services.AddAuthDbContext(Configuration);
         services.AddRepositories();
         services.AddMappers();
         services.AddDomainServices();
