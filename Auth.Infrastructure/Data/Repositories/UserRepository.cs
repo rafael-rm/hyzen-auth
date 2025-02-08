@@ -1,5 +1,5 @@
-﻿using Auth.Domain.Core.Interfaces.Repositories;
-using Auth.Domain.Entities;
+﻿using Auth.Domain.Entities;
+using Auth.Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Infrastructure.Data.Repositories;

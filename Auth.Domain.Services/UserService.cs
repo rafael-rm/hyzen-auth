@@ -1,19 +1,17 @@
-﻿using Auth.Domain.Core.Exceptions;
-using Auth.Domain.Core.Interfaces.Repositories;
-using Auth.Domain.Core.Interfaces.Services;
-using Auth.Domain.Entities;
+﻿using Auth.Domain.Entities;
+using Auth.Domain.Exceptions;
+using Auth.Domain.Interfaces.Repositories;
+using Auth.Domain.Interfaces.Services;
 
 namespace Auth.Domain.Services;
 
 public class UserService : IUserService
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRepository _userRepository;
     
-    public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
+    public UserService(IUserRepository userRepository)
     {
         _userRepository = userRepository;
-        _unitOfWork = unitOfWork;
     }
     
     public async Task<User> CreateAsync(User user)
@@ -24,7 +22,6 @@ public class UserService : IUserService
             throw new UserAlreadyExistsException(existingUser.Email);
         
         await _userRepository.AddAsync(user);
-        await _unitOfWork.CommitAsync();
         
         return user;
     }
@@ -39,9 +36,10 @@ public class UserService : IUserService
         return await _userRepository.GetByEmailAsync(email);
     }
 
-    public async Task DeleteAsync(User user)
+    public Task DeleteAsync(User user)
     {
         _userRepository.Delete(user);
-        await _unitOfWork.CommitAsync();
+        
+        return Task.CompletedTask;
     }
 }

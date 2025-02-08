@@ -1,4 +1,4 @@
-﻿using Auth.Domain.Core.Interfaces.Repositories;
+﻿using Auth.Domain.Interfaces.Repositories;
 using Auth.Infrastructure.Exceptions;
 using Microsoft.EntityFrameworkCore.Storage;
 

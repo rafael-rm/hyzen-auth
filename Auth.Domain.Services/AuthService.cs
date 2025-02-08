@@ -1,20 +1,18 @@
-﻿using Auth.Domain.Core.Exceptions;
-using Auth.Domain.Core.Interfaces.Repositories;
-using Auth.Domain.Core.Interfaces.Services;
+﻿using Auth.Domain.Exceptions;
+using Auth.Domain.Interfaces.Repositories;
+using Auth.Domain.Interfaces.Services;
 
 namespace Auth.Domain.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IUserRepository _userRepository;
     private readonly IHashService _hashService;
     private readonly ITokenService _tokenService;
     
-    public AuthService(IUserRepository userRepository, IUnitOfWork unitOfWork, IHashService hashService, ITokenService tokenService)
+    public AuthService(IUserRepository userRepository, IHashService hashService, ITokenService tokenService)
     {
         _userRepository = userRepository;
-        _unitOfWork = unitOfWork;
         _hashService = hashService;
         _tokenService = tokenService;
     }

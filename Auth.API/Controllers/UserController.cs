@@ -1,7 +1,7 @@
 ﻿using Auth.Application.DTOs.Request;
 using Auth.Application.DTOs.Response;
 using Auth.Application.Interfaces;
-using Auth.Domain.Core.Exceptions;
+using Auth.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.API.Controllers;

@@ -2,25 +2,28 @@
 using Auth.Application.DTOs.Response;
 using Auth.Application.Interfaces;
 using Auth.Application.Mappers.Interfaces;
-using Auth.Domain.Core.Exceptions;
-using Auth.Domain.Core.Interfaces.Services;
 using Auth.Domain.Entities;
+using Auth.Domain.Exceptions;
+using Auth.Domain.Interfaces.Repositories;
+using Auth.Domain.Interfaces.Services;
 
 namespace Auth.Application.Services;
 
 public class UserApplicationService : IUserApplicationService
 {
+    private readonly IUnitOfWork _unitOfWork;
     private readonly IUserService _userService;
     private readonly IHashService _hashService;
     private readonly IMapper<User, UserResponse> _mapperDto;
     private readonly IMapper<CreateUserRequest, User> _mapperCreate;
     
-    public UserApplicationService(IUserService userService, IMapper<CreateUserRequest, User> mapperCreate, IHashService hashService, IMapper<User, UserResponse> mapperDto)
+    public UserApplicationService(IUnitOfWork unitOfWork, IUserService userService, IHashService hashService, IMapper<User, UserResponse> mapperDto, IMapper<CreateUserRequest, User> mapperCreate)
     {
+        _unitOfWork = unitOfWork;
         _userService = userService;
         _hashService = hashService;
-        _mapperCreate = mapperCreate;
         _mapperDto = mapperDto;
+        _mapperCreate = mapperCreate;
     }
     
     public async Task<UserResponse> CreateAsync(CreateUserRequest createUserRequest)
@@ -32,6 +35,7 @@ public class UserApplicationService : IUserApplicationService
         user.Password = _hashService.Hash(createUserRequest.Password);
         
         await _userService.CreateAsync(user);
+        await _unitOfWork.CommitAsync();
         
         return _mapperDto.Map(user);
     }
@@ -64,5 +68,7 @@ public class UserApplicationService : IUserApplicationService
             throw new UserNotFoundException(userId);
         
         await _userService.DeleteAsync(user);
+        
+        await _unitOfWork.CommitAsync();
     }
 }

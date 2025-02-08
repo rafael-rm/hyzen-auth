@@ -2,7 +2,7 @@
 using Auth.Application.DTOs.Response;
 using Auth.Application.Exceptions;
 using Auth.Application.Interfaces;
-using Auth.Domain.Core.Exceptions;
+using Auth.Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.API.Controllers;
@@ -19,7 +19,7 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost("login")]
-    [ProducesResponseType(typeof(LoginResponse),StatusCodes.Status202Accepted)]
+    [ProducesResponseType(typeof(LoginResponse),StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Login(LoginRequest request)
@@ -27,7 +27,7 @@ public class AuthController : ControllerBase
         try
         {
             var user = await _authApplicationService.LoginAsync(request.Email, request.Password);
-            return Accepted(string.Empty, user);
+            return Ok(user);
         }
         catch (InvalidPasswordException ex)
         {
