@@ -1,4 +1,5 @@
-﻿using Auth.Application.DTOs;
+﻿using Auth.Application.DTOs.Request;
+using Auth.Application.DTOs.Response;
 using Auth.Application.Interfaces;
 using Auth.Application.Mappers.Interfaces;
 using Auth.Domain.Core.Exceptions;
@@ -11,10 +12,10 @@ public class UserApplicationService : IUserApplicationService
 {
     private readonly IUserService _userService;
     private readonly IHashService _hashService;
-    private readonly IMapper<User, UserDto> _mapperDto;
-    private readonly IMapper<CreateUserDto, User> _mapperCreate;
+    private readonly IMapper<User, UserResponse> _mapperDto;
+    private readonly IMapper<CreateUserRequest, User> _mapperCreate;
     
-    public UserApplicationService(IUserService userService, IMapper<CreateUserDto, User> mapperCreate, IHashService hashService, IMapper<User, UserDto> mapperDto)
+    public UserApplicationService(IUserService userService, IMapper<CreateUserRequest, User> mapperCreate, IHashService hashService, IMapper<User, UserResponse> mapperDto)
     {
         _userService = userService;
         _hashService = hashService;
@@ -22,20 +23,20 @@ public class UserApplicationService : IUserApplicationService
         _mapperDto = mapperDto;
     }
     
-    public async Task<UserDto> CreateAsync(CreateUserDto createUserDto)
+    public async Task<UserResponse> CreateAsync(CreateUserRequest createUserRequest)
     {
-        var user = _mapperCreate.Map(createUserDto);
+        var user = _mapperCreate.Map(createUserRequest);
         
         user.Guid = Guid.NewGuid();
         user.IsActive = true;
-        user.Password = _hashService.Hash(createUserDto.Password);
+        user.Password = _hashService.Hash(createUserRequest.Password);
         
         await _userService.CreateAsync(user);
         
         return _mapperDto.Map(user);
     }
 
-    public async Task<UserDto> GetByGuidAsync(Guid userId)
+    public async Task<UserResponse> GetByGuidAsync(Guid userId)
     {
         var user = await _userService.GetByGuidAsync(userId);
 
@@ -45,7 +46,7 @@ public class UserApplicationService : IUserApplicationService
         return _mapperDto.Map(user);
     }
 
-    public async Task<UserDto> GetByEmailAsync(string email)
+    public async Task<UserResponse> GetByEmailAsync(string email)
     {
         var user = await _userService.GetByEmailAsync(email);
         

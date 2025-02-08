@@ -1,9 +1,9 @@
 ﻿using Auth.Domain.Entities;
 
-namespace Auth.Application.Services;
+namespace Auth.Domain.Core.Interfaces.Services;
 
 public interface ITokenService
 {
     string GenerateToken(User user);
-    bool ValidateToken(string token);
+    Task<bool> VerifyAsync(string token);
 }

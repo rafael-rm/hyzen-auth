@@ -1,4 +1,4 @@
-﻿namespace Auth.Application.Services;
+﻿namespace Auth.Domain.Core.Interfaces.Services;
 
 public interface IHashService
 {

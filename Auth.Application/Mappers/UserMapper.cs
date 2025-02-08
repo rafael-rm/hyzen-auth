@@ -1,14 +1,14 @@
-﻿using Auth.Application.DTOs;
+﻿using Auth.Application.DTOs.Response;
 using Auth.Application.Mappers.Interfaces;
 using Auth.Domain.Entities;
 
 namespace Auth.Application.Mappers;
 
-public class UserMapper : IMapper<User, UserDto>, IMapper<UserDto, User>
+public class UserMapper : IMapper<User, UserResponse>, IMapper<UserResponse, User>
 {
-    public UserDto Map(User source)
+    public UserResponse Map(User source)
     {
-        return new UserDto
+        return new UserResponse
         {
             Guid = source.Guid,
             Name = source.Name,
@@ -18,7 +18,7 @@ public class UserMapper : IMapper<User, UserDto>, IMapper<UserDto, User>
         };
     }
 
-    public User Map(UserDto source)
+    public User Map(UserResponse source)
     {
         return new User
         {
@@ -30,12 +30,12 @@ public class UserMapper : IMapper<User, UserDto>, IMapper<UserDto, User>
         };
     }
     
-    public IEnumerable<UserDto> Map(IEnumerable<User> source)
+    public IEnumerable<UserResponse> Map(IEnumerable<User> source)
     {
         return source.Select(Map);
     }
     
-    public IEnumerable<User> Map(IEnumerable<UserDto> source)
+    public IEnumerable<User> Map(IEnumerable<UserResponse> source)
     {
         return source.Select(Map);
     }

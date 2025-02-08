@@ -1,4 +1,5 @@
-﻿using Auth.Application.DTOs;
+﻿using Auth.Application.DTOs.Request;
+using Auth.Application.DTOs.Response;
 using Auth.Application.Interfaces;
 using Auth.Domain.Core.Exceptions;
 using Microsoft.AspNetCore.Mvc;
@@ -17,15 +18,15 @@ public class UserController : ControllerBase
     }
     
     [HttpPost]
-    [ProducesResponseType(typeof(UserDto),StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(UserResponse),StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateAsync(CreateUserDto userDto)
+    public async Task<IActionResult> CreateAsync(CreateUserRequest userRequest)
     {
         try
         {
-            var user = await _userApplicationService.CreateAsync(userDto);
+            var user = await _userApplicationService.CreateAsync(userRequest);
             return Created(string.Empty, user);
         }
         catch (UserAlreadyExistsException ex)
@@ -35,7 +36,7 @@ public class UserController : ControllerBase
     }
     
     [HttpGet("guid/{guid:guid}")]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetByGuidAsync(Guid guid)
@@ -52,7 +53,7 @@ public class UserController : ControllerBase
     }
     
     [HttpGet("email/{email}")]
-    [ProducesResponseType(typeof(UserDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetByEmailAsync(string email)

@@ -1,6 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Auth.Application.Services;
+using Auth.Domain.Core.Interfaces.Services;
 using Auth.Domain.Entities;
 using Microsoft.IdentityModel.Tokens;
 
@@ -52,16 +52,16 @@ public class JwtService : ITokenService
         return handler.WriteToken(token);
     }
 
-    public bool ValidateToken(string token)
+    public async Task<bool> VerifyAsync(string token)
     {
         if (string.IsNullOrWhiteSpace(token))
-            throw new ArgumentException("Token cannot be null or empty.", nameof(token));
+            return false;
 
         var handler = new JwtSecurityTokenHandler();
 
         try
         {
-            handler.ValidateToken(token, ValidationParameters, out _);
+            await handler.ValidateTokenAsync(token, ValidationParameters);
             return true;
         }
         catch (SecurityTokenException)

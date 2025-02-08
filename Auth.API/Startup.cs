@@ -19,7 +19,7 @@ public class Startup(IConfiguration configuration)
         services.AddMappers();
         services.AddDomainServices();
         services.AddApplicationServices();
-        services.AddInfrastructureServices();
+        services.AddInfrastructureServices(Configuration);
         
         // TODO: Avaliar filters
         /*services.AddControllers(options =>

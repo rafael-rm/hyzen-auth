@@ -1,4 +1,5 @@
-﻿using Auth.Application.DTOs;
+﻿using Auth.Application.DTOs.Request;
+using Auth.Application.DTOs.Response;
 using Auth.Application.Interfaces;
 using Auth.Application.Mappers;
 using Auth.Application.Mappers.Interfaces;
@@ -35,23 +36,25 @@ public static class ServicesCollectionExtensions
     public static void AddDomainServices(this IServiceCollection services)
     {
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IAuthService, AuthService>();
     }
         
     public static void AddMappers(this IServiceCollection services)
     {
-        services.AddScoped<IMapper<User, UserDto>, UserMapper>();
-        services.AddScoped<IMapper<UserDto, User>, UserMapper>();
-        services.AddScoped<IMapper<CreateUserDto, User>, CreateUserMapper>();
+        services.AddScoped<IMapper<User, UserResponse>, UserMapper>();
+        services.AddScoped<IMapper<UserResponse, User>, UserMapper>();
+        services.AddScoped<IMapper<CreateUserRequest, User>, CreateUserMapper>();
     }
         
     public static void AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IUserApplicationService, UserApplicationService>();
+        services.AddScoped<IAuthApplicationService, AuthApplicationService>();
     }
         
-    public static void AddInfrastructureServices(this IServiceCollection services)
+    public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IHashService, Pbkdf2HashService>();
-        services.AddSingleton<ITokenService>(_ => new JwtService("base64secret"));
+        services.AddSingleton<ITokenService>(_ => new JwtService(configuration["Token:Secret"] ?? string.Empty));
     }
 }

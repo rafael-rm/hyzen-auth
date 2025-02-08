@@ -1,6 +1,6 @@
-﻿namespace Auth.Application.DTOs;
+﻿namespace Auth.Application.DTOs.Response;
 
-public class UserDto
+public class UserResponse
 {
     public Guid Guid { get;  set; }
     public string Name { get;  set; }
