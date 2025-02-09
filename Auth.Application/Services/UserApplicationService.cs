@@ -4,7 +4,6 @@ using Auth.Application.Interfaces;
 using Auth.Application.Mappers.Interfaces;
 using Auth.Domain.Entities;
 using Auth.Domain.Exceptions;
-using Auth.Domain.Interfaces.Repositories;
 using Auth.Domain.Interfaces.Services;
 
 namespace Auth.Application.Services;
@@ -15,24 +14,25 @@ public class UserApplicationService : IUserApplicationService
     private readonly IUserService _userService;
     private readonly IHashService _hashService;
     private readonly IMapper<User, UserResponse> _mapperDto;
-    private readonly IMapper<CreateUserRequest, User> _mapperCreate;
     
-    public UserApplicationService(IUnitOfWork unitOfWork, IUserService userService, IHashService hashService, IMapper<User, UserResponse> mapperDto, IMapper<CreateUserRequest, User> mapperCreate)
+    public UserApplicationService(IUnitOfWork unitOfWork, IUserService userService, IHashService hashService, IMapper<User, UserResponse> mapperDto)
     {
         _unitOfWork = unitOfWork;
         _userService = userService;
         _hashService = hashService;
         _mapperDto = mapperDto;
-        _mapperCreate = mapperCreate;
     }
     
     public async Task<UserResponse> CreateAsync(CreateUserRequest createUserRequest)
     {
-        var user = _mapperCreate.Map(createUserRequest);
-        
-        user.Guid = Guid.NewGuid();
-        user.IsActive = true;
-        user.Password = _hashService.Hash(createUserRequest.Password);
+        var user = new User
+        {
+            Guid = Guid.NewGuid(),
+            Name = createUserRequest.Name,
+            Email = createUserRequest.Email,
+            Password = _hashService.Hash(createUserRequest.Password),
+            IsActive = true,
+        };
         
         await _userService.CreateAsync(user);
         await _unitOfWork.CommitAsync();

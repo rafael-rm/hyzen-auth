@@ -7,4 +7,5 @@ public class UserResponse
     public required string Email { get;  set; }
     public DateTime? LastLoginAt { get;  set; }
     public DateTime CreatedAt { get;  set; }
+    public List<string> Roles { get; set; } = [];
 }

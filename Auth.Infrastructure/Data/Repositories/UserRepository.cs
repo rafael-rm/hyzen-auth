@@ -20,17 +20,27 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetByIdAsync(int id)
     {
-       return await _context.Users.FindAsync(id);
+       return await _context.Users
+           .Include(s => s.UserRoles)
+           .ThenInclude(s => s.Role)
+           .FirstOrDefaultAsync(u => u.Id == id);
     }
 
     public async Task<User?> GetByGuidAsync(Guid userId)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.Guid == userId);
+        return await _context.Users
+            .Include(s => s.UserRoles)
+            .ThenInclude(s => s.Role)
+            .FirstOrDefaultAsync(u => u.Guid == userId);
+        
     }
 
     public async Task<User?> GetByEmailAsync(string email)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        return await _context.Users
+            .Include(s => s.UserRoles)
+            .ThenInclude(s => s.Role)
+            .FirstOrDefaultAsync(u => u.Email == email);
     }
 
     public Task UpdateAsync(User user)

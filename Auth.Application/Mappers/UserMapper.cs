@@ -6,6 +6,13 @@ namespace Auth.Application.Mappers;
 
 public class UserMapper : IMapper<User, UserResponse>, IMapper<UserResponse, User>
 {
+    private readonly RoleMapper _roleMapper;
+    
+    public UserMapper(RoleMapper roleMapper)
+    {
+        _roleMapper = roleMapper;
+    }
+    
     public UserResponse Map(User source)
     {
         return new UserResponse
@@ -14,7 +21,8 @@ public class UserMapper : IMapper<User, UserResponse>, IMapper<UserResponse, Use
             Name = source.Name,
             Email = source.Email,
             CreatedAt = source.CreatedAt,
-            LastLoginAt = source.LastLoginAt
+            LastLoginAt = source.LastLoginAt,
+            Roles = source.UserRoles.Select(ur => ur.Role.Name).ToList()
         };
     }
 
@@ -26,7 +34,7 @@ public class UserMapper : IMapper<User, UserResponse>, IMapper<UserResponse, Use
             Name = source.Name,
             Email = source.Email,
             CreatedAt = source.CreatedAt,
-            LastLoginAt = source.LastLoginAt
+            LastLoginAt = source.LastLoginAt,
         };
     }
     

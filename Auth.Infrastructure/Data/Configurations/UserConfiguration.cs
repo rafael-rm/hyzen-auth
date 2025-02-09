@@ -62,18 +62,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .ValueGeneratedOnAddOrUpdate()
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-        /* Relacionamentos
-        builder.HasMany(u => u.Roles)
-            .WithOne(r => r.User)
-            .HasForeignKey(r => r.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder.HasMany(u => u.Groups)
-            .WithOne(g => g.User)
-            .HasForeignKey(g => g.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
-        */
-
         builder.HasIndex(u => u.Email)
             .IsUnique()
             .HasDatabaseName("IX_users_email");
@@ -81,5 +69,10 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasIndex(u => u.Guid)
             .IsUnique()
             .HasDatabaseName("IX_users_guid");
+        
+        builder.HasMany(u => u.UserRoles)
+            .WithOne(ur => ur.User)
+            .HasForeignKey(ur => ur.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

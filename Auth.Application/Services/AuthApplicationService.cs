@@ -1,7 +1,6 @@
 ﻿using Auth.Application.DTOs.Response;
 using Auth.Application.Exceptions;
 using Auth.Application.Interfaces;
-using Auth.Domain.Interfaces.Repositories;
 using Auth.Domain.Interfaces.Services;
 
 namespace Auth.Application.Services;

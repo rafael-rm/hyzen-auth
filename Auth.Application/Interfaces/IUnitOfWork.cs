@@ -1,4 +1,4 @@
-﻿namespace Auth.Domain.Interfaces.Repositories;
+﻿namespace Auth.Application.Interfaces;
 
 public interface IUnitOfWork
 {
