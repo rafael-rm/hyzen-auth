@@ -1,4 +1,4 @@
-﻿namespace Auth.Domain.Exceptions;
+﻿namespace Auth.Domain.Exceptions.Role;
 
 public class RoleNotFoundException : Exception
 {

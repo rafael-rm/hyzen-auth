@@ -1,7 +1,8 @@
 ﻿using Auth.Application.DTOs.Request;
 using Auth.Application.DTOs.Response;
 using Auth.Application.Interfaces;
-using Auth.Domain.Exceptions;
+using Auth.Domain.Exceptions.Role;
+using Auth.Domain.Exceptions.User;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.API.Controllers;
@@ -46,7 +47,7 @@ public class RoleController : ControllerBase
             var role = await _roleApplicationService.GetByGuidAsync(guid);
             return Ok(role);
         }
-        catch (UserNotFoundException ex)
+        catch (RoleNotFoundException ex)
         {
             return NotFound(ex.Message);
         }

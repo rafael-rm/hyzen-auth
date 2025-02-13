@@ -3,7 +3,7 @@ using Auth.Application.DTOs.Response;
 using Auth.Application.Interfaces;
 using Auth.Application.Mappers.Interfaces;
 using Auth.Domain.Entities;
-using Auth.Domain.Exceptions;
+using Auth.Domain.Exceptions.User;
 using Auth.Domain.Interfaces.Services;
 
 namespace Auth.Application.Services;

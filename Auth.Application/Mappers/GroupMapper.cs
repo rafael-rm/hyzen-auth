@@ -4,32 +4,32 @@ using Auth.Domain.Entities;
 
 namespace Auth.Application.Mappers
 {
-    public class RoleMapper : IMapper<Role, RoleResponse>, IMapper<RoleResponse, Role>
+    public class GroupMapper : IMapper<Group, GroupResponse>, IMapper<GroupResponse, Group>
     {
-        public RoleResponse Map(Role source)
+        public GroupResponse Map(Group source)
         {
-            return new RoleResponse
+            return new GroupResponse
             {
                 Name = source.Name,
                 Description = source.Description,
             };
         }
 
-        public Role Map(RoleResponse source)
+        public Group Map(GroupResponse source)
         {
-            return new Role
+            return new Group
             {
                 Name = source.Name,
                 Description = source.Description,
             };
         }
 
-        public IEnumerable<RoleResponse> Map(IEnumerable<Role> source)
+        public IEnumerable<GroupResponse> Map(IEnumerable<Group> source)
         {
             return source.Select(Map);
         }
 
-        public IEnumerable<Role> Map(IEnumerable<RoleResponse> source)
+        public IEnumerable<Group> Map(IEnumerable<GroupResponse> source)
         {
             return source.Select(Map);
         }

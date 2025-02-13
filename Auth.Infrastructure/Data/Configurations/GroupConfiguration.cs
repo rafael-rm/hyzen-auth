@@ -4,44 +4,48 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Auth.Infrastructure.Data.Configurations
 {
-    public class RoleConfiguration : IEntityTypeConfiguration<Role>
+    public class GroupConfiguration : IEntityTypeConfiguration<Group>
     {
-        public void Configure(EntityTypeBuilder<Role> builder)
+        public void Configure(EntityTypeBuilder<Group> builder)
         {
-            builder.ToTable("roles");
+            builder.ToTable("groups");
 
-            builder.HasKey(r => r.Id);
+            builder.HasKey(g => g.Id);
 
-            builder.Property(r => r.Id)
+            builder.Property(g => g.Id)
                 .HasColumnName("id")
                 .HasColumnType("INT")
                 .ValueGeneratedOnAdd();
-            
-            builder.Property(u => u.Guid)
+
+            builder.Property(g => g.Guid)
                 .HasColumnName("guid")
                 .HasColumnType("UUID")
                 .IsRequired();
 
-            builder.Property(r => r.Name)
+            builder.Property(g => g.Name)
                 .HasColumnName("name")
                 .HasColumnType("VARCHAR(255)")
                 .HasMaxLength(255)
                 .IsRequired();
 
-            builder.Property(r => r.Description)
+            builder.Property(g => g.Description)
                 .HasColumnName("description")
                 .HasColumnType("TEXT")
                 .IsRequired();
 
-            builder.Property(r => r.CreatedAt)
+            builder.Property(g => g.CreatedAt)
                 .HasColumnName("created_at")
                 .HasColumnType("TIMESTAMPTZ")
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-            builder.Property(r => r.UpdatedAt)
+            builder.Property(g => g.UpdatedAt)
                 .HasColumnName("updated_at")
                 .HasColumnType("TIMESTAMPTZ")
                 .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            builder.HasIndex(g => g.Guid)
+                .IsUnique()
+                .HasDatabaseName("IX_groups_guid");
         }
     }
 }

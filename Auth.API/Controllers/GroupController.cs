@@ -1,6 +1,8 @@
 ﻿using Auth.Application.DTOs.Request;
 using Auth.Application.DTOs.Response;
 using Auth.Application.Interfaces;
+using Auth.Domain.Exceptions.Group;
+using Auth.Domain.Exceptions.Role;
 using Auth.Domain.Exceptions.User;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,79 +10,79 @@ namespace Auth.API.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class UserController : ControllerBase
+public class GroupController : ControllerBase
 {
-    private readonly IUserApplicationService _userApplicationService;
+    private readonly IGroupApplicationService _groupApplicationService;
     
-    public UserController(IUserApplicationService userApplicationService)
+    public GroupController(IGroupApplicationService groupApplicationService)
     {
-        _userApplicationService = userApplicationService;
+        _groupApplicationService = groupApplicationService;
     }
     
     [HttpPost]
-    [ProducesResponseType(typeof(UserResponse),StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(GroupResponse),StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateAsync(CreateUserRequest userRequest)
+    public async Task<IActionResult> CreateAsync(CreateGroupRequest roleRequest)
     {
         try
         {
-            var user = await _userApplicationService.CreateAsync(userRequest);
-            return Created(string.Empty, user);
+            var role = await _groupApplicationService.CreateAsync(roleRequest);
+            return Created(string.Empty, role);
         }
-        catch (UserAlreadyExistsException ex)
+        catch (GroupAlreadyExistsException ex)
         {
             return Conflict(ex.Message);
         }
     }
     
     [HttpGet("guid/{guid:guid}")]
-    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(GroupResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetByGuidAsync(Guid guid)
     {
         try
         {
-            var user = await _userApplicationService.GetByGuidAsync(guid);
-            return Ok(user);
+            var role = await _groupApplicationService.GetByGuidAsync(guid);
+            return Ok(role);
         }
-        catch (UserNotFoundException ex)
+        catch (GroupNotFoundException ex)
         {
             return NotFound(ex.Message);
         }
     }
     
-    [HttpGet("email/{email}")]
-    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
+    [HttpGet("name/{name}")]
+    [ProducesResponseType(typeof(GroupResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetByEmailAsync(string email)
+    public async Task<IActionResult> GetByEmailAsync(string name)
     {
         try
         {
-            var user = await _userApplicationService.GetByEmailAsync(email);
-            return Ok(user);
+            var role = await _groupApplicationService.GetByNameAsync(name);
+            return Ok(role);
         }
-        catch (UserNotFoundException ex)
+        catch (GroupNotFoundException ex)
         {
             return NotFound(ex.Message);
         }
     }
     
-    [HttpDelete("guid/{guid:guid}")]
+    [HttpDelete("name/{name}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> DeleteByGuidAsync(Guid guid)
+    public async Task<IActionResult> DeleteByNameAsync(string name)
     {
         try
         {
-            await _userApplicationService.DeleteAsync(guid);
+            await _groupApplicationService.DeleteAsync(name);
             return NoContent();
         }
-        catch (UserNotFoundException ex)
+        catch (GroupNotFoundException ex)
         {
             return NotFound(ex.Message);
         }

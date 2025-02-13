@@ -3,7 +3,7 @@ using Auth.Application.DTOs.Response;
 using Auth.Application.Interfaces;
 using Auth.Application.Mappers.Interfaces;
 using Auth.Domain.Entities;
-using Auth.Domain.Exceptions;
+using Auth.Domain.Exceptions.Role;
 using Auth.Domain.Interfaces.Services;
 
 namespace Auth.Application.Services;
@@ -36,12 +36,12 @@ public class RoleApplicationService : IRoleApplicationService
         return _mapperDto.Map(role);
     }
 
-    public async Task<RoleResponse> GetByGuidAsync(Guid roleId)
+    public async Task<RoleResponse> GetByGuidAsync(Guid groupId)
     {
-        var role = await _roleService.GetByGuidAsync(roleId);
+        var role = await _roleService.GetByGuidAsync(groupId);
 
         if (role is null)
-            throw new RoleNotFoundException(roleId);
+            throw new RoleNotFoundException(groupId);
         
         return _mapperDto.Map(role);
     }

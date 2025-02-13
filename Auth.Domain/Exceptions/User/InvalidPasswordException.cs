@@ -1,3 +1,3 @@
-﻿namespace Auth.Domain.Exceptions;
+﻿namespace Auth.Domain.Exceptions.User;
 
 public class InvalidPasswordException() : Exception("Invalid password.");
