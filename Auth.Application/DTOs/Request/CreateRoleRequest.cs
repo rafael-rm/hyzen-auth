@@ -6,6 +6,6 @@ public class CreateRoleRequest
 {
     [Required]
     public required string Name { get; set; }
-    [MaxLength(255)]
-    public string? Description { get; set; }
+    [Required, MaxLength(255)]
+    public required string? Description { get; set; }
 }
