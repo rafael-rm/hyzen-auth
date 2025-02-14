@@ -29,7 +29,7 @@ public class AuthController : ControllerBase
             var user = await _authApplicationService.LoginAsync(request.Email, request.Password);
             return Ok(user);
         }
-        catch (InvalidPasswordException ex)
+        catch (AuthenticationFailedException ex)
         {
             return Unauthorized(ex.Message);
         }

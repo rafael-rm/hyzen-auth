@@ -7,4 +7,12 @@ public class UserGroup
 
     public int GroupId { get; set; }
     public Group Group { get; set; }
+    
+    private UserGroup() { }
+    
+    public UserGroup(User user, Group group)
+    {
+        User = user;
+        Group = group;
+    }
 }

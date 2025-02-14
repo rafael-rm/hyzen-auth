@@ -7,4 +7,12 @@ public class GroupRole
 
     public int RoleId { get; set; }
     public Role Role { get; set; }
+    
+    private GroupRole() { }
+    
+    public GroupRole(Group group, Role role)
+    {
+        Group = group;
+        Role = role;
+    }
 }

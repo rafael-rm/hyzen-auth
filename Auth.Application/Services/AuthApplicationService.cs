@@ -1,26 +1,38 @@
 ﻿using Auth.Application.DTOs.Response;
 using Auth.Application.Exceptions;
 using Auth.Application.Interfaces;
+using Auth.Domain.Exceptions.User;
 using Auth.Domain.Interfaces.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Application.Services;
 
 public class AuthApplicationService : IAuthApplicationService
 {
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAuthDbContext _authDbContext;
     private readonly IAuthService _authService;
+    private readonly IHashService _hashService;
     private readonly ITokenService _tokenService;
     
-    public AuthApplicationService(IUnitOfWork unitOfWork, IAuthService authService, ITokenService tokenService)
+    public AuthApplicationService(IAuthDbContext authDbContext, IAuthService authService, IHashService hashService, ITokenService tokenService)
     {
-        _unitOfWork = unitOfWork;
+        _authDbContext = authDbContext;
         _authService = authService;
+        _hashService = hashService;
         _tokenService = tokenService;
     }
     
     public async Task<LoginResponse> LoginAsync(string email, string password)
     {
-        var token = await _authService.LoginAsync(email, password);
+        var user = await _authDbContext.Users.FirstOrDefaultAsync(s => s.Email == email);
+
+        if (user is null)
+            throw new AuthenticationFailedException();
+
+        if (!_hashService.Verify(password, user.Password))
+            throw new AuthenticationFailedException();
+
+        var token= _tokenService.GenerateToken(user);
         
         return new LoginResponse
         {

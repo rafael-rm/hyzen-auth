@@ -1,9 +1,10 @@
-﻿using Auth.Domain.Entities;
+﻿using Auth.Application.Interfaces;
+using Auth.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Infrastructure.Data;
 
-public class AuthDbContext : DbContext
+public class AuthDbContext : DbContext, IAuthDbContext
 {
     public AuthDbContext(DbContextOptions<AuthDbContext> options) : base(options) { }
 

@@ -61,8 +61,8 @@ public class JwtService : ITokenService
 
         try
         {
-            await handler.ValidateTokenAsync(token, ValidationParameters);
-            return true;
+            var result = await handler.ValidateTokenAsync(token, ValidationParameters);
+            return result.IsValid;
         }
         catch (SecurityTokenException)
         {
