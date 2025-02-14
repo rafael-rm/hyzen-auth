@@ -10,11 +10,11 @@ namespace Auth.API.Controllers;
 [Route("api/v1/[controller]")]
 public class GroupController : ControllerBase
 {
-    private readonly IGroupApplicationService _groupApplicationService;
+    private readonly IGroupService _groupService;
     
-    public GroupController(IGroupApplicationService groupApplicationService)
+    public GroupController(IGroupService groupService)
     {
-        _groupApplicationService = groupApplicationService;
+        _groupService = groupService;
     }
     
     [HttpPost]
@@ -26,7 +26,7 @@ public class GroupController : ControllerBase
     {
         try
         {
-            var role = await _groupApplicationService.CreateAsync(roleRequest);
+            var role = await _groupService.CreateAsync(roleRequest);
             return Created(string.Empty, role);
         }
         catch (GroupAlreadyExistsException ex)
@@ -43,7 +43,7 @@ public class GroupController : ControllerBase
     {
         try
         {
-            var role = await _groupApplicationService.GetByGuidAsync(guid);
+            var role = await _groupService.GetByGuidAsync(guid);
             return Ok(role);
         }
         catch (GroupNotFoundException ex)
@@ -60,7 +60,7 @@ public class GroupController : ControllerBase
     {
         try
         {
-            var role = await _groupApplicationService.GetByNameAsync(name);
+            var role = await _groupService.GetByNameAsync(name);
             return Ok(role);
         }
         catch (GroupNotFoundException ex)
@@ -77,7 +77,7 @@ public class GroupController : ControllerBase
     {
         try
         {
-            await _groupApplicationService.DeleteAsync(name);
+            await _groupService.DeleteAsync(name);
             return NoContent();
         }
         catch (GroupNotFoundException ex)

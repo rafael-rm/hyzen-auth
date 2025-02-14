@@ -3,20 +3,17 @@ using Auth.Application.DTOs.Response;
 using Auth.Application.Interfaces;
 using Auth.Domain.Entities;
 using Auth.Domain.Exceptions.Group;
-using Auth.Domain.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Application.Services;
 
-public class GroupApplicationService : IGroupApplicationService
+public class GroupService : IGroupService
 {
     private readonly IAuthDbContext _authDbContext;
-    private readonly IGroupService _groupService;
     
-    public GroupApplicationService(IAuthDbContext authDbContext, IGroupService groupService)
+    public GroupService(IAuthDbContext authDbContext)
     {
         _authDbContext = authDbContext;
-        _groupService = groupService;
     }
     
     public async Task<GroupResponse> CreateAsync(CreateGroupRequest createGroupRequest)

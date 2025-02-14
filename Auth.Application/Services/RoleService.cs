@@ -3,20 +3,17 @@ using Auth.Application.DTOs.Response;
 using Auth.Application.Interfaces;
 using Auth.Domain.Entities;
 using Auth.Domain.Exceptions.Role;
-using Auth.Domain.Interfaces.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Application.Services;
 
-public class RoleApplicationService : IRoleApplicationService
+public class RoleService : IRoleService
 {
     private readonly IAuthDbContext _authDbContext;
-    private readonly IRoleService _roleService;
     
-    public RoleApplicationService(IAuthDbContext authDbContext, IRoleService roleService)
+    public RoleService(IAuthDbContext authDbContext)
     {
         _authDbContext = authDbContext;
-        _roleService = roleService;
     }
 
     public async Task<RoleResponse> CreateAsync(CreateRoleRequest createRoleRequest)

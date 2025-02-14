@@ -7,17 +7,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Application.Services;
 
-public class AuthApplicationService : IAuthApplicationService
+public class AuthService : IAuthService
 {
     private readonly IAuthDbContext _authDbContext;
-    private readonly IAuthService _authService;
     private readonly IHashService _hashService;
     private readonly ITokenService _tokenService;
     
-    public AuthApplicationService(IAuthDbContext authDbContext, IAuthService authService, IHashService hashService, ITokenService tokenService)
+    public AuthService(IAuthDbContext authDbContext, IHashService hashService, ITokenService tokenService)
     {
         _authDbContext = authDbContext;
-        _authService = authService;
         _hashService = hashService;
         _tokenService = tokenService;
     }

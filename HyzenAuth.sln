@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Application", "Auth.Ap
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Domain", "Auth.Domain\Auth.Domain.csproj", "{5B709CB0-4B7F-4D3B-9D4A-5697B85D386D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Domain.Services", "Auth.Domain.Services\Auth.Domain.Services.csproj", "{26219284-63B1-4626-BD29-6B9856388583}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.API", "Auth.API\Auth.API.csproj", "{009CC58D-AF9C-4BBD-A25C-1FAAA40962B9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Infrastructure", "Auth.Infrastructure\Auth.Infrastructure.csproj", "{2E123658-18E2-4B7E-BD15-4102DB3D69D9}"
@@ -30,10 +28,6 @@ Global
 		{5B709CB0-4B7F-4D3B-9D4A-5697B85D386D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B709CB0-4B7F-4D3B-9D4A-5697B85D386D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B709CB0-4B7F-4D3B-9D4A-5697B85D386D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{26219284-63B1-4626-BD29-6B9856388583}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{26219284-63B1-4626-BD29-6B9856388583}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{26219284-63B1-4626-BD29-6B9856388583}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{26219284-63B1-4626-BD29-6B9856388583}.Release|Any CPU.Build.0 = Release|Any CPU
 		{009CC58D-AF9C-4BBD-A25C-1FAAA40962B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{009CC58D-AF9C-4BBD-A25C-1FAAA40962B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{009CC58D-AF9C-4BBD-A25C-1FAAA40962B9}.Release|Any CPU.ActiveCfg = Release|Any CPU

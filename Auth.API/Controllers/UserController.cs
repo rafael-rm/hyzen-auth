@@ -10,11 +10,11 @@ namespace Auth.API.Controllers;
 [Route("api/v1/[controller]")]
 public class UserController : ControllerBase
 {
-    private readonly IUserApplicationService _userApplicationService;
+    private readonly IUserService _userService;
     
-    public UserController(IUserApplicationService userApplicationService)
+    public UserController(IUserService userService)
     {
-        _userApplicationService = userApplicationService;
+        _userService = userService;
     }
     
     [HttpPost]
@@ -26,7 +26,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var user = await _userApplicationService.CreateAsync(userRequest);
+            var user = await _userService.CreateAsync(userRequest);
             return Created(string.Empty, user);
         }
         catch (UserAlreadyExistsException ex)
@@ -43,7 +43,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var user = await _userApplicationService.GetByGuidAsync(guid);
+            var user = await _userService.GetByGuidAsync(guid);
             return Ok(user);
         }
         catch (UserNotFoundException ex)
@@ -60,7 +60,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var user = await _userApplicationService.GetByEmailAsync(email);
+            var user = await _userService.GetByEmailAsync(email);
             return Ok(user);
         }
         catch (UserNotFoundException ex)
@@ -77,7 +77,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            await _userApplicationService.DeleteAsync(guid);
+            await _userService.DeleteAsync(guid);
             return NoContent();
         }
         catch (UserNotFoundException ex)

@@ -11,11 +11,11 @@ namespace Auth.API.Controllers;
 [Route("api/v1/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthApplicationService _authApplicationService;
+    private readonly IAuthService _authService;
     
-    public AuthController(IAuthApplicationService authApplicationService)
+    public AuthController(IAuthService authService)
     {
-        _authApplicationService = authApplicationService;
+        _authService = authService;
     }
     
     [HttpPost("login")]
@@ -26,7 +26,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            var user = await _authApplicationService.LoginAsync(request.Email, request.Password);
+            var user = await _authService.LoginAsync(request.Email, request.Password);
             return Ok(user);
         }
         catch (AuthenticationFailedException ex)
@@ -43,7 +43,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            await _authApplicationService.VerifyAsync(token);
+            await _authService.VerifyAsync(token);
             return Ok();
         }
         catch (InvalidTokenException ex)

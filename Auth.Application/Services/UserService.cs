@@ -8,16 +8,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Application.Services;
 
-public class UserApplicationService : IUserApplicationService
+public class UserService : IUserService
 {
     private readonly IAuthDbContext _authDbContext;
-    private readonly IUserService _userService;
     private readonly IHashService _hashService;
     
-    public UserApplicationService(IAuthDbContext authDbContext, IUserService userService, IHashService hashService)
+    public UserService(IAuthDbContext authDbContext, IHashService hashService)
     {
         _authDbContext = authDbContext;
-        _userService = userService;
         _hashService = hashService;
     }
     

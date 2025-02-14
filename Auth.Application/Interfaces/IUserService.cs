@@ -3,7 +3,7 @@ using Auth.Application.DTOs.Response;
 
 namespace Auth.Application.Interfaces;
 
-public interface IUserApplicationService
+public interface IUserService
 {
     Task<UserResponse> CreateAsync(CreateUserRequest user);
     Task<UserResponse> GetByGuidAsync(Guid userId);

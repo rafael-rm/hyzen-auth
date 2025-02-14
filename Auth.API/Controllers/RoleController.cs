@@ -10,11 +10,11 @@ namespace Auth.API.Controllers;
 [Route("api/v1/[controller]")]
 public class RoleController : ControllerBase
 {
-    private readonly IRoleApplicationService _roleApplicationService;
+    private readonly IRoleService _roleService;
     
-    public RoleController(IRoleApplicationService roleApplicationService)
+    public RoleController(IRoleService roleService)
     {
-        _roleApplicationService = roleApplicationService;
+        _roleService = roleService;
     }
     
     [HttpPost]
@@ -26,7 +26,7 @@ public class RoleController : ControllerBase
     {
         try
         {
-            var role = await _roleApplicationService.CreateAsync(roleRequest);
+            var role = await _roleService.CreateAsync(roleRequest);
             return Created(string.Empty, role);
         }
         catch (RoleAlreadyExistsException ex)
@@ -43,7 +43,7 @@ public class RoleController : ControllerBase
     {
         try
         {
-            var role = await _roleApplicationService.GetByGuidAsync(guid);
+            var role = await _roleService.GetByGuidAsync(guid);
             return Ok(role);
         }
         catch (RoleNotFoundException ex)
@@ -60,7 +60,7 @@ public class RoleController : ControllerBase
     {
         try
         {
-            var role = await _roleApplicationService.GetByNameAsync(name);
+            var role = await _roleService.GetByNameAsync(name);
             return Ok(role);
         }
         catch (RoleNotFoundException ex)
@@ -77,7 +77,7 @@ public class RoleController : ControllerBase
     {
         try
         {
-            await _roleApplicationService.DeleteAsync(name);
+            await _roleService.DeleteAsync(name);
             return NoContent();
         }
         catch (RoleNotFoundException ex)

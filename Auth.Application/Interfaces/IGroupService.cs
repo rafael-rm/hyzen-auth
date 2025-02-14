@@ -3,7 +3,7 @@ using Auth.Application.DTOs.Response;
 
 namespace Auth.Application.Interfaces;
 
-public interface IGroupApplicationService
+public interface IGroupService
 {
     Task<GroupResponse> CreateAsync(CreateGroupRequest createGroupRequest);
     Task<GroupResponse> GetByGuidAsync(Guid groupId);

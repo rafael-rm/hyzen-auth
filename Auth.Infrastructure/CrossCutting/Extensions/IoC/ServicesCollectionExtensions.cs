@@ -1,7 +1,6 @@
 ﻿using Auth.Application.Interfaces;
 using Auth.Application.Services;
 using Auth.Domain.Interfaces.Services;
-using Auth.Domain.Services;
 using Auth.Infrastructure.Data;
 using Auth.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -23,19 +22,13 @@ public static class ServicesCollectionExtensions
         
         services.AddScoped<IAuthDbContext>(provider => provider.GetRequiredService<AuthDbContext>());
     }
-    
-    public static void AddDomainServices(this IServiceCollection services)
+        
+    public static void AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IRoleService, RoleService>();
-    }
-        
-    public static void AddApplicationServices(this IServiceCollection services)
-    {
-        services.AddScoped<IUserApplicationService, UserApplicationService>();
-        services.AddScoped<IAuthApplicationService, AuthApplicationService>();
-        services.AddScoped<IRoleApplicationService, RoleApplicationService>();
+        services.AddScoped<IGroupService, GroupService>();
     }
         
     public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)

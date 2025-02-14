@@ -3,7 +3,7 @@ using Auth.Application.DTOs.Response;
 
 namespace Auth.Application.Interfaces;
 
-public interface IRoleApplicationService
+public interface IRoleService
 {
     Task<RoleResponse> CreateAsync(CreateRoleRequest createRoleRequest);
     Task<RoleResponse> GetByGuidAsync(Guid roleId);
