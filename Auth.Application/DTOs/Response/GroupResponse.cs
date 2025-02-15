@@ -5,6 +5,7 @@ namespace Auth.Application.DTOs.Response;
 public class GroupResponse
 {
     public Guid Guid { get; set; }
+    public string Key { get; set; }
     public string Name { get; set; }
     public string Description { get; set; }
     public DateTime CreatedAt { get; set; }
@@ -16,6 +17,7 @@ public class GroupResponse
         return new GroupResponse
         {
             Guid = group.Guid,
+            Key = group.Key,
             Name = group.Name,
             Description = group.Description,
             CreatedAt = group.CreatedAt,

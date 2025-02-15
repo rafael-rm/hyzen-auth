@@ -16,9 +16,11 @@ public class RoleService : IRoleService
         _authDbContext = authDbContext;
     }
 
-    public async Task<RoleResponse> CreateAsync(CreateRoleRequest createRoleRequest)
+    public async Task<RoleResponse> CreateAsync(CreateRoleRequest request)
     {
-        var role = new Role(createRoleRequest.Name, createRoleRequest.Description);
+        // TODO: Add validation
+        
+        var role = new Role(request.Key, request.Name, request.Description);
         
         await _authDbContext.Roles.AddAsync(role);
         await _authDbContext.SaveChangesAsync();
@@ -36,22 +38,22 @@ public class RoleService : IRoleService
         return RoleResponse.FromEntity(role);
     }
 
-    public async Task<RoleResponse> GetByNameAsync(string name)
+    public async Task<RoleResponse> GetByKeyAsync(string key)
     {
-        var role = await _authDbContext.Roles.FirstOrDefaultAsync(s => s.Name == name);
+        var role = await _authDbContext.Roles.FirstOrDefaultAsync(s => s.Key == key);
         
         if (role is null)
-            throw new RoleNotFoundException(name);
+            throw new RoleNotFoundException(key);
         
         return RoleResponse.FromEntity(role);
     }
 
-    public async Task DeleteAsync(string name)
+    public async Task DeleteAsync(string key)
     {
-        var role = await _authDbContext.Roles.FirstOrDefaultAsync(s => s.Name == name);
+        var role = await _authDbContext.Roles.FirstOrDefaultAsync(s => s.Key == key);
 
         if (role is null)
-            throw new RoleNotFoundException(name);
+            throw new RoleNotFoundException(key);
 
         _authDbContext.Roles.Remove(role);
         await _authDbContext.SaveChangesAsync();

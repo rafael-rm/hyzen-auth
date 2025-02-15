@@ -4,8 +4,14 @@ namespace Auth.Application.DTOs.Request;
 
 public class CreateGroupRequest
 {
-    [Required]
+    [Required(ErrorMessage = "Name is required.")]
     public string Name { get; set; }
-    [Required, MaxLength(255)]
+    
+    [Required(ErrorMessage = "Key is required.")]
+    public string Key { get; set; }
+    
+    [Required(ErrorMessage = "Description is required.")]
     public string Description { get; set; }
+    
+    public List<string> Roles { get; set; } = [];
 }

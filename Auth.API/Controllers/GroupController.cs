@@ -22,12 +22,12 @@ public class GroupController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> CreateAsync(CreateGroupRequest roleRequest)
+    public async Task<IActionResult> CreateAsync(CreateGroupRequest request)
     {
         try
         {
-            var role = await _groupService.CreateAsync(roleRequest);
-            return Created(string.Empty, role);
+            var response = await _groupService.CreateAsync(request);
+            return Created(string.Empty, response);
         }
         catch (GroupAlreadyExistsException ex)
         {
@@ -43,8 +43,8 @@ public class GroupController : ControllerBase
     {
         try
         {
-            var role = await _groupService.GetByGuidAsync(guid);
-            return Ok(role);
+            var response = await _groupService.GetByGuidAsync(guid);
+            return Ok(response);
         }
         catch (GroupNotFoundException ex)
         {
@@ -52,16 +52,16 @@ public class GroupController : ControllerBase
         }
     }
     
-    [HttpGet("name/{name}")]
+    [HttpGet("key/{key}")]
     [ProducesResponseType(typeof(GroupResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetByEmailAsync(string name)
+    public async Task<IActionResult> GetByKeyAsync(string key)
     {
         try
         {
-            var role = await _groupService.GetByNameAsync(name);
-            return Ok(role);
+            var response = await _groupService.GetByKeyAsync(key);
+            return Ok(response);
         }
         catch (GroupNotFoundException ex)
         {
@@ -69,16 +69,34 @@ public class GroupController : ControllerBase
         }
     }
     
-    [HttpDelete("name/{name}")]
+    [HttpDelete("key/{key}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> DeleteByNameAsync(string name)
+    public async Task<IActionResult> DeleteByKeyAsync(string key)
     {
         try
         {
-            await _groupService.DeleteAsync(name);
+            await _groupService.DeleteAsync(key);
             return NoContent();
+        }
+        catch (GroupNotFoundException ex)
+        {
+            return NotFound(ex.Message);
+        }
+    }
+    
+    [HttpPut("key/{key}")]
+    [ProducesResponseType(typeof(GroupResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateByKeyAsync(string key, UpdateGroupRequest request)
+    {
+        try
+        {
+            var response = await _groupService.UpdateAsync(key, request);
+            return Ok(response);
         }
         catch (GroupNotFoundException ex)
         {

@@ -21,6 +21,12 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
             .HasColumnName("guid")
             .HasColumnType("UUID")
             .IsRequired();
+        
+        builder.Property(g => g.Key)
+            .HasColumnName("key")
+            .HasColumnType("VARCHAR(255)")
+            .HasMaxLength(255)
+            .IsRequired();
 
         builder.Property(g => g.Name)
             .HasColumnName("name")
@@ -46,5 +52,9 @@ public class GroupConfiguration : IEntityTypeConfiguration<Group>
         builder.HasIndex(g => g.Guid)
             .IsUnique()
             .HasDatabaseName("IX_groups_guid");
+        
+        builder.HasIndex(g => g.Key)
+            .IsUnique()
+            .HasDatabaseName("IX_groups_key");
     }
 }

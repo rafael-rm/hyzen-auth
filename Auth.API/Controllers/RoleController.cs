@@ -52,15 +52,15 @@ public class RoleController : ControllerBase
         }
     }
     
-    [HttpGet("name/{name}")]
+    [HttpGet("key/{key}")]
     [ProducesResponseType(typeof(RoleResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetByEmailAsync(string name)
+    public async Task<IActionResult> GetByKeyAsync(string key)
     {
         try
         {
-            var role = await _roleService.GetByNameAsync(name);
+            var role = await _roleService.GetByKeyAsync(key);
             return Ok(role);
         }
         catch (RoleNotFoundException ex)
@@ -69,15 +69,15 @@ public class RoleController : ControllerBase
         }
     }
     
-    [HttpDelete("name/{name}")]
+    [HttpDelete("key/{key}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> DeleteByNameAsync(string name)
+    public async Task<IActionResult> DeleteByKeyAsync(string key)
     {
         try
         {
-            await _roleService.DeleteAsync(name);
+            await _roleService.DeleteAsync(key);
             return NoContent();
         }
         catch (RoleNotFoundException ex)

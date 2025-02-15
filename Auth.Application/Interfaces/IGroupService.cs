@@ -5,8 +5,9 @@ namespace Auth.Application.Interfaces;
 
 public interface IGroupService
 {
-    Task<GroupResponse> CreateAsync(CreateGroupRequest createGroupRequest);
+    Task<GroupResponse> CreateAsync(CreateGroupRequest request);
     Task<GroupResponse> GetByGuidAsync(Guid groupId);
-    Task<GroupResponse> GetByNameAsync(string name);
-    Task DeleteAsync(string name);
+    Task<GroupResponse> GetByKeyAsync(string key);
+    Task DeleteAsync(string key);
+    Task<GroupResponse> UpdateAsync(string key, UpdateGroupRequest request);
 }

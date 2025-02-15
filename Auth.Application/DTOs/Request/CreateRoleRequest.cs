@@ -4,8 +4,12 @@ namespace Auth.Application.DTOs.Request;
 
 public class CreateRoleRequest
 {
-    [Required]
+    [Required(ErrorMessage = "Key is required.")]
+    public string Key { get; set; }
+    
+    [Required(ErrorMessage = "Name is required.")]
     public string Name { get; set; }
-    [Required, MaxLength(255)]
+    
+    [Required(ErrorMessage = "Description is required.")]
     public string Description { get; set; }
 }
