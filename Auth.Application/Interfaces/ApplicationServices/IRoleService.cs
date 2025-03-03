@@ -6,7 +6,6 @@ namespace Auth.Application.Interfaces.ApplicationServices;
 public interface IRoleService
 {
     Task<Result> CreateAsync(CreateRoleRequest request);
-    Task<Result> GetByGuidAsync(Guid roleId);
     Task<Result> GetByKeyAsync(string key);
     Task<Result> DeleteAsync(string key);
 }

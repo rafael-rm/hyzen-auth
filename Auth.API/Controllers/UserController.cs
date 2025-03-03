@@ -80,4 +80,24 @@ public class UserController(IUserService userService) : ControllerBase
         
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
+    
+    [HttpPut("guid/{guid:guid}/roles")]
+    [ProducesResponseType(typeof(Result<UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateRolesAsync(Guid guid, UpdateUserRolesRequest request)
+    {
+        var result = await userService.UpdateRolesAsync(guid, request.Roles);
+        
+        if (result.IsSuccess)
+            return Ok(result);
+        
+        if (result.Error == UserError.UserNotFound)
+            return NotFound(result);
+        
+        if (result.Error == RoleError.RoleNotFound)
+            return NotFound(result);
+        
+        return StatusCode(StatusCodes.Status500InternalServerError);
+    }
 }

@@ -9,4 +9,5 @@ public interface IUserService
     Task<Result> GetByGuidAsync(Guid userId);
     Task<Result> GetByEmailAsync(string email);
     Task<Result> DeleteAsync(Guid userId);
+    Task<Result> UpdateRolesAsync(Guid userId, List<string> roleIds);
 }

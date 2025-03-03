@@ -28,24 +28,6 @@ public class RoleController(IRoleService roleService) : ControllerBase
         
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
-
-    [HttpGet("guid/{guid:guid}")]
-    [ProducesResponseType(typeof(Result<RoleResponse>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> GetByGuidAsync(Guid guid)
-    {
-
-        var result = await roleService.GetByGuidAsync(guid);
-
-        if (result.IsSuccess)
-            return Ok(result);
-
-        if (result.Error == RoleError.RoleNotFound)
-            return NotFound(result);
-        
-        return StatusCode(StatusCodes.Status500InternalServerError);
-    }
     
     [HttpGet("key/{key}")]
     [ProducesResponseType(typeof(Result<RoleResponse>), StatusCodes.Status200OK)]

@@ -58,6 +58,29 @@ public class UserService(IAuthDbContext authDbContext, IHashService hashService)
         return Result.Success();
     }
 
+    public async Task<Result> UpdateRolesAsync(Guid userId, List<string> roleIds)
+    {
+        // TODO: Ensure that the user has the necessary permissions to update roles
+        
+        var user = await authDbContext.Users
+            .Include(s => s.UserRoles)
+            .ThenInclude(s => s.Role)
+            .FirstOrDefaultAsync(s => s.Guid == userId);
+        
+        if (user is null)
+            return Result.Failure(UserError.UserNotFound);
+        
+        var roles = await authDbContext.Roles.Where(s => roleIds.Contains(s.Key)).ToListAsync();
+        
+        if (roles.Count != roleIds.Count)
+            return Result.Failure(RoleError.RoleNotFound);
+        
+        user.UpdateRoles(roles);
+        await authDbContext.SaveChangesAsync();
+        
+        return Result.Success(UserResponse.FromEntity(user));
+    }
+
     private async Task<bool> UserExistsByEmailAsync(string email)
     {
         return await authDbContext.Users.AnyAsync(s => s.Email == email);

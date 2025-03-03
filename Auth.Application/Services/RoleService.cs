@@ -24,16 +24,6 @@ public class RoleService(IAuthDbContext authDbContext) : IRoleService
         return Result.Success(RoleResponse.FromEntity(role));
     }
 
-    public async Task<Result> GetByGuidAsync(Guid roleId)
-    {
-        var role = await authDbContext.Roles.FirstOrDefaultAsync(s => s.Guid == roleId);
-        
-        if (role is null)
-            return Result.Failure(RoleError.RoleNotFound);
-        
-        return Result.Success(RoleResponse.FromEntity(role));
-    }
-
     public async Task<Result> GetByKeyAsync(string key)
     {
         var role = await authDbContext.Roles.FirstOrDefaultAsync(s => s.Key == key);

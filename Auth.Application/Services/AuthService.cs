@@ -11,7 +11,10 @@ public class AuthService(IAuthDbContext authDbContext, IHashService hashService,
 {
     public async Task<Result> LoginAsync(string email, string password)
     {
-        var user = await authDbContext.Users.FirstOrDefaultAsync(s => s.Email == email);
+        var user = await authDbContext.Users
+            .Include(s => s.UserRoles)
+            .ThenInclude(s => s.Role)
+            .FirstOrDefaultAsync(s => s.Email == email);
 
         if (user is null)
             return Result.Failure(AuthError.InvalidCredentials);

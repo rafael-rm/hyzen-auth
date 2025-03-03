@@ -27,4 +27,30 @@ public class User
         UpdatedAt = DateTime.UtcNow;
         UserRoles = new List<UserRole>();
     }
+    
+    public void AddRole(Role role)
+    {
+        if (UserRoles.Any(ur => ur.RoleId == role.Id))
+            return;
+        
+        UserRoles.Add(new UserRole(this, role));
+    }
+    
+    public void RemoveRole(Role role)
+    {
+        var userRole = UserRoles.FirstOrDefault(ur => ur.RoleId == role.Id);
+        
+        if (userRole is not null)
+            UserRoles.Remove(userRole);
+    }
+    
+    public void UpdateRoles(List<Role> roles)
+    {
+        UserRoles.Clear();
+        
+        foreach (var role in roles)
+        {
+            AddRole(role);
+        }
+    }
 }

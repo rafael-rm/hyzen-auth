@@ -16,11 +16,6 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
             .HasColumnName("id")
             .HasColumnType("INT")
             .ValueGeneratedOnAdd();
-            
-        builder.Property(u => u.Guid)
-            .HasColumnName("guid")
-            .HasColumnType("UUID")
-            .IsRequired();
         
         builder.Property(r => r.Key)
             .HasColumnName("key")
@@ -48,10 +43,6 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
             .HasColumnName("updated_at")
             .HasColumnType("TIMESTAMPTZ")
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
-        
-        builder.HasIndex(g => g.Guid)
-            .IsUnique()
-            .HasDatabaseName("IX_roles_guid");
         
         builder.HasIndex(g => g.Key)
             .IsUnique()
