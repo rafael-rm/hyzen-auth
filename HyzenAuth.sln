@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Legacy", "Legacy\Legacy.csproj", "{49AF8FBC-A4D1-4E5E-8843-040CF1EB1810}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Application", "Auth.Application\Auth.Application.csproj", "{31F2A4C4-21FC-445E-B1C9-44430583B988}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth.Domain", "Auth.Domain\Auth.Domain.csproj", "{5B709CB0-4B7F-4D3B-9D4A-5697B85D386D}"
@@ -16,10 +14,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{49AF8FBC-A4D1-4E5E-8843-040CF1EB1810}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{49AF8FBC-A4D1-4E5E-8843-040CF1EB1810}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{49AF8FBC-A4D1-4E5E-8843-040CF1EB1810}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{49AF8FBC-A4D1-4E5E-8843-040CF1EB1810}.Release|Any CPU.Build.0 = Release|Any CPU
 		{31F2A4C4-21FC-445E-B1C9-44430583B988}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{31F2A4C4-21FC-445E-B1C9-44430583B988}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31F2A4C4-21FC-445E-B1C9-44430583B988}.Release|Any CPU.ActiveCfg = Release|Any CPU

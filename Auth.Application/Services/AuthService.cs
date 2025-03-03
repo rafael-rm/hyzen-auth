@@ -1,49 +1,40 @@
-﻿using Auth.Application.DTOs.Response;
-using Auth.Application.Exceptions;
-using Auth.Application.Interfaces;
-using Auth.Domain.Exceptions.User;
-using Auth.Domain.Interfaces.Services;
+﻿using Auth.Application.Common;
+using Auth.Application.DTOs.Response;
+using Auth.Application.Errors;
+using Auth.Application.Interfaces.ApplicationServices;
+using Auth.Application.Interfaces.InfrastructureServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Application.Services;
 
-public class AuthService : IAuthService
+public class AuthService(IAuthDbContext authDbContext, IHashService hashService, ITokenService tokenService) : IAuthService
 {
-    private readonly IAuthDbContext _authDbContext;
-    private readonly IHashService _hashService;
-    private readonly ITokenService _tokenService;
-    
-    public AuthService(IAuthDbContext authDbContext, IHashService hashService, ITokenService tokenService)
+    public async Task<Result> LoginAsync(string email, string password)
     {
-        _authDbContext = authDbContext;
-        _hashService = hashService;
-        _tokenService = tokenService;
-    }
-    
-    public async Task<LoginResponse> LoginAsync(string email, string password)
-    {
-        var user = await _authDbContext.Users.FirstOrDefaultAsync(s => s.Email == email);
+        var user = await authDbContext.Users.FirstOrDefaultAsync(s => s.Email == email);
 
         if (user is null)
-            throw new AuthenticationFailedException();
+            return Result.Failure(AuthError.InvalidCredentials);
 
-        if (!_hashService.Verify(password, user.Password))
-            throw new AuthenticationFailedException();
+        if (!hashService.Verify(password, user.Password))
+            return Result.Failure(AuthError.InvalidCredentials);
 
-        var token= _tokenService.GenerateToken(user);
+        var token= tokenService.GenerateToken(user);
         
-        return new LoginResponse
+        return Result.Success(new LoginResponse
         {
-            Token = token,
-        };
+            Token = token
+        });
     }
 
-    public async Task VerifyAsync(string token)
+    public async Task<Result> VerifyAsync(string token)
     {
         if (string.IsNullOrWhiteSpace(token))
-            throw new InvalidTokenException();
+            return Result.Failure(AuthError.InvalidToken);
         
-        if (!await _tokenService.VerifyAsync(token))
-            throw new InvalidTokenException();
+        if (!await tokenService.VerifyAsync(token))
+            return Result.Failure(AuthError.InvalidToken);
+        
+        return Result.Success();
     }
 }

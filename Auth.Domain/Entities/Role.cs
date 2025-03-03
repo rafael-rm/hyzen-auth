@@ -11,7 +11,6 @@ public class Role
     public DateTime UpdatedAt { get; set; }
 
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
-    public ICollection<GroupRole> GroupRoles { get; set; } = new List<GroupRole>();
     
     private Role() { }
     

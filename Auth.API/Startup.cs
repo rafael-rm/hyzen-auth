@@ -15,15 +15,8 @@ public class Startup(IConfiguration configuration)
         services.AddControllers(options => options.OutputFormatters.RemoveType<StringOutputFormatter>());
         
         services.AddAuthDbContext(Configuration);
-        services.AddApplicationServices();
         services.AddInfrastructureServices(Configuration);
-        
-        // TODO: Avaliar filters
-        /*services.AddControllers(options =>
-        {
-            options.Filters.Add(new CustomActionFilter());
-            options.Filters.Add(new CustomExceptionFilterAttribute());
-        });*/
+        services.AddApplicationServices();
         
         services.AddSwaggerGen(c =>
         {

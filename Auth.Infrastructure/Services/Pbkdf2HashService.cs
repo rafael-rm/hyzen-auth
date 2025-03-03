@@ -1,5 +1,5 @@
 ﻿using System.Security.Cryptography;
-using Auth.Domain.Interfaces.Services;
+using Auth.Application.Interfaces.InfrastructureServices;
 
 namespace Auth.Infrastructure.Services;
 

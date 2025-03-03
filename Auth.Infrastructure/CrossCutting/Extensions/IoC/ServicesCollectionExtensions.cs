@@ -1,6 +1,6 @@
-﻿using Auth.Application.Interfaces;
+﻿using Auth.Application.Interfaces.ApplicationServices;
+using Auth.Application.Interfaces.InfrastructureServices;
 using Auth.Application.Services;
-using Auth.Domain.Interfaces.Services;
 using Auth.Infrastructure.Data;
 using Auth.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +28,6 @@ public static class ServicesCollectionExtensions
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IRoleService, RoleService>();
-        services.AddScoped<IGroupService, GroupService>();
     }
         
     public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)

@@ -1,61 +1,64 @@
-﻿using Auth.Application.DTOs.Request;
+﻿using Auth.Application.Common;
+using Auth.Application.DTOs.Request;
 using Auth.Application.DTOs.Response;
-using Auth.Application.Interfaces;
+using Auth.Application.Errors;
+using Auth.Application.Interfaces.ApplicationServices;
+using Auth.Application.Interfaces.InfrastructureServices;
 using Auth.Domain.Entities;
-using Auth.Domain.Exceptions.Role;
 using Microsoft.EntityFrameworkCore;
 
 namespace Auth.Application.Services;
 
-public class RoleService : IRoleService
+public class RoleService(IAuthDbContext authDbContext) : IRoleService
 {
-    private readonly IAuthDbContext _authDbContext;
-    
-    public RoleService(IAuthDbContext authDbContext)
+    public async Task<Result> CreateAsync(CreateRoleRequest request)
     {
-        _authDbContext = authDbContext;
-    }
+        if (await RoleExistsByKeyAsync(request.Key))
+            return Result.Failure(RoleError.RoleAlreadyExists);
 
-    public async Task<RoleResponse> CreateAsync(CreateRoleRequest request)
-    {
-        // TODO: Add validation
-        
         var role = new Role(request.Key, request.Name, request.Description);
         
-        await _authDbContext.Roles.AddAsync(role);
-        await _authDbContext.SaveChangesAsync();
+        await authDbContext.Roles.AddAsync(role);
+        await authDbContext.SaveChangesAsync();
         
-        return RoleResponse.FromEntity(role);
+        return Result.Success(RoleResponse.FromEntity(role));
     }
 
-    public async Task<RoleResponse> GetByGuidAsync(Guid groupId)
+    public async Task<Result> GetByGuidAsync(Guid roleId)
     {
-        var role = await _authDbContext.Roles.FirstOrDefaultAsync(s => s.Guid == groupId);
-
-        if (role is null)
-            throw new RoleNotFoundException(groupId);
+        var role = await authDbContext.Roles.FirstOrDefaultAsync(s => s.Guid == roleId);
         
-        return RoleResponse.FromEntity(role);
+        if (role is null)
+            return Result.Failure(RoleError.RoleNotFound);
+        
+        return Result.Success(RoleResponse.FromEntity(role));
     }
 
-    public async Task<RoleResponse> GetByKeyAsync(string key)
+    public async Task<Result> GetByKeyAsync(string key)
     {
-        var role = await _authDbContext.Roles.FirstOrDefaultAsync(s => s.Key == key);
+        var role = await authDbContext.Roles.FirstOrDefaultAsync(s => s.Key == key);
         
         if (role is null)
-            throw new RoleNotFoundException(key);
+            return Result.Failure(RoleError.RoleNotFound);
         
-        return RoleResponse.FromEntity(role);
+        return Result.Success(RoleResponse.FromEntity(role));
     }
 
-    public async Task DeleteAsync(string key)
+    public async Task<Result> DeleteAsync(string key)
     {
-        var role = await _authDbContext.Roles.FirstOrDefaultAsync(s => s.Key == key);
+        var role = await authDbContext.Roles.FirstOrDefaultAsync(s => s.Key == key);
 
         if (role is null)
-            throw new RoleNotFoundException(key);
+            return Result.Failure(RoleError.RoleNotFound);
 
-        _authDbContext.Roles.Remove(role);
-        await _authDbContext.SaveChangesAsync();
+        authDbContext.Roles.Remove(role);
+        await authDbContext.SaveChangesAsync();
+        
+        return Result.Success();
+    }
+
+    private async Task<bool> RoleExistsByKeyAsync(string key)
+    {
+        return await authDbContext.Roles.AnyAsync(s => s.Key == key);
     }
 }

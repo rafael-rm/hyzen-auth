@@ -13,7 +13,6 @@ public class User
     public DateTime UpdatedAt { get;  set; }
     
     public ICollection<UserRole> UserRoles { get; set; }
-    public ICollection<UserGroup> UserGroups { get; set; }
     
     private User() { }
     
@@ -27,6 +26,5 @@ public class User
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
         UserRoles = new List<UserRole>();
-        UserGroups = new List<UserGroup>();
     }
 }

@@ -1,88 +1,83 @@
-﻿using Auth.Application.DTOs.Request;
+﻿using Auth.Application.Common;
+using Auth.Application.DTOs.Request;
 using Auth.Application.DTOs.Response;
-using Auth.Application.Interfaces;
-using Auth.Domain.Exceptions.User;
+using Auth.Application.Errors;
+using Auth.Application.Interfaces.ApplicationServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.API.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class UserController : ControllerBase
+public class UserController(IUserService userService) : ControllerBase
 {
-    private readonly IUserService _userService;
-    
-    public UserController(IUserService userService)
-    {
-        _userService = userService;
-    }
-    
     [HttpPost]
-    [ProducesResponseType(typeof(UserResponse),StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(Result<UserResponse>),StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> CreateAsync(CreateUserRequest userRequest)
     {
-        try
-        {
-            var user = await _userService.CreateAsync(userRequest);
-            return Created(string.Empty, user);
-        }
-        catch (UserAlreadyExistsException ex)
-        {
-            return Conflict(ex.Message);
-        }
+        var result = await userService.CreateAsync(userRequest);
+        
+        if (result.IsSuccess)
+            return Created(string.Empty, result);
+        
+        if (result.Error == UserError.UserAlreadyExists)
+            return Conflict(result);
+        
+        return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
     [HttpGet("guid/{guid:guid}")]
-    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Result<UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetByGuidAsync(Guid guid)
     {
-        try
-        {
-            var user = await _userService.GetByGuidAsync(guid);
-            return Ok(user);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        
+        var result = await userService.GetByGuidAsync(guid);
+            
+        if (result.IsSuccess)
+            return Ok(result);
+        
+        if (result.Error == UserError.UserNotFound)
+            return NotFound(result);
+        
+        return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
     [HttpGet("email/{email}")]
-    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Result<UserResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetByEmailAsync(string email)
     {
-        try
-        {
-            var user = await _userService.GetByEmailAsync(email);
-            return Ok(user);
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+        var result = await userService.GetByEmailAsync(email);
+        
+        if (result.IsSuccess)
+            return Ok(result);
+    
+        if (result.Error == UserError.UserNotFound)
+            return NotFound(result);
+    
+        return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
     [HttpDelete("guid/{guid:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteByGuidAsync(Guid guid)
     {
-        try
-        {
-            await _userService.DeleteAsync(guid);
+        var result = await userService.DeleteAsync(guid);
+        
+        if (result.IsSuccess) 
             return NoContent();
-        }
-        catch (UserNotFoundException ex)
-        {
-            return NotFound(ex.Message);
-        }
+            
+        if (result.Error == UserError.UserNotFound)
+            return NotFound(result);
+        
+        return StatusCode(StatusCodes.Status500InternalServerError);
     }
 }
