@@ -1,28 +1,16 @@
-﻿using Auth.Application.Interfaces.ApplicationServices;
-using Auth.Application.Interfaces.InfrastructureServices;
+﻿using Auth.Application.Interfaces.Application;
+using Auth.Application.Interfaces.Infrastructure;
 using Auth.Application.Services;
 using Auth.Infrastructure.Data;
 using Auth.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Auth.Infrastructure.CrossCutting.Extensions.IoC;
 
 public static class ServicesCollectionExtensions
 {
-    public static void AddAuthDbContext(this IServiceCollection services, IConfiguration configuration)
-    {
-        services.AddDbContext<AuthDbContext>(options =>
-        {
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"));
-            options.LogTo(Console.WriteLine, LogLevel.Information);
-        });
-        
-        services.AddScoped<IAuthDbContext>(provider => provider.GetRequiredService<AuthDbContext>());
-    }
-        
     public static void AddApplicationServices(this IServiceCollection services)
     {
         services.AddScoped<IUserService, UserService>();
@@ -33,10 +21,15 @@ public static class ServicesCollectionExtensions
     public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IHashService, Pbkdf2HashService>();
-        
-        var publicKey = configuration["Jwt:PublicKeyXml"];
-        var privateKey = configuration["Jwt:PrivateKeyXml"];
-        
-        services.AddSingleton<ITokenService>(_ => new JwtService(publicKey, privateKey));
+        services.AddSingleton<ITokenService, JwtService>();
+
+        services.AddScoped<IAuthDbContext, AuthDbContext>(_ =>
+        {
+            var connectionStr = configuration.GetConnectionString("DefaultConnection");
+            var optionsBuilder = new DbContextOptionsBuilder<AuthDbContext>();
+            optionsBuilder.UseNpgsql(connectionStr);
+
+            return new AuthDbContext(optionsBuilder.Options);
+        });
     }
 }

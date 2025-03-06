@@ -2,7 +2,8 @@
 using Auth.Application.DTOs.Request;
 using Auth.Application.DTOs.Response;
 using Auth.Application.Errors;
-using Auth.Application.Interfaces.ApplicationServices;
+using Auth.Application.Interfaces.Application;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.API.Controllers;
@@ -11,6 +12,7 @@ namespace Auth.API.Controllers;
 [Route("api/v1/[controller]")]
 public class RoleController(IRoleService roleService) : ControllerBase
 {
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     [ProducesResponseType(typeof(Result<RoleResponse>),StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
@@ -29,6 +31,7 @@ public class RoleController(IRoleService roleService) : ControllerBase
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
+    [Authorize(Roles = "User")]
     [HttpGet("key/{key}")]
     [ProducesResponseType(typeof(Result<RoleResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
@@ -46,6 +49,7 @@ public class RoleController(IRoleService roleService) : ControllerBase
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete("key/{key}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]

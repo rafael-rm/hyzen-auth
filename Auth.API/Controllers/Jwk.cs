@@ -1,8 +1,8 @@
 ﻿using System.Security.Cryptography;
 using Auth.Application.DTOs.Response.Jwk;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Auth.API.Controllers;
 
@@ -17,18 +17,17 @@ public class Jwk : ControllerBase
         _configuration = configuration;
     }
     
+    [AllowAnonymous]
     [HttpGet("jwks")]
     public IActionResult GetJwks()
     {
-        var publicKeyXml = _configuration["Jwt:PublicKeyXml"];
-
+        var publicKeyXml = _configuration.GetValue<string>("Jwt:PublicKeyXml");
+        
         using var rsa = RSA.Create();
         rsa.FromXmlString(publicKeyXml!);
         
-        var publicKey = new RsaSecurityKey(rsa);
-
         var jwk = new JwkResponse(
-            publicKey.KeyId,
+            "v1",
             Base64UrlTextEncoder.Encode(rsa.ExportParameters(false).Modulus!),
             Base64UrlTextEncoder.Encode(rsa.ExportParameters(false).Exponent!)
         );
@@ -38,13 +37,16 @@ public class Jwk : ControllerBase
         return Ok(jwks);
     }
     
+    [AllowAnonymous]
     [HttpGet("openid-configuration")]
     [ProducesResponseType(typeof(OpenIdConfigurationResponse), StatusCodes.Status200OK)]
     public IActionResult GetOpenIdConfiguration()
     {
         var jwksUri = Url.Action("GetJwks", "Jwk", null, Request.Scheme);
         
-        var openIdConfiguration = new OpenIdConfigurationResponse("https://localhost:5021", jwksUri);
+        var issuer = _configuration.GetValue<string>("Jwt:Issuer");
+        
+        var openIdConfiguration = new OpenIdConfigurationResponse(issuer, jwksUri);
         
         return Ok(openIdConfiguration);
     }

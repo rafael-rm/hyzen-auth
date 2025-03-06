@@ -1,6 +1,6 @@
 ﻿using Auth.Domain.Entities;
 
-namespace Auth.Application.Interfaces.InfrastructureServices;
+namespace Auth.Application.Interfaces.Infrastructure;
 
 public interface ITokenService
 {

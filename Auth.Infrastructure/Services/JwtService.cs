@@ -1,9 +1,10 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Auth.Application.Interfaces.InfrastructureServices;
 using Auth.Domain.Entities;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
+using Auth.Application.Interfaces.Infrastructure;
+using Microsoft.Extensions.Configuration;
 
 namespace Auth.Infrastructure.Services;
 
@@ -11,17 +12,26 @@ public class JwtService : ITokenService
 {
     private readonly string _publicKeyXml;
     private readonly string _privateKeyXml;
+    private readonly string _issuer;
 
-    public JwtService(string publicKeyXml, string privateKeyXml)
+    public JwtService(IConfiguration configuration)
     {
+        var publicKeyXml = configuration["Jwt:PublicKeyXml"];
+        var privateKeyXml = configuration["Jwt:PrivateKeyXml"];
+        var issuer = configuration["Jwt:Issuer"];
+        
         if (string.IsNullOrWhiteSpace(publicKeyXml))
             throw new ArgumentException("Public key cannot be null or empty.", nameof(publicKeyXml));
 
         if (string.IsNullOrWhiteSpace(privateKeyXml))
             throw new ArgumentException("Private key cannot be null or empty.", nameof(privateKeyXml));
+        
+        if (string.IsNullOrWhiteSpace(issuer))
+            throw new ArgumentException("Issuer cannot be null or empty.", nameof(issuer));
 
         _publicKeyXml = publicKeyXml;
         _privateKeyXml = privateKeyXml;
+        _issuer = issuer;
     }
 
     private RSAParameters PublicKeyParameters => GetRsaParameters(_publicKeyXml);
@@ -58,14 +68,16 @@ public class JwtService : ITokenService
             SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256Signature),
             Expires = issuanceDate.AddHours(6),
             IssuedAt = issuanceDate,
-            Audience = "auth",
-            Issuer = "http://localhost:5021"
+            Audience = "all",
+            Issuer = _issuer
         };
         
         descriptor.Subject.AddClaims(request.UserRoles.Select(ur => new Claim(ClaimTypes.Role, ur.Role.Name)));
 
         var handler = new JwtSecurityTokenHandler();
         var token = handler.CreateJwtSecurityToken(descriptor);
+        
+        token.Header["kid"] = "v1"; // TODO: Rotate keys
 
         return handler.WriteToken(token);
     }

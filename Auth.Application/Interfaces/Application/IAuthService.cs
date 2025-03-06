@@ -1,6 +1,6 @@
 ﻿using Auth.Application.Common;
 
-namespace Auth.Application.Interfaces.ApplicationServices;
+namespace Auth.Application.Interfaces.Application;
 
 public interface IAuthService
 {

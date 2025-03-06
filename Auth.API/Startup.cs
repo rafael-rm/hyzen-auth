@@ -16,10 +16,10 @@ public class Startup(IConfiguration configuration)
     {
         services.AddHttpClient();
         
+        services.AddInfrastructureServices(Configuration);
+        
         services.AddControllers(options => options.OutputFormatters.RemoveType<StringOutputFormatter>());
         
-        services.AddAuthDbContext(Configuration);
-        services.AddInfrastructureServices(Configuration);
         services.AddApplicationServices();
         
         var publicKey = Configuration["Jwt:PublicKeyXml"];
@@ -38,12 +38,11 @@ public class Startup(IConfiguration configuration)
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     ValidIssuer = issuer,
-                    ValidAudience = "auth",
+                    ValidAudience = "all",
                     IssuerSigningKey = new RsaSecurityKey(publicRsa)
                 };
-
-                options.Authority = issuer;
-                options.RequireHttpsMetadata = !Debugger.IsAttached; // Disable in development
+                
+                options.RequireHttpsMetadata = !Debugger.IsAttached;
             });
 
         services.AddAuthorization();
@@ -84,7 +83,7 @@ public class Startup(IConfiguration configuration)
         }
         
         app.UseSwagger();
-        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hyzen Auth API v1"));
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Hyzen Auth API v2"));
 
         app.UseCors(e => e.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
         app.UseHttpsRedirection();

@@ -1,7 +1,7 @@
 ﻿using Auth.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Auth.Application.Interfaces.InfrastructureServices;
+namespace Auth.Application.Interfaces.Infrastructure;
 
 public interface IAuthDbContext
 {

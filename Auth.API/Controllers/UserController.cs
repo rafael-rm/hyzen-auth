@@ -2,7 +2,8 @@
 using Auth.Application.DTOs.Request;
 using Auth.Application.DTOs.Response;
 using Auth.Application.Errors;
-using Auth.Application.Interfaces.ApplicationServices;
+using Auth.Application.Interfaces.Application;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.API.Controllers;
@@ -11,6 +12,7 @@ namespace Auth.API.Controllers;
 [Route("api/v1/[controller]")]
 public class UserController(IUserService userService) : ControllerBase
 {
+    [AllowAnonymous]
     [HttpPost]
     [ProducesResponseType(typeof(Result<UserResponse>),StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status400BadRequest)]
@@ -29,6 +31,7 @@ public class UserController(IUserService userService) : ControllerBase
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
+    [Authorize(Roles = "User")]
     [HttpGet("guid/{guid:guid}")]
     [ProducesResponseType(typeof(Result<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
@@ -47,6 +50,7 @@ public class UserController(IUserService userService) : ControllerBase
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpGet("email/{email}")]
     [ProducesResponseType(typeof(Result<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
@@ -64,6 +68,7 @@ public class UserController(IUserService userService) : ControllerBase
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpDelete("guid/{guid:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
@@ -81,6 +86,7 @@ public class UserController(IUserService userService) : ControllerBase
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
+    [Authorize(Roles = "Admin")]
     [HttpPut("guid/{guid:guid}/roles")]
     [ProducesResponseType(typeof(Result<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]

@@ -1,4 +1,4 @@
-﻿using Auth.Application.Interfaces.InfrastructureServices;
+﻿using Auth.Application.Interfaces.Infrastructure;
 using Auth.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 

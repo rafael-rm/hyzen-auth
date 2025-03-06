@@ -2,8 +2,8 @@
 using Auth.Application.DTOs.Request;
 using Auth.Application.DTOs.Response;
 using Auth.Application.Errors;
-using Auth.Application.Interfaces.ApplicationServices;
-using Auth.Application.Interfaces.InfrastructureServices;
+using Auth.Application.Interfaces.Application;
+using Auth.Application.Interfaces.Infrastructure;
 using Auth.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 

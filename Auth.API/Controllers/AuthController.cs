@@ -2,7 +2,8 @@
 using Auth.Application.DTOs.Request;
 using Auth.Application.DTOs.Response;
 using Auth.Application.Errors;
-using Auth.Application.Interfaces.ApplicationServices;
+using Auth.Application.Interfaces.Application;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Auth.API.Controllers;
@@ -11,6 +12,7 @@ namespace Auth.API.Controllers;
 [Route("api/v1/[controller]")]
 public class AuthController(IAuthService authService) : ControllerBase
 {
+    [AllowAnonymous]
     [HttpPost("login")]
     [ProducesResponseType(typeof(Result<LoginResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status401Unauthorized)]
@@ -28,6 +30,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
+    [AllowAnonymous]
     [HttpGet("verify/{token}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status401Unauthorized)]

@@ -1,7 +1,7 @@
 ﻿using Auth.Application.Common;
 using Auth.Application.DTOs.Request;
 
-namespace Auth.Application.Interfaces.ApplicationServices;
+namespace Auth.Application.Interfaces.Application;
 
 public interface IUserService
 {
