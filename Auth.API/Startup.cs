@@ -1,5 +1,9 @@
-﻿using Auth.Infrastructure.CrossCutting.Extensions.IoC;
+﻿using System.Diagnostics;
+using System.Security.Cryptography;
+using Auth.Infrastructure.CrossCutting.Extensions.IoC;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace Auth.API;
@@ -17,6 +21,32 @@ public class Startup(IConfiguration configuration)
         services.AddAuthDbContext(Configuration);
         services.AddInfrastructureServices(Configuration);
         services.AddApplicationServices();
+        
+        var publicKey = Configuration["Jwt:PublicKeyXml"];
+        var issuer = Configuration["Jwt:Issuer"];
+
+        var publicRsa = RSA.Create();
+        publicRsa.FromXmlString(publicKey!);
+        
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = issuer,
+                    ValidAudience = "auth",
+                    IssuerSigningKey = new RsaSecurityKey(publicRsa)
+                };
+
+                options.Authority = issuer;
+                options.RequireHttpsMetadata = !Debugger.IsAttached; // Disable in development
+            });
+
+        services.AddAuthorization();
         
         services.AddSwaggerGen(c =>
         {

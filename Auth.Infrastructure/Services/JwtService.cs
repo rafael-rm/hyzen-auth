@@ -3,37 +3,51 @@ using System.Security.Claims;
 using Auth.Application.Interfaces.InfrastructureServices;
 using Auth.Domain.Entities;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
 
 namespace Auth.Infrastructure.Services;
 
 public class JwtService : ITokenService
 {
-    private readonly string _secret;
+    private readonly string _publicKeyXml;
+    private readonly string _privateKeyXml;
 
-    public JwtService(string secret)
+    public JwtService(string publicKeyXml, string privateKeyXml)
     {
-        if (string.IsNullOrWhiteSpace(secret))
-            throw new ArgumentException("Secret cannot be null or empty.", nameof(secret));
+        if (string.IsNullOrWhiteSpace(publicKeyXml))
+            throw new ArgumentException("Public key cannot be null or empty.", nameof(publicKeyXml));
 
-        _secret = secret;
+        if (string.IsNullOrWhiteSpace(privateKeyXml))
+            throw new ArgumentException("Private key cannot be null or empty.", nameof(privateKeyXml));
+
+        _publicKeyXml = publicKeyXml;
+        _privateKeyXml = privateKeyXml;
     }
 
-    private byte[] ByteSecret => Convert.FromBase64String(_secret);
+    private RSAParameters PublicKeyParameters => GetRsaParameters(_publicKeyXml);
+    private RSAParameters PrivateKeyParameters => GetRsaParameters(_privateKeyXml);
+
+    private RSAParameters GetRsaParameters(string keyXml)
+    {
+        using var rsa = RSA.Create();
+        rsa.FromXmlString(keyXml);
+        return rsa.ExportParameters(true);
+    }
 
     private TokenValidationParameters ValidationParameters => new()
     {
-        ValidateIssuer = false,
-        ValidateAudience = false,
+        ValidateIssuer = true,
+        ValidateAudience = true,
         ValidateLifetime = true,
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(ByteSecret),
+        IssuerSigningKey = new RsaSecurityKey(RSA.Create(PublicKeyParameters)),
         ClockSkew = TimeSpan.Zero
     };
 
     public string GenerateToken(User request)
     {
         var issuanceDate = DateTime.UtcNow;
-        var securityKey = new SymmetricSecurityKey(ByteSecret);
+        var securityKey = new RsaSecurityKey(RSA.Create(PrivateKeyParameters));
         var descriptor = new SecurityTokenDescriptor
         {
             Subject = new ClaimsIdentity([
@@ -41,10 +55,14 @@ public class JwtService : ITokenService
                 new Claim(ClaimTypes.GivenName, request.Name),
                 new Claim(ClaimTypes.Email, request.Email)
             ]),
-            SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature),
+            SigningCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.RsaSha256Signature),
             Expires = issuanceDate.AddHours(6),
-            IssuedAt = issuanceDate
+            IssuedAt = issuanceDate,
+            Audience = "auth",
+            Issuer = "http://localhost:5021"
         };
+        
+        descriptor.Subject.AddClaims(request.UserRoles.Select(ur => new Claim(ClaimTypes.Role, ur.Role.Name)));
 
         var handler = new JwtSecurityTokenHandler();
         var token = handler.CreateJwtSecurityToken(descriptor);

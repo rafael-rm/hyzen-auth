@@ -33,6 +33,10 @@ public static class ServicesCollectionExtensions
     public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<IHashService, Pbkdf2HashService>();
-        services.AddSingleton<ITokenService>(_ => new JwtService(configuration["Token:Secret"] ?? string.Empty));
+        
+        var publicKey = configuration["Jwt:PublicKeyXml"];
+        var privateKey = configuration["Jwt:PrivateKeyXml"];
+        
+        services.AddSingleton<ITokenService>(_ => new JwtService(publicKey, privateKey));
     }
 }

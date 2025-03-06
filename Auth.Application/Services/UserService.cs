@@ -27,7 +27,10 @@ public class UserService(IAuthDbContext authDbContext, IHashService hashService)
 
     public async Task<Result> GetByGuidAsync(Guid userId)
     {
-        var user = await authDbContext.Users.FirstOrDefaultAsync(s => s.Guid == userId);
+        var user = await authDbContext.Users
+            .Include(s => s.UserRoles)
+            .ThenInclude(s => s.Role)
+            .FirstOrDefaultAsync(s => s.Guid == userId);
         
         if (user is null)
             return Result.Failure(UserError.UserNotFound);
@@ -37,7 +40,10 @@ public class UserService(IAuthDbContext authDbContext, IHashService hashService)
 
     public async Task<Result> GetByEmailAsync(string email)
     {
-        var user = await authDbContext.Users.FirstOrDefaultAsync(s => s.Email == email);
+        var user = await authDbContext.Users
+            .Include(s => s.UserRoles)
+            .ThenInclude(s => s.Role)
+            .FirstOrDefaultAsync(s => s.Email == email);
         
         if (user is null)
             return Result.Failure(UserError.UserNotFound);
