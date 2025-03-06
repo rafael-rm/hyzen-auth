@@ -1,93 +1,92 @@
-# Micro-serviço de Autenticação em .NET 8 ASP.NET Core
+# Hyzen Auth
 
-Este projeto é um micro-serviço de autenticação baseado em JWT, criado com .NET 8 ASP.NET Core. Ele implementa um sistema de permissão robusto baseado em roles e groups, garantindo consistência e segurança nas permissões de acesso.
+Um microserviço de autenticação robusto e seguro, implementado com base na [Arquitetura Onion](https://en.wikipedia.org/wiki/Onion_architecture). O Hyzen Auth utiliza JWT com assinatura RS256 (RsaSha256Signature) para autenticação e autorização, fornecendo endpoints para descoberta e validação das chaves públicas.
 
-## Funcionalidades
+## Visão Geral
 
-- Autenticação baseada em JWT.
-- Sistema de permissão com roles e groups.
-- Gerenciamento de usuários, grupos e roles.
-- Validações para garantir a consistência das permissões.
-- Integração com o Sentry para monitoramento de erros e falhas.
+O Hyzen Auth foi desenvolvido para oferecer uma solução escalável e segura para gerenciamento de autenticação em aplicações modernas. Baseado na Arquitetura Onion, o projeto separa claramente as responsabilidades, facilitando a manutenção, testes e evolução do código.
 
-## Criptografia de Senhas
+## Segurança
 
-Para garantir a segurança das senhas dos usuários, utilizamos o algoritmo PBKDF2 com SHA512. Abaixo estão os parâmetros de configuração usados para a criptografia das senhas:
+- **JWT com RS256**: Geração e validação de tokens JWT utilizando assinatura com algoritmo RSA SHA256.
+- **Segurança de Senhas**:
+  - Utilização de **PBKDF2** com SHA512.
+  - Salt de 64 bytes.
+  - Hash de 64 bytes.
+  - 256 mil iterações.
 
-- **Salt**: 64 bytes - Um valor único de 64 bytes é gerado para cada senha, adicionando uma camada extra de segurança contra ataques de força bruta.
-- **Hash**: 64 bytes - O resultado da hash gerada possui 64 bytes, assegurando um alto nível de segurança.
-- **Iterations**: 256.000 - A quantidade de iterações realizadas pelo algoritmo é 256.000, aumentando significativamente a dificuldade de ataques de cracking.
+### Endpoints de descoberta
 
-Esses parâmetros garantem que as senhas armazenadas sejam altamente resistentes a tentativas de quebra, protegendo eficazmente os dados dos usuários.
+- **/.well-known/jwks**: Retorna a chave pública (JSON Web Key Set) para validação dos tokens.
+- **/.well-known/openid-configuration**: Fornece os metadados de configuração, seguindo os padrões do OpenID Connect.
 
-## Endpoints
+## Exemplo de Configuração em uma API ASP.NET
 
-### Auth
+Para adicionar a autenticação baseada em JWT com o Hyzen Auth em sua API ASP.NET, siga as etapas abaixo.
 
-- **POST /api/v1/Auth/Login**
-  - Realiza o login do usuário e retorna um token JWT.
-- **POST /api/v1/Auth/Verify**
-  - Verifica se um token JWT é válido e retorna as informações do usuário.
+1. **Instalação dos Pacotes**:
+   
+   Você precisa adicionar os pacotes NuGet para o middleware de autenticação JWT:
+   ```bash
+   dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+   ```
 
-### Group
+   2. **Configuração da Autenticação no `Program.cs` ou `Startup.cs`**:
 
-- **GET /api/v1/Group**
-  - Retorna a lista de grupos.
-- **POST /api/v1/Group**
-  - Cria um novo grupo.
-- **DELETE /api/v1/Group**
-  - Deleta um grupo.
-- **PUT /api/v1/Group**
-  - Atualiza um grupo.
-- **POST /api/v1/Group/HasRole**
-  - Verifica se um grupo possui determinada role.
-- **POST /api/v1/Group/AddRole**
-  - Adiciona uma role a um grupo.
-- **POST /api/v1/Group/RemoveRole**
-  - Remove uma role de um grupo.
-- **POST /api/v1/Group/AddGroupToUser**
-  - Adiciona um grupo a um usuário.
-- **POST /api/v1/Group/RemoveGroupToUser**
-  - Remove um grupo de um usuário.
+      No arquivo `Program.cs` (ou `Startup.cs` dependendo da sua versão do ASP.NET Core), adicione a configuração para utilizar o JWT Bearer Authentication:
 
-### Role
+      ```cs
+      using Microsoft.AspNetCore.Authentication.JwtBearer;
+      using Microsoft.IdentityModel.Tokens;
 
-- **GET /api/v1/Role**
-  - Retorna a lista de roles.
-- **POST /api/v1/Role**
-  - Cria uma nova role.
-- **DELETE /api/v1/Role**
-  - Deleta uma role.
-- **PUT /api/v1/Role**
-  - Atualiza uma role.
-- **POST /api/v1/Role/AddRoleToUser**
-  - Adiciona uma role a um usuário.
-- **POST /api/v1/Role/RemoveRoleToUser**
-  - Remove uma role de um usuário.
+      var builder = WebApplication.CreateBuilder(args);
 
-### User
+      // Configuração do serviço de autenticação utilizando JWT Bearer
+      builder.Services.AddAuthentication(options =>
+      {
+          options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+          options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+      })
+      .AddJwtBearer(options =>
+      {
+          // URL do Hyzen Auth que fornece os metadados de OpenID Connect, incluindo o JWKS (chaves públicas)
+          options.Authority = "http://localhost:5021";
+       
+          // Definindo o público (Audience) que representa a API protegida
+          options.Audience = "all";
+   
+          // Não recomendado para produção, desabilita a validação do certificado SSL
+          options.RequireHttpsMetadata = false;
+       
+          // Parâmetros de validação do token
+          options.TokenValidationParameters = new TokenValidationParameters
+          {
+              ValidateIssuer = true,
+              ValidateAudience = true,
+              ValidateLifetime = true,
+              ValidateIssuerSigningKey = true
+          };
+      });
 
-- **GET /api/v1/User**
-  - Retorna a lista de usuários.
-- **POST /api/v1/User**
-  - Cria um novo usuário.
-- **DELETE /api/v1/User**
-  - Deleta um usuário.
-- **PUT /api/v1/User**
-  - Atualiza um usuário.
-- **POST /api/v1/User/HasRole**
-  - Verifica se um usuário possui determinada role.
+      var app = builder.Build();
 
-## Exemplo de JWT Retornado (Decodificado)
+      // Habilita os middlewares de autenticação e autorização
+      app.UseAuthentication();
+      app.UseAuthorization();
 
-Para garantir que o JWT não ultrapasse 4KB quando utilizado em cookies do navegador e para garantir uma autorização em tempo real, os grupos e roles não são retornados diretamente no JWT. Em vez disso, essas informações são obtidas em tempo real pelo endpoint `/api/v1/Auth/Verify`.
+      // Mapeia os controllers ou endpoints protegidos
+      app.MapControllers();
 
-```json
-{
-  "primarysid": "931023cd-5c9a-420c-821d-d8ed2d2a1eab",
-  "given_name": "Tester",
-  "email": "tester@test.com.br",
-  "nbf": 1716154875,
-  "exp": 1716165675,
-  "iat": 1716154875
-}
+      app.Run();
+      ```
+
+### Explicação do Funcionamento
+
+- **Integração com o Hyzen Auth**:  
+  A propriedade `Authority` aponta para o endereço do serviço Hyzen Auth, que expõe os endpoints de descoberta (`/.well-known/openid-configuration` e `/.well-known/jwks`). Esses endpoints fornecem os metadados e as chaves públicas necessárias para validar a assinatura dos tokens JWT.
+
+- **Validação do Token JWT**:  
+  O middleware de autenticação JWT extrai o token enviado pelo cliente (geralmente via header `Authorization: Bearer <token>`), e utiliza as chaves públicas disponibilizadas pelo Hyzen Auth para verificar a assinatura RS256 do token. Além disso, ele valida outros aspectos, como o emissor, o público (Audience) e a validade temporal do token.
+
+- **Proteção dos Endpoints da API**:  
+  Após a configuração, os middlewares `UseAuthentication()` e `UseAuthorization()` garantem que apenas requisições autenticadas e autorizadas possam acessar os endpoints protegidos. Caso o token seja inválido ou ausente, a API retorna um status de não autorizado.
