@@ -45,22 +45,19 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(255)
             .IsRequired();
 
-        builder.Property(u => u.LastLoginAt)
-            .HasColumnName("last_login_at")
-            .HasColumnType("TIMESTAMPTZ")
-            .IsRequired(false);
-
         builder.Property(u => u.CreatedAt)
             .HasColumnName("created_at")
             .HasColumnType("TIMESTAMPTZ")
             .ValueGeneratedOnAddOrUpdate()
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .IsRequired();
 
         builder.Property(u => u.UpdatedAt)
             .HasColumnName("updated_at")
             .HasColumnType("TIMESTAMPTZ")
             .ValueGeneratedOnAddOrUpdate()
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .IsRequired();
 
         builder.HasIndex(u => u.Email)
             .IsUnique()

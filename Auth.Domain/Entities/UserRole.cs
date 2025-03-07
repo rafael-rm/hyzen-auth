@@ -8,6 +8,8 @@ public class UserRole
     public int RoleId { get; set; }
     public Role Role { get; set; }
     
+    public DateTime AssignedAt { get; set; }
+    
     private UserRole() { }
     
     public UserRole(User user, Role role)
@@ -16,5 +18,6 @@ public class UserRole
         User = user;
         RoleId = role.Id;
         Role = role;
+        AssignedAt = DateTime.UtcNow;
     }
 }

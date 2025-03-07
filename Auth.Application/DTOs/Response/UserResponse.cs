@@ -18,7 +18,7 @@ public class UserResponse
             Name = user.Name,
             Email = user.Email,
             CreatedAt = user.CreatedAt,
-            Roles = user.UserRoles.Select(ur => ur.Role.Name).ToList()
+            Roles = user.UserRoles.Select(ur => ur.Role.Key).ToList()
         };
     }
 }

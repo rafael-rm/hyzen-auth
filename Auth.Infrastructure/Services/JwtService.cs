@@ -72,7 +72,7 @@ public class JwtService : ITokenService
             Issuer = _issuer
         };
         
-        descriptor.Subject.AddClaims(request.UserRoles.Select(ur => new Claim(ClaimTypes.Role, ur.Role.Name)));
+        descriptor.Subject.AddClaims(request.UserRoles.Select(ur => new Claim(ClaimTypes.Role, ur.Role.Key)));
 
         var handler = new JwtSecurityTokenHandler();
         var token = handler.CreateJwtSecurityToken(descriptor);

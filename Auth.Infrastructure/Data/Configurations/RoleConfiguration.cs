@@ -37,12 +37,14 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
         builder.Property(r => r.CreatedAt)
             .HasColumnName("created_at")
             .HasColumnType("TIMESTAMPTZ")
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .IsRequired();
 
         builder.Property(r => r.UpdatedAt)
             .HasColumnName("updated_at")
             .HasColumnType("TIMESTAMPTZ")
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .IsRequired();
         
         builder.HasIndex(g => g.Key)
             .IsUnique()

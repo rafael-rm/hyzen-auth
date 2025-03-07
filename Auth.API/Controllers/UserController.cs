@@ -31,7 +31,7 @@ public class UserController(IUserService userService) : ControllerBase
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "user")]
     [HttpGet("guid/{guid:guid}")]
     [ProducesResponseType(typeof(Result<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
@@ -50,7 +50,7 @@ public class UserController(IUserService userService) : ControllerBase
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     [HttpGet("email/{email}")]
     [ProducesResponseType(typeof(Result<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
@@ -68,7 +68,7 @@ public class UserController(IUserService userService) : ControllerBase
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     [HttpDelete("guid/{guid:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]
@@ -86,7 +86,7 @@ public class UserController(IUserService userService) : ControllerBase
         return StatusCode(StatusCodes.Status500InternalServerError);
     }
     
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "admin")]
     [HttpPut("guid/{guid:guid}/roles")]
     [ProducesResponseType(typeof(Result<UserResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(Result), StatusCodes.Status404NotFound)]

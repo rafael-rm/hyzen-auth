@@ -21,6 +21,13 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
             .HasColumnName("role_id")
             .HasColumnType("INT")
             .IsRequired();
+        
+        builder.Property(u => u.AssignedAt)
+            .HasColumnName("assigned_at")
+            .HasColumnType("TIMESTAMPTZ")
+            .ValueGeneratedOnAddOrUpdate()
+            .HasDefaultValueSql("CURRENT_TIMESTAMP")
+            .IsRequired();
 
         builder.HasOne(ur => ur.User)
             .WithMany(u => u.UserRoles)
