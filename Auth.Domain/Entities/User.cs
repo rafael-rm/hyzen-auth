@@ -17,7 +17,7 @@ public class User
     
     public User(string name, string email, string hashPassword)
     {
-        Guid = Guid.NewGuid();
+        Guid = Guid.CreateVersion7();
         Name = name;
         Email = email;
         Password = hashPassword;
