@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Auth.Application.DTOs.Response.Jwk;
+namespace Auth.Application.DTOs.Response.OpenId;
 
 public class OpenIdConfigurationResponse(string issuer, string jwksUri)
 {

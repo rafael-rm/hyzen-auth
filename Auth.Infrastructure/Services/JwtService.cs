@@ -76,8 +76,8 @@ public class JwtService : ITokenService
 
         var handler = new JwtSecurityTokenHandler();
         var token = handler.CreateJwtSecurityToken(descriptor);
-        
-        token.Header["kid"] = "v1"; // TODO: Rotate keys
+
+        token.Header["kid"] = "ad3e3bff-049b-4950-8af5-be08ab21c5c1";
 
         return handler.WriteToken(token);
     }

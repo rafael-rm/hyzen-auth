@@ -7,12 +7,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Auth.Domain\Auth.Domain.csproj" />
+        <ProjectReference Include="..\Auth.Domain\Auth.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="Microsoft.EntityFrameworkCore">
-        <HintPath>..\..\..\..\Packages\nuget\microsoft.entityframeworkcore\9.0.0\lib\net8.0\Microsoft.EntityFrameworkCore.dll</HintPath>
-      </Reference>
+        <Reference Include="Microsoft.EntityFrameworkCore">
+            <HintPath>..\..\..\..\Packages\nuget\microsoft.entityframeworkcore\9.0.0\lib\net8.0\Microsoft.EntityFrameworkCore.dll</HintPath>
+        </Reference>
     </ItemGroup>
 </Project>
